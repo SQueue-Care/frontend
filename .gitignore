@@ -4,3 +4,4 @@ PRD.md
 
 # Exclude Claude Code directory
 .claude/
+.DS_Store
