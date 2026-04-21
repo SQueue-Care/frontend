@@ -27,3 +27,10 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Exclude documentation files from GitHub
+database_schema.md
+PRD.md
+
+# Exclude Claude Code directory
+.DS_Store
