@@ -32,5 +32,12 @@ dist-ssr
 database_schema.md
 PRD.md
 
-# Exclude Claude Code directory
+# OS
 .DS_Store
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# Local Netlify folder
+.netlify
