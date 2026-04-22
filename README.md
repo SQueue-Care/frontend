@@ -1,4 +1,9 @@
-# Cara Menjalankan Proyek Lokal
+# SQueue Care - Frontend
+
+## Live Demo
+https://sq-care.netlify.app/
+
+## Cara Menjalankan Proyek Lokal
 1. Pastikan Node.js sudah terinstal.
 2. Buka terminal di folder proyek ini.
 3. Jalankan `npm install` untuk mengunduh dependensi.
