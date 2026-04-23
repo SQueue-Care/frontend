@@ -1,3 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Manrope:wght@700;800&display=swap');
+@import "tailwindcss";
+@theme {
+    --font-inter: "Inter",sans-serif;
+    --font-manrope: "Manrope", sans-serif;
+}
