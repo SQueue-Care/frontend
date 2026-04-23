@@ -1,5 +1,5 @@
 // src/components/AuthButton.tsx
-import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { type ButtonHTMLAttributes, type ReactNode } from "react";
 
 /**
  * Properti untuk komponen AuthButton.

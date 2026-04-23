@@ -1,5 +1,5 @@
 // src/components/AuthInput.tsx
-import { InputHTMLAttributes, useId } from 'react';
+import { type InputHTMLAttributes } from "react";
 
 /**
  * Properti untuk komponen AuthInput.
