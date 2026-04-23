@@ -1,5 +1,5 @@
 // src/components/AuthButton.tsx
-import { ButtonHTMLAttributes, type ReactNode } from "react";
+import { type ButtonHTMLAttributes, type ReactNode } from "react";
 
 interface AuthButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     children: ReactNode;

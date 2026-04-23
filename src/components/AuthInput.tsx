@@ -1,5 +1,5 @@
 // src/components/AuthInput.tsx
-import { InputHTMLAttributes } from "react";
+import { type InputHTMLAttributes } from "react";
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string;
