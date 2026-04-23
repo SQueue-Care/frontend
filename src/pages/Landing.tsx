@@ -22,7 +22,7 @@ export default function Landing() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link to="/login" className="px-6 py-2.5 bg-gradient-to-r from-[#0d9488] to-[#2563eb] hover:opacity-90 transition-opacity rounded-xl text-white text-sm font-bold shadow-md shadow-teal-700/30">
+            <Link to="/auth" className="px-6 py-2.5 bg-gradient-to-r from-[#0d9488] to-[#2563eb] hover:opacity-90 transition-opacity rounded-xl text-white text-sm font-bold shadow-md shadow-teal-700/30">
               Masuk / Daftar
             </Link>
           </div>
