@@ -1,12 +1,13 @@
 // src/pages/AuthPage.tsx
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthInput from '../components/AuthInput';
 import AuthButton from '../components/AuthButton';
 
 type AuthMode = 'login' | 'register';
 
 export default function AuthPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
   
@@ -77,11 +78,17 @@ export default function AuthPage() {
     if (!validate()) return; // Hentikan proses jika validasi gagal
 
     setIsLoading(true);
-    // Simulasi API Call
+    // Simulasi API Call & Redirect
     setTimeout(() => {
       setIsLoading(false);
-      alert(mode === 'login' ? 'Login Berhasil!' : 'Registrasi Berhasil!');
-    }, 2000);
+      // Arahkan ke portal jika login, atau kembali ke halaman awal jika register
+      if (mode === 'login') {
+        navigate('/portal');
+      } else {
+        alert('Registrasi Berhasil! Silakan masuk dengan akun Anda.');
+        setMode('login'); // Otomatis pindah ke tab login setelah daftar
+      }
+    }, 1500); // Waktu loading 1.5 detik
   };
 
   return (

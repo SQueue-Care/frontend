@@ -4,3 +4,12 @@
     --font-inter: "Inter",sans-serif;
     --font-manrope: "Manrope", sans-serif;
 }
+
+/* Menghilangkan scrollbar untuk elemen dengan class no-scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* Standar IE dan Edge */
+  scrollbar-width: none;  /* Standar Firefox */
+}
