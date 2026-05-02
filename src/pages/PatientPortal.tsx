@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import PolyclinicCard from '../components/PolyclinicCard';
 import BookingPanel from '../components/BookingPanel';
+import LiveQueueTracker from '../components/LiveQueueTracker';
 
 /**
  * SARAN ARSITEKTUR:
@@ -9,6 +10,14 @@ import BookingPanel from '../components/BookingPanel';
  * (misal: <PolyclinicCard />) lalu di-render menggunakan metode .map() dari sebuah array data.
  * Saat ini kita menggunakan struktur statis penuh sesuai dengan file HTML referensi Anda.
  */
+const polyclinics = [
+    { name: 'Poli Umum', description: 'Pelayanan kesehatan dasar, pemeriksaan fisik, dan konsultasi keluhan medis umum.', status: 'Sangat Ramai', percentage: '90%', color: 'rose' },
+    { name: 'Poli Gigi', description: 'Perawatan kesehatan gigi, pencabutan, pembersihan karang, dan ortodonti.', status: 'Normal / Sedang', percentage: '50%', color: 'amber' },
+    { name: 'Poli Anak', description: 'Konsultasi tumbuh kembang anak, imunisasi, dan penanganan penyakit pada anak.', status: 'Sepi / Lengang', percentage: '25%', color: 'emerald' },
+    { name: 'Poli Mata', description: 'Pemeriksaan visus, katarak, glaukoma, dan konsultasi kesehatan penglihatan menyeluruh.', status: 'Normal / Sedang', percentage: '40%', color: 'amber' },
+    { name: 'Poli Jantung', description: 'Layanan rekam jantung (EKG), ekokardiografi, dan konsultasi kardiovaskular spesialis.', status: 'Sangat Ramai', percentage: '85%', color: 'rose' },
+    { name: 'Poli THT', description: 'Pemeriksaan telinga, hidung, dan tenggorokan, serta penanganan gangguan pendengaran.', status: 'Sepi / Lengang', percentage: '15%', color: 'emerald' },
+  ];
 
 export default function PatientPortal() {
   // Manajemen State untuk Sidebar dan Panel Booking
@@ -16,6 +25,7 @@ export default function PatientPortal() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
   const [selectedPoli, setSelectedPoli] = useState("Poli Umum");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -31,20 +41,17 @@ export default function PatientPortal() {
     setTimeout(() => setBookingStep(1), 500); // Reset step setelah animasi tutup selesai
   };
 
+  // LOGIKA FILTER: Menyaring array polyclinics berdasarkan nama atau deskripsi
+  const filteredPolyclinics = polyclinics.filter((poli) =>
+    poli.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    poli.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handleNextStep = () => setBookingStep((prev) => prev + 1);
   const handlePrevStep = () => setBookingStep((prev) => prev - 1);
 
-  const polyclinics = [
-    { name: 'Poli Umum', description: 'Pelayanan kesehatan dasar, pemeriksaan fisik, dan konsultasi keluhan medis umum.', status: 'Sangat Ramai', percentage: '90%', color: 'rose' },
-    { name: 'Poli Gigi', description: 'Perawatan kesehatan gigi, pencabutan, pembersihan karang, dan ortodonti.', status: 'Normal / Sedang', percentage: '50%', color: 'amber' },
-    { name: 'Poli Anak', description: 'Konsultasi tumbuh kembang anak, imunisasi, dan penanganan penyakit pada anak.', status: 'Sepi / Lengang', percentage: '25%', color: 'emerald' },
-    { name: 'Poli Mata', description: 'Pemeriksaan visus, katarak, glaukoma, dan konsultasi kesehatan penglihatan menyeluruh.', status: 'Normal / Sedang', percentage: '40%', color: 'amber' },
-    { name: 'Poli Jantung', description: 'Layanan rekam jantung (EKG), ekokardiografi, dan konsultasi kardiovaskular spesialis.', status: 'Sangat Ramai', percentage: '85%', color: 'rose' },
-    { name: 'Poli THT', description: 'Pemeriksaan telinga, hidung, dan tenggorokan, serta penanganan gangguan pendengaran.', status: 'Sepi / Lengang', percentage: '15%', color: 'emerald' },
-  ];
-
   return (
-    <div className="min-h-screen bg-slate-50 font-['Inter'] relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 font-['Inter'] relative">
       
       {/* ========================================== */}
       {/* 1. SIDEBAR & OVERLAY */}
@@ -101,14 +108,15 @@ export default function PatientPortal() {
       {/* ========================================== */}
       {/* 2. NAVBAR ATAS */}
       {/* ========================================== */}
-      <nav className="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center gap-3">
+          <div className="flex justify-between h-16 items-center gap-4 md:gap-8">
+            
+            {/* BAGIAN KIRI: Tombol Sidebar & Logo */}
+            <div className="flex items-center gap-3 shrink-0">
               <button onClick={toggleSidebar} className="p-2 -ml-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500/50">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
               </button>
-              
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-teal-600">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h4" />
@@ -125,15 +133,36 @@ export default function PatientPortal() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* BAGIAN TENGAH: Search Box (Disembunyikan di Mobile) */}
+            <div className="hidden md:flex flex-1 max-w-md relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+              <input 
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari layanan poliklinik..." 
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-zinc-900 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all placeholder:text-slate-400 shadow-sm" 
+              />
+            </div>
+
+            {/* BAGIAN KANAN: Profil User */}
+            <div className="flex items-center gap-3 shrink-0">
+              {/* Tombol Search Mobile (Opsional, menggantikan fungsi search bar di layar kecil) */}
+              <button className="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
+                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </button>
+              
               <div className="hidden md:flex flex-col text-right">
                 <span className="text-sm font-bold text-zinc-900 leading-none mb-1">Bambang</span>
                 <span className="text-[11px] font-semibold text-slate-500 tracking-wide uppercase">Pasien</span>
               </div>
-              <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
+              <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-teal-500/50 transition-all">
                 <img src="https://placehold.co/100x100/e2e8f0/64748b?text=B" alt="Profil" className="w-full h-full object-cover" />
               </div>
             </div>
+
           </div>
         </div>
       </nav>
@@ -142,59 +171,15 @@ export default function PatientPortal() {
       {/* 3. KONTEN UTAMA */}
       {/* ========================================== */}
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-10 md:py-12">
-        <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-8 mb-12">
-          <div className="flex flex-col gap-2.5 max-w-2xl">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tighter">Pilih Layanan Poliklinik</h1>
-            <p className="text-slate-600 text-base leading-relaxed">Cek status keramaian poli secara <span className="font-semibold text-teal-700">real-time</span> (diprediksi oleh AI) sebelum mengambil nomor antrean.</p>
-          </div>
-
-          <div className="w-full lg:w-96 relative">
-            <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none">
-              {/* SARAN: Perbaiki margin left (pl-4.5 bukan standar Tailwind, gunakan pl-4 atau pl-5) */}
-              <svg className="w-5 h-5 text-slate-400 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-            <input type="text" placeholder="Cari poli..." className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl text-zinc-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all shadow-sm placeholder:text-slate-400" />
-          </div>
-        </div>
-        
-        <div className="mb-12 bg-gradient-to-r from-teal-900 to-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-xl shadow-teal-900/10 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transform transition-all hover:scale-[1.01]">
-          <div className="absolute -right-10 -top-10 w-48 h-48 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative z-10 w-full md:w-auto">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center min-w-[110px] shadow-inner">
-              <span className="block text-teal-200 text-[10px] font-bold uppercase tracking-widest mb-1">Nomor Anda</span>
-              <span className="block text-4xl font-extrabold font-['Manrope'] tracking-tight">A-14</span>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2.5 mb-1.5">
-                <span className="flex items-center gap-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
-                  Live
-                </span>
-                <h4 className="text-xl font-bold font-['Manrope'] text-white">Poli Umum</h4>
-              </div>
-              <p className="text-slate-300 text-sm font-medium mb-3">dr. Sarah Jenkins, Sp.U</p>
-              
-              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-teal-100 bg-black/20 w-max px-3 py-1.5 rounded-lg border border-white/5">
-                <span className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
-                  Estimasi AI: 10:45 WIB
-                </span>
-                <span className="text-slate-500">•</span>
-                <span className="text-amber-300">Sisa antrean: 3 </span>
-              </div>
-            </div>
-          </div>
-
-          <button className="relative z-10 w-full md:w-auto px-6 py-4 bg-white text-teal-900 text-sm font-extrabold rounded-xl hover:bg-slate-50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
-            Buka Pelacak Antrean
-          </button>
+        <div className="mb-12 max-w-2xl">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tighter mb-2.5">Pilih Layanan Poliklinik</h1>
+          <p className="text-slate-600 text-base leading-relaxed">Cek status keramaian poli secara <span className="font-semibold text-teal-700">real-time</span> (diprediksi oleh AI) sebelum mengambil nomor antrean.</p>
         </div>
 
+        {/* Real-time Queue Tracker Card */}
+        <LiveQueueTracker />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {polyclinics.map((poli) => (
+          {filteredPolyclinics.map((poli) => (
             <PolyclinicCard
               key={poli.name}
               name={poli.name}
@@ -205,6 +190,17 @@ export default function PatientPortal() {
               onClick={() => openBooking(poli.name)}
             />
           ))}
+
+          {/* Saran UI: Pesan jika hasil pencarian tidak ditemukan */}
+          {filteredPolyclinics.length === 0 && (
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+              <h3 className="text-lg font-bold text-zinc-900 mb-1">Layanan tidak ditemukan</h3>
+              <p className="text-sm text-slate-500">Kami tidak dapat menemukan poliklinik dengan kata kunci "{searchQuery}".</p>
+            </div>
+          )}
         </div>
       </main>
 
