@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage";
 import PatientPortal from "./pages/PatientPortal";
 import Booking from "./pages/Booking";
 import ResetPassword from "./pages/ResetPassword";
+import AdminDashboard from "./pages/AdminDashboard";
 
 
 function App() {
@@ -13,11 +14,13 @@ function App() {
       <Route path="/login" element={<Navigate to="/auth" replace />} />
       <Route path="/register" element={<Navigate to="/auth" replace />} />
       <Route path="/auth" element={<AuthPage/>}></Route>
-      <Route path="*" element={<Navigate to="/" replace />}></Route>
       <Route path="/reset-password" element={<ResetPassword/>}></Route>
+      <Route path="/admin" element={<AdminDashboard/>}></Route>
 
       <Route path="/portal" element={<PatientPortal/>}></Route>
       <Route path="/booking" element={<Booking/>}></Route>
+
+      <Route path="*" element={<Navigate to="/" replace />}></Route>
     </Routes>
   )
 }
