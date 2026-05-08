@@ -3,6 +3,8 @@ import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthInput from '../components/AuthInput';
 import AuthButton from '../components/AuthButton';
+import { useAuthStore } from '../store/authStore';
+import apiClient from '../lib/apiClient';
 
 type AuthMode = 'login' | 'register';
 
@@ -10,6 +12,8 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
+
+  const login = useAuthStore((state) => state.login);
   
   // State untuk mengontrol animasi transisi
   const [isAnimate, setIsAnimate] = useState(true);
@@ -27,7 +31,7 @@ export default function AuthPage() {
   // 1. Memori Data Form
   const [formData, setFormData] = useState({
     nama: '',
-    nik: '',
+    email: '', 
     password: '',
     confirmPassword: '',
     agreed: false
@@ -62,8 +66,9 @@ export default function AuthPage() {
     }
 
     // Validasi Umum (Login & Register)
-    if (formData.nik.length !== 16) {
-      newErrors.nik = "NIK harus persis 16 digit angka";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Format email tidak valid";
     }
     if (formData.password.length < 8) {
       newErrors.password = "Kata sandi minimal 8 karakter";
@@ -73,22 +78,36 @@ export default function AuthPage() {
     return Object.keys(newErrors).length === 0; // Mengembalikan 'true' jika tidak ada error
   };
 
-  const handleAuth = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return; // Hentikan proses jika validasi gagal
+    if (!validate()) return; // Hentikan jika validasi gagal (pastikan Anda juga mengubah validasi NIK menjadi Email di fungsi validate)
 
     setIsLoading(true);
-    // Simulasi API Call & Redirect
-    setTimeout(() => {
-      setIsLoading(false);
-      // Arahkan ke portal jika login, atau kembali ke halaman awal jika register
+    setErrors({}); // Bersihkan error sebelumnya
+
+    try {
       if (mode === 'login') {
+        // Eksekusi Login menggunakan Zustand Store
+        await login(formData.email, formData.password);
         navigate('/portal');
       } else {
+        // Eksekusi Register menggunakan apiClient langsung
+        await apiClient.post('/auth/register', {
+          email: formData.email,
+          password: formData.password,
+          name: formData.nama
+        });
         alert('Registrasi Berhasil! Silakan masuk dengan akun Anda.');
-        setMode('login'); // Otomatis pindah ke tab login setelah daftar
+        setMode('login'); // Pindah ke tab login
       }
-    }, 1500); // Waktu loading 1.5 detik
+    } catch (error: any) {
+      // Tangkap dan tampilkan error dari backend
+      setErrors({ 
+        api: error.message || 'Terjadi kesalahan pada server. Silakan coba lagi.' 
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -154,6 +173,14 @@ export default function AuthPage() {
           </div>
 
           <form className="flex flex-col gap-6" onSubmit={handleAuth}>
+            
+            {/* Tampilkan Error API jika ada */}
+            {errors.api && (
+              <div className="p-3 text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                {errors.api}
+              </div>
+            )}
+
             {mode === 'register' && (
               <AuthInput 
                 label="Nama Lengkap" 
@@ -164,12 +191,14 @@ export default function AuthPage() {
               />
             )}
 
+            {/* Ubah label dan binding nilai dari NIK ke Email */}
             <AuthInput 
-              label="Username / NIK" 
-              placeholder="16 digit nomor NIK" 
-              value={formData.nik}
-              onChange={(e) => setFormData({...formData, nik: e.target.value.replace(/\D/g, '').slice(0, 16)})}
-              error={errors.nik}
+              label="Email Terdaftar" 
+              type="email"
+              placeholder="contoh@email.com" 
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              error={errors.email}
             />
 
             <div className="flex flex-col gap-1">

@@ -4,9 +4,18 @@ import StatCard from '../components/StatCard';
 import WaitTimeChart from '../components/WaitTimeChart';
 import DepartmentWorkloadChart from '../components/DepartmentWorkloadChart';
 import QueueManagementTable from '../components/QueueManagementTable';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/auth');
+  };
 
   return (
     // Background slate-50 yang sama persis dengan pasien, namun struktur flex untuk sidebar permanen
@@ -46,6 +55,12 @@ export default function AdminDashboard() {
             Analitik Performa
           </button>
         </nav>
+        <div className="p-4 border-t border-slate-100">
+          <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-4 py-3 text-rose-600 hover:bg-rose-50 rounded-xl font-medium transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Keluar Sistem
+          </button>
+        </div>
       </aside>
 
       {/* ========================================== */}

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import PolyclinicCard from '../components/PolyclinicCard';
 import BookingPanel from '../components/BookingPanel';
 import LiveQueueTracker from '../components/LiveQueueTracker';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 /**
  * SARAN ARSITEKTUR:
@@ -26,6 +28,13 @@ export default function PatientPortal() {
   const [bookingStep, setBookingStep] = useState(1);
   const [selectedPoli, setSelectedPoli] = useState("Poli Umum");
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/auth');
+  };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -95,7 +104,7 @@ export default function PatientPortal() {
         </nav>
 
         <div className="p-4 border-t border-slate-100">
-          <button className="w-full text-left flex items-center gap-3 px-4 py-3 text-rose-600 hover:bg-rose-50 rounded-xl font-medium transition-colors">
+          <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-4 py-3 text-rose-600 hover:bg-rose-50 rounded-xl font-medium transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             Keluar Akun
           </button>

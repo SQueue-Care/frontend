@@ -3,34 +3,50 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthInput from '../components/AuthInput';
 import AuthButton from '../components/AuthButton';
+import apiClient from '../lib/apiClient';
 
 export default function ResetPassword() {
-  const [identifier, setIdentifier] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!identifier.trim()) {
-      setError('NIK atau Email wajib diisi');
+    
+    // Validasi input tidak boleh kosong
+    if (!email.trim()) {
+      setError('Email wajib diisi');
+      return;
+    }
+
+    // Validasi format email menggunakan RegEx
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Format email tidak valid');
       return;
     }
     
     setError('');
     setIsLoading(true);
     
-    // Simulasi pengiriman tautan pemulihan ke server
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Eksekusi API call ke backend
+      // Endpoint disesuaikan dengan standar industri (pastikan backend merespons endpoint ini)
+      await apiClient.post('/auth/forgot-password', { email });
+      
       setIsSuccess(true);
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Gagal memproses permintaan. Pastikan email terdaftar di sistem.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="w-full h-screen flex font-['Inter'] overflow-hidden bg-white">
       
-      {/* SISI KIRI: Branding Statis */}
+      {/* SISI KIRI: Branding Statis (Dipertahankan 100% dari desain Anda) */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-teal-900 to-slate-900 p-12 flex-col justify-between relative overflow-hidden">
         <div className="w-96 h-96 absolute -top-24 -left-24 bg-teal-500/20 rounded-full blur-[80px]"></div>
         <div className="w-96 h-96 absolute -bottom-24 -right-24 bg-blue-500/20 rounded-full blur-[80px]"></div>
@@ -66,18 +82,27 @@ export default function ResetPassword() {
               Reset Kata Sandi
             </h2>
             <p className="text-zinc-500 text-sm">
-              Masukkan NIK atau Email Anda untuk menerima instruksi pemulihan.
+              Masukkan Email Anda untuk menerima instruksi pemulihan.
             </p>
           </div>
 
           {!isSuccess ? (
             <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+              
+              {/* Tampilan Error API */}
+              {error && (
+                <div className="p-3 text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                  {error}
+                </div>
+              )}
+
+              {/* Disesuaikan menjadi Email saja sesuai requirement backend */}
               <AuthInput 
-                label="NIK / Email Terdaftar" 
-                placeholder="Contoh: 317... atau nama@email.com" 
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                error={error}
+                label="Email Terdaftar" 
+                type="email"
+                placeholder="nama@email.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
 
               <div className="mt-2">
@@ -95,7 +120,7 @@ export default function ResetPassword() {
               </div>
               <h3 className="text-xl font-bold text-zinc-900">Instruksi Terkirim</h3>
               <p className="text-sm text-zinc-500">
-                Kami telah mengirimkan langkah pemulihan ke kontak yang terhubung dengan akun Anda. Silakan periksa kotak masuk Anda.
+                Kami telah mengirimkan langkah pemulihan ke kontak yang terhubung dengan akun <span className="font-semibold text-teal-700">{email}</span>. Silakan periksa kotak masuk Anda.
               </p>
             </div>
           )}

@@ -1,5 +1,6 @@
 // src/lib/apiClient.ts
-import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
+import type { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 // 1. Create API Base Configuration (Aktivitas 2, 7)
 const apiClient = axios.create({
