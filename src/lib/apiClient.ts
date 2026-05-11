@@ -4,13 +4,13 @@ import type { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axio
 
 // 1. Create API Base Configuration (Aktivitas 2, 7)
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000, // Request akan dibatalkan jika server tidak merespons dalam 10 detik
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true, 
+  withCredentials: true,
 });
 
 // 2. Setup Request Interceptor (Aktivitas 3, 6)
@@ -18,7 +18,7 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Mengambil token otentikasi dari localStorage (atau state management)
     const token = localStorage.getItem('access_token');
-    
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -74,7 +74,7 @@ apiClient.interceptors.response.use(
     // Menangkap error 401 (Unauthorized) untuk Token Refresh Logic (Aktivitas 5)
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
           failedQueue.push({ resolve, reject });
         }).then(token => {
           originalRequest.headers.Authorization = 'Bearer ' + token;
@@ -90,16 +90,19 @@ apiClient.interceptors.response.use(
       try {
         // Asumsi endpoint untuk refresh token
         const refreshToken = localStorage.getItem('refresh_token');
-        const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, {
-          token: refreshToken
+        const response = await axios.post(`${apiClient.defaults.baseURL}/auth/refresh`, {
+          refreshToken: refreshToken
         });
 
-        // Simpan token baru
-        localStorage.setItem('access_token', data.access_token);
-        apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + data.access_token;
-        originalRequest.headers.Authorization = 'Bearer ' + data.access_token;
+        const data = response.data.data;
 
-        processQueue(null, data.access_token);
+        // Simpan token baru
+        localStorage.setItem('access_token', data.accessToken);
+        localStorage.setItem('refresh_token', data.refreshToken);
+        apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + data.accessToken;
+        originalRequest.headers.Authorization = 'Bearer ' + data.accessToken;
+
+        processQueue(null, data.accessToken);
         return apiClient(originalRequest);
 
       } catch (refreshError) {
