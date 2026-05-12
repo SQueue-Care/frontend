@@ -110,7 +110,8 @@ export default function AuthPage() {
         await apiClient.post('/auth/register', {
           email: formData.email,
           password: formData.password,
-          name: formData.nama
+          name: formData.nama,
+          role: 'PATIENT' // Menambahkan role eksplicit untuk memastikan pengguna baru adalah pasien
         });
         alert('Registrasi Berhasil! Silakan masuk dengan akun Anda.');
         setMode('login'); 

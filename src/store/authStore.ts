@@ -56,8 +56,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     set({ isLoading: true });
     try {
+      const refreshToken = localStorage.getItem('refresh_token');
       // Memanggil endpoint logout untuk mencabut refresh token di server
-      await apiClient.post('/auth/logout');
+      await apiClient.post('/auth/logout', { refreshToken });
     } catch (error) {
       console.error('[AuthStore] API Logout gagal, memaksa pembersihan sesi lokal.', error);
     } finally {
