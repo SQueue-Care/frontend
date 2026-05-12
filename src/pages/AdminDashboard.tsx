@@ -1,25 +1,78 @@
 // src/pages/AdminDashboard.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import StatCard from '../components/StatCard';
 import WaitTimeChart from '../components/WaitTimeChart';
 import DepartmentWorkloadChart from '../components/DepartmentWorkloadChart';
 import QueueManagementTable from '../components/QueueManagementTable';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { useUserStore } from '../store/userStore'; // Tambahan store pengguna
+
+type AdminView = 'dashboard' | 'users';
 
 export default function AdminDashboard() {
+  const [activeView, setActiveView] = useState<AdminView>('dashboard');
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newUser, setNewUser] = useState({ name: '', email: '', password: '' });
+  
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
+
+  // Mengambil state dan fungsi dari useUserStore
+  const { users, fetchUsers, updateUser, deleteUser, isLoading: isUserLoading } = useUserStore();
+
+  // Memuat data pengguna hanya saat tab Manajemen Pengguna aktif
+  useEffect(() => {
+    if (activeView === 'users') {
+      fetchUsers();
+    }
+  }, [activeView, fetchUsers]);
 
   const handleLogout = async () => {
     await logout();
     navigate('/auth');
   };
 
+  const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
+    try {
+      await updateUser(userId, { isActive: !currentStatus });
+    } catch (err) {
+      alert("Gagal mengubah status pengguna.");
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini secara permanen?")) {
+      try {
+        await deleteUser(userId);
+      } catch (err) {
+        alert("Gagal menghapus pengguna.");
+      }
+    }
+  };
+
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      // Panggil fungsi createUser dari useUserStore
+      await useUserStore.getState().createUser(newUser);
+      setIsAddModalOpen(false);
+      setNewUser({ name: '', email: '', password: '' }); // Reset formulir
+      alert("Pengguna berhasil didaftarkan.");
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "Gagal mendaftarkan pengguna.";
+      alert(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    // Background slate-50 yang sama persis dengan pasien, namun struktur flex untuk sidebar permanen
     <div className="min-h-screen bg-slate-50 font-['Inter'] flex">
       
       {/* ========================================== */}
@@ -42,10 +95,23 @@ export default function AdminDashboard() {
 
         {/* Menu Navigasi Admin */}
         <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
-          <button className="w-full text-left flex items-center gap-3 px-4 py-3 bg-teal-500/20 text-teal-400 rounded-xl font-semibold transition-colors">
+          <button 
+            onClick={() => setActiveView('dashboard')}
+            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'dashboard' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             Command Center
           </button>
+          
+          {/* Tombol Baru: Manajemen Pengguna */}
+          <button 
+            onClick={() => setActiveView('users')}
+            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'users' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            Manajemen Pengguna
+          </button>
+
           <button className="w-full text-left flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-white/10 hover:text-white rounded-xl font-medium transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             Manajemen Antrean
@@ -115,88 +181,201 @@ export default function AdminDashboard() {
 
         {/* Ruang Kanvas Utama */}
         <main className="flex-1 p-4 sm:p-8">
-          <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">Overview Antrean Hari Ini</h1>
-              <p className="text-slate-500 text-sm font-medium">Pantau metrik operasional seluruh poliklinik secara real-time.</p>
+          
+          {/* TAMPILAN 1: DASHBOARD ASLI */}
+          {activeView === 'dashboard' && (
+            <div className="animate-in fade-in duration-500">
+              <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">Overview Antrean Hari Ini</h1>
+                  <p className="text-slate-500 text-sm font-medium">Pantau metrik operasional seluruh poliklinik secara real-time.</p>
+                </div>
+                
+                {/* Filter Departemen (Aktivitas 9) */}
+                <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                  <button className="px-4 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow-md shadow-teal-600/20">Semua Poli</button>
+                  <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Umum</button>
+                  <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Gigi</button>
+                  <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Anak</button>
+                </div>
+              </div>
+
+              {/* 4 Kartu Statistik Utama */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard 
+                  title="Total Pasien" 
+                  value="1,284" 
+                  icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>}
+                  trend={{ value: "12%", isPositive: true }}
+                  description="Dibandingkan kemarin"
+                />
+                <StatCard 
+                  title="Rata-rata Waktu Tunggu" 
+                  value="24 Menit" 
+                  icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
+                  trend={{ value: "4m", isPositive: false }}
+                  description="Lebih lambat dari rata-rata"
+                />
+                <StatCard 
+                  title="Antrean Aktif" 
+                  value="42" 
+                  icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>}
+                  description="Pasien menunggu saat ini"
+                />
+                <StatCard 
+                  title="Kepuasan Pasien" 
+                  value="4.8/5" 
+                  icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
+                  trend={{ value: "0.2", isPositive: true }}
+                  description="Rating layanan bulan ini"
+                />
+              </div>
+
+              {/* Area Grafik */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                 <div className="lg:col-span-2 min-h-[400px] bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="font-extrabold text-zinc-950 font-['Manrope']">Analitik Waktu Tunggu</h3>
+                      <select className="text-xs font-bold bg-slate-50 border-slate-200 rounded-lg focus:ring-teal-500 text-slate-600 px-3 py-1.5 cursor-pointer outline-none">
+                        <option>Hari Ini</option>
+                        <option>7 Hari Terakhir</option>
+                        <option>30 Hari Terakhir</option>
+                      </select>
+                    </div>
+                    <div className="flex-1">
+                      <WaitTimeChart />
+                    </div>
+                 </div>
+                 
+                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
+                    <h3 className="font-extrabold text-zinc-950 font-['Manrope'] mb-6">Beban Kerja Departemen</h3>
+                    <div className="flex-1 flex items-center justify-center">
+                      <DepartmentWorkloadChart />
+                    </div>
+                 </div>
+              </div>
+
+              {/* Area Tabel Kendali */}
+              <div>
+                <QueueManagementTable />
+              </div>
             </div>
-            
-            {/* Filter Departemen (Aktivitas 9) */}
-            <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
-              <button className="px-4 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow-md shadow-teal-600/20">Semua Poli</button>
-              <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Umum</button>
-              <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Gigi</button>
-              <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Anak</button>
+          )}
+
+          {/* TAMPILAN 2: MANAJEMEN PENGGUNA */}
+          {activeView === 'users' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">Manajemen Pengguna</h1>
+                  <p className="text-slate-500 text-sm font-medium">Kelola peran, status, dan akses seluruh akun sistem RS Ethereal.</p>
+                </div>
+                <button 
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="px-5 py-2.5 bg-teal-600 text-white text-sm font-bold rounded-xl shadow-md shadow-teal-600/20 hover:bg-teal-700 transition-all active:scale-95 flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                  Tambah Pengguna
+                </button>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama & Email</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {isUserLoading ? (
+                      <tr><td colSpan={4} className="px-6 py-10 text-center text-slate-400 font-medium italic">Mengambil data pengguna...</td></tr>
+                    ) : users.length === 0 ? (
+                      <tr><td colSpan={4} className="px-6 py-10 text-center text-slate-400 font-medium italic">Tidak ada pengguna ditemukan.</td></tr>
+                    ) : users.map((u) => (
+                      <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-zinc-900">{u.name}</div>
+                          <div className="text-xs text-slate-500">{u.email}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-1 text-[10px] font-bold rounded-md uppercase ${
+                            u.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
+                            u.role === 'DOCTOR' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'
+                          }`}>
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button 
+                            onClick={() => handleToggleStatus(u.id, u.isActive)}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                              u.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
+                            }`}
+                          >
+                            <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                            {u.isActive ? 'Aktif' : 'Nonaktif'}
+                          </button>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button 
+                            onClick={() => handleDeleteUser(u.id)}
+                            className="p-2 text-slate-400 hover:text-rose-600 transition-colors"
+                            title="Hapus Pengguna"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+                    {isAddModalOpen && (
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+                  <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                      <div>
+                        <h3 className="font-extrabold text-zinc-900 text-lg">Daftarkan Pengguna Biasa</h3>
+                        <p className="text-xs text-slate-500 font-medium mt-1">Akun baru akan mendapatkan peran default (Pasien).</p>
+                      </div>
+                      <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:bg-slate-200 p-2 rounded-lg transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                      </button>
+                    </div>
+                    
+                    <form onSubmit={handleAddUser} className="p-6 space-y-5">
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Nama Lengkap</label>
+                        <input type="text" required value={newUser.name} onChange={(e) => setNewUser({...newUser, name: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 transition-all outline-none" placeholder="Masukkan nama lengkap" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Alamat Email</label>
+                        <input type="email" required value={newUser.email} onChange={(e) => setNewUser({...newUser, email: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 transition-all outline-none" placeholder="email@contoh.com" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Kata Sandi</label>
+                        <input type="password" required minLength={8} value={newUser.password} onChange={(e) => setNewUser({...newUser, password: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 transition-all outline-none" placeholder="Minimal 8 karakter" />
+                      </div>
+
+                      <div className="pt-4 flex gap-3">
+                        <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                          Batal
+                        </button>
+                        <button type="submit" disabled={isSubmitting} className="flex-1 py-3 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-lg shadow-teal-600/20 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2">
+                          {isSubmitting ? 'Memproses...' : 'Daftarkan Akun'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
             </div>
-          </div>
-
-          {/* 4 Kartu Statistik Utama (Aktivitas 2 & 10) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard 
-              title="Total Pasien" 
-              value="1,284" 
-              icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>}
-              trend={{ value: "12%", isPositive: true }}
-              description="Dibandingkan kemarin"
-            />
-            <StatCard 
-              title="Rata-rata Waktu Tunggu" 
-              value="24 Menit" 
-              icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
-              trend={{ value: "4m", isPositive: false }}
-              description="Lebih lambat dari rata-rata"
-            />
-            <StatCard 
-              title="Antrean Aktif" 
-              value="42" 
-              icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>}
-              description="Pasien menunggu saat ini"
-            />
-            <StatCard 
-              title="Kepuasan Pasien" 
-              value="4.8/5" 
-              icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
-              trend={{ value: "0.2", isPositive: true }}
-              description="Rating layanan bulan ini"
-            />
-          </div>
-
-          {/* Area Grafik (Fase 2) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-             {/* Card Line Chart */}
-             <div className="lg:col-span-2 min-h-[400px] bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-extrabold text-zinc-950 font-['Manrope']">Analitik Waktu Tunggu</h3>
-                  <select className="text-xs font-bold bg-slate-50 border-slate-200 rounded-lg focus:ring-teal-500 text-slate-600 px-3 py-1.5 cursor-pointer outline-none">
-                    <option>Hari Ini</option>
-                    <option>7 Hari Terakhir</option>
-                    <option>30 Hari Terakhir</option>
-                  </select>
-                </div>
-                {/* Memanggil komponen Line Chart */}
-                <div className="flex-1">
-                  <WaitTimeChart />
-                </div>
-             </div>
-             
-             {/* Card Doughnut Chart */}
-             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
-                <h3 className="font-extrabold text-zinc-950 font-['Manrope'] mb-6">Beban Kerja Departemen</h3>
-                {/* Memanggil komponen Doughnut Chart */}
-                <div className="flex-1 flex items-center justify-center">
-                  <DepartmentWorkloadChart />
-                </div>
-             </div>
-          </div>
-          {/* Area Grafik (Fase 2) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-             {/* ... (kode Line Chart dan Doughnut Chart tetap seperti sebelumnya) ... */}
-          </div>
-
-          {/* Area Tabel Kendali (Fase 3) ditambahkan di sini */}
-          <div className="mt-8">
-            <QueueManagementTable />
-          </div>
+          )}
 
         </main>
       </div>
