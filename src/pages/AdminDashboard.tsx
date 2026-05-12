@@ -10,7 +10,10 @@ import { useAuthStore } from '../store/authStore';
 export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const logout = useAuthStore((state) => state.logout);
+  const { logout, user } = useAuthStore((state) => ({
+    logout: state.logout,
+    user: state.user
+  }));
 
   const handleLogout = async () => {
     await logout();
@@ -97,11 +100,17 @@ export default function AdminDashboard() {
 
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
               <div className="flex flex-col text-right">
-                <span className="text-sm font-bold text-zinc-900 leading-none mb-1">Dr. Hendra</span>
-                <span className="text-[11px] font-semibold text-teal-600 tracking-wide uppercase">Kepala Operasional</span>
+                <span className="text-sm font-bold text-zinc-900 leading-none mb-1">
+                  {user?.name || 'Administrator'}
+                </span>
+                <span className="text-[11px] font-semibold text-teal-600 tracking-wide uppercase">
+                  {user?.role || 'Admin'}
+                </span>
               </div>
-              <div className="w-9 h-9 rounded-full bg-teal-100 border border-teal-200 overflow-hidden flex-shrink-0">
-                <img src="https://placehold.co/100x100/14b8a6/ffffff?text=H" alt="Admin" className="w-full h-full object-cover" />
+              <div className="w-9 h-9 rounded-full bg-teal-100 border border-teal-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                 <span className="text-teal-700 font-bold text-sm">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                </span>
               </div>
             </div>
           </div>
