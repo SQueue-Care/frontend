@@ -29,7 +29,10 @@ export default function PatientPortal() {
   const [selectedPoli, setSelectedPoli] = useState("Poli Umum");
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const logout = useAuthStore((state) => state.logout);
+  const { logout, user } = useAuthStore((state) => ({
+    logout: state.logout,
+    user: state.user
+  }));
 
   const handleLogout = async () => {
     await logout();
@@ -158,17 +161,24 @@ export default function PatientPortal() {
 
             {/* BAGIAN KANAN: Profil User */}
             <div className="flex items-center gap-3 shrink-0">
-              {/* Tombol Search Mobile (Opsional, menggantikan fungsi search bar di layar kecil) */}
               <button className="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
               </button>
               
               <div className="hidden md:flex flex-col text-right">
-                <span className="text-sm font-bold text-zinc-900 leading-none mb-1">Bambang</span>
-                <span className="text-[11px] font-semibold text-slate-500 tracking-wide uppercase">Pasien</span>
+                {/* Rendering dinamis nama pengguna, fallback jika null */}
+                <span className="text-sm font-bold text-zinc-900 leading-none mb-1">
+                  {user?.name || 'Pengguna'}
+                </span>
+                <span className="text-[11px] font-semibold text-slate-500 tracking-wide uppercase">
+                  {user?.role === 'PATIENT' ? 'Pasien' : user?.role}
+                </span>
               </div>
-              <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-teal-500/50 transition-all">
-                <img src="https://placehold.co/100x100/e2e8f0/64748b?text=B" alt="Profil" className="w-full h-full object-cover" />
+              <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-teal-500/50 transition-all flex items-center justify-center">
+                {/* Mengambil inisial huruf pertama dari nama */}
+                <span className="text-slate-600 font-bold text-sm">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </span>
               </div>
             </div>
 
