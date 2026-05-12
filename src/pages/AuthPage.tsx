@@ -80,30 +80,44 @@ export default function AuthPage() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return; // Hentikan jika validasi gagal (pastikan Anda juga mengubah validasi NIK menjadi Email di fungsi validate)
+    if (!validate()) return; 
 
     setIsLoading(true);
-    setErrors({}); // Bersihkan error sebelumnya
+    setErrors({}); 
 
     try {
       if (mode === 'login') {
-        // Eksekusi Login menggunakan Zustand Store
+        // 1. Eksekusi Login 
         await login(formData.email, formData.password);
-        navigate('/portal');
+        
+        // 2. Tarik data user terbaru dari state (Zustand) setelah login berhasil
+        const currentUser = useAuthStore.getState().user;
+
+        // 3. Pengalihan cerdas berbasis peran (Role-Based Redirect)
+        if (currentUser?.role === 'PATIENT') {
+          navigate('/portal');
+        } else if (currentUser?.role === 'DOCTOR') {
+          navigate('/doctor');
+        } else if (currentUser?.role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          // Fallback keamanan jika role tidak terdeteksi
+          setErrors({ api: "Peran pengguna tidak valid." });
+        }
+        
       } else {
-        // Eksekusi Register menggunakan apiClient langsung
+        // Eksekusi Register
         await apiClient.post('/auth/register', {
           email: formData.email,
           password: formData.password,
           name: formData.nama
         });
         alert('Registrasi Berhasil! Silakan masuk dengan akun Anda.');
-        setMode('login'); // Pindah ke tab login
+        setMode('login'); 
       }
     } catch (error: any) {
-      // Tangkap dan tampilkan error dari backend
       setErrors({ 
-        api: error.message || 'Terjadi kesalahan pada server. Silakan coba lagi.' 
+        api: error.response?.data?.message || error.message || 'Terjadi kesalahan pada server. Silakan coba lagi.' 
       });
     } finally {
       setIsLoading(false);

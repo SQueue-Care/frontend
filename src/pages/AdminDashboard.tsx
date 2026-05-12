@@ -10,10 +10,8 @@ import { useAuthStore } from '../store/authStore';
 export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const { logout, user } = useAuthStore((state) => ({
-    logout: state.logout,
-    user: state.user
-  }));
+  const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
 
   const handleLogout = async () => {
     await logout();
@@ -27,11 +25,10 @@ export default function AdminDashboard() {
       {/* ========================================== */}
       {/* 1. SIDEBAR PERMANEN (Khusus Admin) */}
       {/* ========================================== */}
-      <aside className="hidden md:flex w-64 bg-white border-r border-slate-200 flex-col fixed inset-y-0 z-50">
-        {/* Header Sidebar (Sama dengan pasien) */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-100">
+      <aside className="hidden md:flex w-64 bg-gradient-to-br from-teal-900 to-slate-900 border-r border-slate-800 flex-col fixed inset-y-0 z-50">
+        <div className="h-16 flex items-center px-6 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-teal-600">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-teal-400">
               <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h4" />
               <polyline points="14 2 14 8 20 8" />
               <line x1="8" y1="10" x2="18" y2="10" />
@@ -39,27 +36,27 @@ export default function AdminDashboard() {
               <circle cx="17" cy="16" r="2.5" />
               <path d="M21.5 22c-1-2-2.5-3-4.5-3s-3.5 1-4.5 3" />
             </svg>
-            <span className="text-teal-700 text-lg font-extrabold font-['Manrope'] tracking-wide">Ethereal<span className="text-slate-900">Admin</span></span>
+            <span className="text-white text-lg font-extrabold font-['Manrope'] tracking-wide">Ethereal<span className="text-teal-400">Admin</span></span>
           </div>
         </div>
 
         {/* Menu Navigasi Admin */}
         <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
-          <button className="w-full text-left flex items-center gap-3 px-4 py-3 bg-teal-50 text-teal-700 rounded-xl font-semibold transition-colors">
+          <button className="w-full text-left flex items-center gap-3 px-4 py-3 bg-teal-500/20 text-teal-400 rounded-xl font-semibold transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             Command Center
           </button>
-          <button className="w-full text-left flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-zinc-900 rounded-xl font-medium transition-colors">
+          <button className="w-full text-left flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-white/10 hover:text-white rounded-xl font-medium transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             Manajemen Antrean
           </button>
-          <button className="w-full text-left flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-zinc-900 rounded-xl font-medium transition-colors">
+          <button className="w-full text-left flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-white/10 hover:text-white rounded-xl font-medium transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             Analitik Performa
           </button>
         </nav>
-        <div className="p-4 border-t border-slate-100">
-          <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-4 py-3 text-rose-600 hover:bg-rose-50 rounded-xl font-medium transition-colors">
+        <div className="p-4 border-t border-white/10">
+          <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-4 py-3 text-rose-400 hover:bg-rose-500/10 rounded-xl font-medium transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             Keluar Sistem
           </button>

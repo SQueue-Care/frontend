@@ -9,7 +9,7 @@ export interface User {
   email: string;
   name: string;
   role: Role;
-  // Anda dapat menambahkan field lain (seperti nomor telepon atau NIK) sesuai dengan balasan dari /auth/me
+  patient?: { id: string };
 }
 
 interface AuthState {
