@@ -18,7 +18,7 @@ export default function PatientPortal() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
-  const [selectedPoli, setSelectedPoli] = useState("");
+  const [selectedDept, setSelectedDept] = useState<{id: string, name: string} | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeView, setActiveView] = useState<PortalView>('polyclinics');
   const [hasActiveQueue, setHasActiveQueue] = useState(false);
@@ -163,15 +163,18 @@ export default function PatientPortal() {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  const openBooking = (poliName: string) => {
-    setSelectedPoli(poliName);
+  const openBooking = (deptId: string, deptName: string) => {
+    setSelectedDept({ id: deptId, name: deptName });
     setBookingStep(1); 
     setIsBookingOpen(true);
   };
 
   const closeBooking = () => {
     setIsBookingOpen(false);
-    setTimeout(() => setBookingStep(1), 500); 
+    setTimeout(() => {
+      setBookingStep(1);
+      setSelectedDept(null);
+    }, 500); 
   };
 
   const handleNextStep = () => setBookingStep((prev) => prev + 1);
@@ -271,16 +274,20 @@ export default function PatientPortal() {
             </div>
 
             {/* BAGIAN KANAN: Profil User */}
-            <div className="flex items-center gap-4 shrink-0">
+            <div 
+              onClick={() => handleNavigation('profile')}
+              className="flex items-center gap-4 shrink-0 cursor-pointer group"
+              title="Buka Profil"
+            >
               <div className="hidden md:flex flex-col text-right">
-                <span className="text-sm font-bold text-white leading-none mb-1">
+                <span className="text-sm font-bold text-white leading-none mb-1 group-hover:text-teal-300 transition-colors">
                   {user?.name || 'Pengguna'}
                 </span>
                 <span className="text-[11px] font-semibold text-teal-400 tracking-wide uppercase">
                   {user?.role === 'PATIENT' ? 'Pasien' : user?.role}
                 </span>
               </div>
-              <div className="w-10 h-10 rounded-full bg-teal-500/20 border border-teal-500/40 overflow-hidden flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-teal-400 transition-all flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-teal-500/20 border border-teal-500/40 overflow-hidden flex-shrink-0 group-hover:ring-2 group-hover:ring-teal-400 transition-all flex items-center justify-center">
                 <span className="text-teal-300 font-bold text-sm">
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                 </span>
@@ -350,7 +357,7 @@ export default function PatientPortal() {
                 status={poli.status}
                 percentage={poli.percentage}
                 colorClass={poli.color}
-                onClick={() => openBooking(poli.name)}
+                onClick={() => openBooking(poli.id, poli.name)}
               />
             ))
           )}
@@ -470,7 +477,7 @@ export default function PatientPortal() {
         isOpen={isBookingOpen}
         onClose={closeBooking}
         step={bookingStep}
-        selectedPoli={selectedPoli}
+        selectedDept={selectedDept}
         onNext={handleNextStep}
         onPrev={handlePrevStep}
       />
