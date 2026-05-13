@@ -51,6 +51,9 @@ interface QueueState {
   isLoadingTable: boolean;
   errorTable: string | null;
   fetchQueues: (filters?: { departmentId?: string; date?: Date }) => Promise<void>;
+
+  patientHistory: Queue[];
+  fetchPatientHistory: (patientId: string) => Promise<void>;
 }
 
 export const useQueueStore = create<QueueState>((set) => ({
@@ -65,6 +68,20 @@ export const useQueueStore = create<QueueState>((set) => ({
   errorTable: null,
 
   activeQueueDetail: null,
+
+  patientHistory: [],
+fetchPatientHistory: async (patientId) => {
+  set({ isLoadingTable: true, errorTable: null });
+  try {
+    const response = await apiClient.get(`/patients/${patientId}/queues`);
+    set({ patientHistory: response.data.data, isLoadingTable: false });
+  } catch (error: any) {
+    set({ 
+      errorTable: error.response?.data?.message || 'Gagal memuat riwayat.', 
+      isLoadingTable: false 
+    });
+  }
+},
 
   fetchActiveQueue: async (id) => {
     try {

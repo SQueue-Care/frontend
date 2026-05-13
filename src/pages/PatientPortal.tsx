@@ -7,9 +7,41 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useDepartmentStore } from '../store/departmentStore';
 import { usePatientStore } from '../store/patientStore';
+import { useQueueStore } from '../store/queueStore';
 
 // 1. Deklarasi Tipe
 type PortalView = 'polyclinics' | 'history' | 'profile';
+
+// Helper untuk menerjemahkan status dan warna (Tambahkan di luar fungsi komponen utama)
+const getStatusBadgeStyle = (status: string) => {
+  switch (status) {
+    case 'CANCELLED': 
+      return 'bg-rose-50 text-rose-600 border-rose-200'; // Merah
+    case 'DONE': 
+      return 'bg-emerald-50 text-emerald-600 border-emerald-200'; // Hijau
+    case 'IN_PROGRESS':
+    case 'CALLED': 
+      return 'bg-amber-50 text-amber-600 border-amber-200'; // Kuning
+    case 'WAITING': 
+      return 'bg-blue-50 text-blue-600 border-blue-200'; // Biru
+    case 'SKIPPED': 
+      return 'bg-slate-50 text-slate-500 border-slate-200'; // Abu-abu
+    default: 
+      return 'bg-slate-50 text-slate-500 border-slate-200';
+  }
+};
+
+const getStatusBadgeText = (status: string) => {
+  switch (status) {
+    case 'CANCELLED': return 'Dibatalkan';
+    case 'DONE': return 'Selesai';
+    case 'IN_PROGRESS': return 'Sedang Diperiksa';
+    case 'CALLED': return 'Dipanggil';
+    case 'WAITING': return 'Menunggu / Reservasi';
+    case 'SKIPPED': return 'Dilewati';
+    default: return status;
+  }
+};
 
 export default function PatientPortal() {
   // ==========================================
@@ -35,6 +67,7 @@ export default function PatientPortal() {
   const user = useAuthStore((state) => state.user);
   const { departments, isLoading: isDeptLoading, fetchDepartments } = useDepartmentStore();
   const { profile, fetchProfile, updateProfile, isLoading: isProfileLoading, isSaving } = usePatientStore();
+  const { patientHistory, fetchPatientHistory, isLoadingTable } = useQueueStore();
 
   // ==========================================
   // 4. EFEK SAMPING (useEffect)
@@ -43,6 +76,13 @@ export default function PatientPortal() {
   useEffect(() => {
     fetchDepartments();
   }, [fetchDepartments]);
+
+  useEffect(() => {
+  const patientId = user?.patient?.id || (user?.role === 'PATIENT' ? user.id : null);
+  if (activeView === 'history' && patientId) {
+    fetchPatientHistory(patientId);
+  }
+}, [activeView, user, fetchPatientHistory]);
 
   // Fetch profil HANYA SATU KALI dengan prioritas ID Pasien
   useEffect(() => {
@@ -378,7 +418,7 @@ export default function PatientPortal() {
           </div>
         )}
 
-        {/* TAMPILAN 2: RIWAYAT ANTREAN (Kerangka Dasar) */}
+        {/* TAMPILAN 2: RIWAYAT ANTREAN (Dinamis) */}
         {activeView === 'history' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="mb-8">
@@ -386,10 +426,62 @@ export default function PatientPortal() {
               <p className="text-slate-600">Pantau tiket antrean aktif dan riwayat kunjungan Anda sebelumnya.</p>
             </div>
             
-            <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-sm">
-              <h3 className="text-lg font-bold text-slate-800">Komponen Riwayat Belum Tersedia</h3>
-              <p className="text-slate-500 mt-2">Kita akan mengintegrasikan API untuk menarik data riwayat antrean di sini.</p>
-            </div>
+            {isLoadingTable ? (
+              <div className="p-12 text-center text-slate-400 font-bold animate-pulse">Memuat riwayat kunjungan...</div>
+            ) : patientHistory.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                  <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 className="text-lg font-bold text-zinc-900">Belum Ada Riwayat</h3>
+                <p className="text-slate-500 mt-1">Anda belum pernah melakukan pendaftaran antrean.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {patientHistory.map((item) => (
+                  <div key={item.id} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-teal-200 transition-all group flex flex-col md:flex-row md:items-center justify-between gap-5">
+                    
+                    {/* Kolom 1: Nomor & Layanan (Kiri) */}
+                    <div className="flex items-center gap-4 flex-[2]">
+                      <div className="w-14 h-14 bg-slate-50 rounded-xl flex flex-col items-center justify-center border border-slate-100 group-hover:bg-teal-50 transition-colors shrink-0">
+                        <span className="text-[10px] font-black text-slate-400 uppercase leading-none mb-1 group-hover:text-teal-600">No</span>
+                        <span className="text-lg font-black text-zinc-900 leading-none group-hover:text-teal-700">
+                          {item.department?.code || 'XX'}-{item.queueNumber}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="font-extrabold text-zinc-900 text-sm md:text-base leading-tight">
+                          {item.department?.name}
+                        </h4>
+                        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1">
+                          {item.doctor?.user?.name || 'Dokter Umum'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Kolom 2: Tanggal & Waktu (Tengah) */}
+                    <div className="flex-[1.5] border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-5">
+                      <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
+                        Tanggal Kunjungan
+                      </span>
+                      <span className="block text-sm font-bold text-zinc-800">
+                        {new Date(item.queueDate).toLocaleDateString('id-ID', { 
+                          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+                        })}
+                      </span>
+                    </div>
+
+                    {/* Kolom 3: Status (Kanan) */}
+                    <div className="flex-[1] flex md:justify-end w-full md:w-auto">
+                      <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border w-full md:w-auto text-center ${getStatusBadgeStyle(item.status)}`}>
+                        {getStatusBadgeText(item.status)}
+                      </span>
+                    </div>
+
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
