@@ -10,3 +10,13 @@ export enum QueueStatus {
   SKIPPED = 'SKIPPED',
   CANCELLED = 'CANCELLED',
 }
+
+export interface Appointment {
+  id: string;
+  patientId: string;
+  departmentId: string;
+  doctorId: string;
+  scheduleId: string;
+  appointmentDate: string;
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+}

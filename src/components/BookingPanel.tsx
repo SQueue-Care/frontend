@@ -1,7 +1,6 @@
 // src/components/BookingPanel.tsx
 import { useState, useEffect } from 'react';
 import { useBookingStore } from '../store/bookingStore';
-import apiClient from '../lib/apiClient';
 
 interface BookingPanelProps {
   isOpen: boolean;
@@ -12,14 +11,7 @@ interface BookingPanelProps {
   onPrev: () => void;
 }
 
-export default function BookingPanel({
-  isOpen,
-  onClose,
-  step,
-  selectedDept,
-  onNext,
-  onPrev
-}: BookingPanelProps) {
+export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNext, onPrev }: BookingPanelProps) {
   
   // 1. Integrasi dengan Store
   const { 
@@ -27,76 +19,45 @@ export default function BookingPanel({
     doctorSchedules, 
     isLoadingDoctors, 
     isLoadingSchedules, 
+    isSubmitting,
     fetchDoctorsByDepartment, 
-    fetchSchedulesByDoctor,
-    resetBookingState
+    fetchSchedulesByDoctor, 
+    submitBooking, 
+    resetBookingState 
   } = useBookingStore();
 
-  // 2. State Lokal untuk Pilihan User
+  // 2. State Lokal
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>(""); 
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
-  
-  // State untuk menangani proses Submit & Hasil Antrean
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [queueResult, setQueueResult] = useState<{ queueNumber: string, estimatedWaitTime: number } | null>(null);
+  const [queueResult, setQueueResult] = useState<any>(null);
 
-  // 3. Efek Samping (Memicu pengambilan data saat panel terbuka)
+  // 3. Efek 1: Ambil daftar dokter saat panel dibuka
   useEffect(() => {
-    if (isOpen && selectedDept && step === 1) {
-      // Saat panel dibuka, ambil daftar dokter untuk poli ini
+    if (isOpen && selectedDept) {
       fetchDoctorsByDepartment(selectedDept.id);
     }
-  }, [isOpen, selectedDept, step, fetchDoctorsByDepartment]);
+  }, [isOpen, selectedDept, fetchDoctorsByDepartment]);
 
-  // Efek Samping (Memicu pengambilan jadwal saat dokter dipilih)
+  // 4. Efek 2: Ambil jadwal saat dokter ATAU tanggal berubah
   useEffect(() => {
-    if (selectedDoctorId) {
-      fetchSchedulesByDoctor(selectedDoctorId);
-      // Reset jadwal yang dipilih jika dokter berubah
-      setSelectedScheduleId(null);
+    if (selectedDoctorId && selectedDate) {
+      const day = new Date(selectedDate).getDay(); // Mendapatkan 0-6 (Minggu-Sabtu)
+      fetchSchedulesByDoctor(selectedDoctorId, day);
+      setSelectedScheduleId(null); // Reset pilihan jadwal saat tanggal diubah
     }
-  }, [selectedDoctorId, fetchSchedulesByDoctor]);
+  }, [selectedDoctorId, selectedDate, fetchSchedulesByDoctor]);
 
-  // 4. Handler Penutupan Panel
+  // 5. Fungsi Bantuan (Helpers)
   const handleClose = () => {
-    resetBookingState();
     setSelectedDoctorId(null);
+    setSelectedDate("");
     setSelectedScheduleId(null);
     setQueueResult(null);
+    resetBookingState();
     onClose();
   };
 
-  // 5. Eksekusi Pembuatan Antrean (POST /queues)
-  const handleConfirmBooking = async () => {
-    if (!selectedDept || !selectedDoctorId || !selectedScheduleId) return;
-
-    setIsSubmitting(true);
-    try {
-      // Payload sesuai ekspektasi umum API (Sesuaikan jika backend meminta format tanggal tertentu)
-      const payload = {
-        departmentId: selectedDept.id,
-        doctorId: selectedDoctorId,
-        scheduleId: selectedScheduleId,
-        date: new Date().toISOString() // Asumsi booking untuk hari ini/jadwal terdekat
-      };
-
-      const response = await apiClient.post('/queues', payload);
-      
-      // Simpan hasil untuk ditampilkan di Step 3
-      setQueueResult({
-        queueNumber: response.data.data.queueNumber,
-        estimatedWaitTime: response.data.data.estimatedWaitTime
-      });
-      
-      onNext(); // Pindah ke Step 3 (Berhasil)
-    } catch (error: any) {
-      alert(error.response?.data?.message || 'Gagal membuat reservasi antrean.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Helper untuk mendapatkan nama dokter dan hari dari ID
   const getSelectedDoctorName = () => {
     const doc = departmentDoctors.find(d => d.id === selectedDoctorId);
     return doc ? doc.user.name : '-';
@@ -104,10 +65,25 @@ export default function BookingPanel({
 
   const getSelectedScheduleDetail = () => {
     const sched = doctorSchedules.find(s => s.id === selectedScheduleId);
-    if (!sched) return '-';
-    // Helper sederhana mengubah angka hari menjadi teks (0=Minggu, 1=Senin, dst)
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    return `${days[sched.dayOfWeek]} (${sched.startTime} - ${sched.endTime})`;
+    if (!sched || !selectedDate) return '-';
+    // Format: YYYY-MM-DD | 08:00 - 12:00
+    return `${selectedDate} | ${sched.startTime} - ${sched.endTime}`;
+  };
+
+  const handleConfirmBooking = async () => {
+    if (!selectedDept || !selectedDoctorId || !selectedScheduleId || !selectedDate) return;
+    try {
+      const result = await submitBooking({
+        departmentId: selectedDept.id,
+        doctorId: selectedDoctorId,
+        scheduleId: selectedScheduleId,
+        date: new Date(selectedDate).toISOString()
+      });
+      setQueueResult(result);
+      onNext();
+    } catch (err) {
+      alert("Gagal melakukan reservasi. Silakan coba lagi.");
+    }
   };
 
   return (
@@ -129,7 +105,7 @@ export default function BookingPanel({
           )}
         </div>
 
-        {/* Progress Indicator (Sembunyikan saat sukses) */}
+        {/* Progress Indicator */}
         {step < 3 && (
           <div className="px-8 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center text-xs font-bold uppercase tracking-wider">
             <div className="flex items-center gap-2">
@@ -147,53 +123,71 @@ export default function BookingPanel({
         {/* Konten Dinamis */}
         <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
           
-          {/* STEP 1: PILIH DOKTER & JADWAL */}
+          {/* STEP 1: PILIH DOKTER, TANGGAL, & JADWAL */}
           {step === 1 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
               
+              {/* BAGIAN A: PILIH DOKTER (Radio Cards Premium) */}
               <section>
-                <label className="block text-sm font-bold text-zinc-900 mb-4 uppercase tracking-widest">Dokter Tersedia</label>
+                <label className="block text-xs font-black text-slate-400 mb-3 uppercase tracking-widest">Pilih Dokter Spesialis</label>
                 {isLoadingDoctors ? (
-                  <div className="p-4 text-center text-slate-500 text-sm font-semibold border border-slate-200 rounded-2xl animate-pulse">Memuat daftar dokter...</div>
+                  <div className="p-4 text-center text-slate-400 text-sm font-semibold border-2 border-dashed border-slate-200 rounded-2xl animate-pulse">Memuat daftar dokter...</div>
                 ) : departmentDoctors.length === 0 ? (
-                  <div className="p-4 text-center text-slate-500 text-sm font-semibold border border-slate-200 rounded-2xl bg-slate-50">Tidak ada dokter yang bertugas di poli ini.</div>
+                  <div className="p-6 text-center text-slate-500 text-sm font-semibold border border-slate-100 rounded-3xl bg-slate-50">Belum ada dokter di poliklinik ini.</div>
                 ) : (
-                  <div className="space-y-3">
-                    {departmentDoctors.map((doc) => (
-                      <div 
-                        key={doc.id} 
-                        onClick={() => setSelectedDoctorId(doc.id)}
-                        className={`p-4 rounded-2xl border-2 flex items-center gap-4 cursor-pointer transition-all ${selectedDoctorId === doc.id ? 'border-teal-600 bg-teal-50' : 'border-slate-200 bg-white hover:border-teal-300'}`}
-                      >
-                        <div className="w-12 h-12 rounded-full bg-slate-100 overflow-hidden border border-slate-200 flex-shrink-0 flex items-center justify-center text-slate-500 font-bold">
-                          {doc.user.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-extrabold text-zinc-950">{doc.user.name}</p>
-                          <p className="text-[11px] text-slate-500 font-medium">{doc.specialization}</p>
-                        </div>
-                        {selectedDoctorId === doc.id && (
-                           <div className="text-teal-600">
-                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                           </div>
-                        )}
-                      </div>
-                    ))}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {departmentDoctors.map(doc => {
+                      const isSelected = selectedDoctorId === doc.id;
+                      return (
+                        <button
+                          key={doc.id}
+                          onClick={() => setSelectedDoctorId(doc.id)}
+                          className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 flex items-center gap-4 overflow-hidden group ${isSelected ? 'border-teal-500 bg-teal-50/30 shadow-md shadow-teal-500/10' : 'border-slate-100 bg-white hover:border-teal-200 hover:shadow-sm'}`}
+                        >
+                          {isSelected && <div className="absolute top-0 left-0 w-1.5 h-full bg-teal-500 animate-in slide-in-from-left-1" />}
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0 transition-colors ${isSelected ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-600'}`}>
+                            {doc.user.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div className={`font-extrabold text-sm ${isSelected ? 'text-teal-800' : 'text-zinc-900'}`}>{doc.user.name}</div>
+                            <div className="text-xs text-slate-500 mt-0.5 font-medium">{doc.specialization}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </section>
 
-              {/* Tampilkan Jadwal Hanya Jika Dokter Sudah Dipilih */}
+              {/* BAGIAN B: PILIH TANGGAL (Custom Date Picker) */}
               {selectedDoctorId && (
                 <section className="animate-in fade-in slide-in-from-bottom-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <label className="text-sm font-bold text-zinc-900 uppercase tracking-widest">Pilih Jadwal</label>
+                  <label className="block text-xs font-black text-slate-400 mb-3 uppercase tracking-widest">Pilih Tanggal Kunjungan</label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                      <svg className="w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    {/* HACK CSS: Menyembunyikan ikon kalender bawaan browser namun tetap fungsional */}
+                    <input 
+                      type="date"
+                      min={new Date().toISOString().split('T')[0]} 
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-slate-100 rounded-2xl text-sm font-extrabold text-zinc-800 shadow-sm hover:border-teal-200 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all cursor-pointer relative [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                    />
                   </div>
+                </section>
+              )}
+
+              {/* BAGIAN C: PILIH JADWAL (Premium Time Slots) */}
+              {selectedDoctorId && selectedDate && (
+                <section className="animate-in fade-in slide-in-from-bottom-4">
+                  <label className="block text-xs font-black text-slate-400 mb-3 uppercase tracking-widest">Pilih Sesi Waktu</label>
                   
                   {isLoadingSchedules ? (
-                     <div className="p-4 text-center text-slate-500 text-sm font-semibold border border-slate-200 rounded-2xl animate-pulse">Memuat jadwal...</div>
+                     <div className="p-4 text-center text-slate-400 text-sm font-semibold border-2 border-dashed border-slate-200 rounded-2xl animate-pulse">Sinkronisasi jadwal...</div>
                   ) : doctorSchedules.length === 0 ? (
-                     <div className="p-4 text-center text-slate-500 text-sm font-semibold border border-slate-200 rounded-2xl bg-slate-50">Dokter ini belum memiliki jadwal praktik.</div>
+                     <div className="p-6 text-center text-slate-500 text-sm font-semibold border border-slate-100 rounded-3xl bg-slate-50">Tidak ada sesi praktik pada tanggal yang dipilih.</div>
                   ) : (
                     <div className="grid grid-cols-2 gap-3">
                       {doctorSchedules.map((sched) => {
@@ -205,11 +199,13 @@ export default function BookingPanel({
                           <button 
                             key={sched.id}
                             onClick={() => setSelectedScheduleId(sched.id)}
-                            className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${isSelected ? 'border-teal-600 bg-teal-50 text-teal-700 shadow-sm' : 'border-slate-200 bg-white text-zinc-900 hover:border-teal-300'}`}
+                            className={`relative p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all duration-300 ${isSelected ? 'border-teal-500 bg-gradient-to-b from-teal-50/50 to-white shadow-md shadow-teal-500/10 scale-[1.02]' : 'border-slate-100 bg-white hover:border-teal-200 hover:bg-slate-50/50'}`}
                           >
-                            <span className={`text-[10px] font-bold uppercase ${isSelected ? 'text-teal-600' : 'text-slate-400'}`}>{dayName}</span>
-                            <span className="text-sm font-extrabold">{sched.startTime} - {sched.endTime}</span>
-                            <span className={`text-[10px] font-bold ${isSelected ? 'text-teal-600' : 'text-slate-500'}`}>Sisa Kuota: {sched.quota}</span>
+                            <span className={`text-[10px] font-black uppercase tracking-wider ${isSelected ? 'text-teal-600' : 'text-slate-400'}`}>{dayName}</span>
+                            <span className={`text-base font-black ${isSelected ? 'text-zinc-900' : 'text-slate-700'}`}>{sched.startTime} - {sched.endTime}</span>
+                            <div className={`mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${isSelected ? 'bg-teal-100 border-teal-200 text-teal-700' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
+                              Sisa Kuota: {sched.quota}
+                            </div>
                           </button>
                         );
                       })}
@@ -251,21 +247,25 @@ export default function BookingPanel({
                 <svg className="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
               </div>
               <h3 className="text-2xl font-extrabold text-zinc-900">Reservasi Berhasil!</h3>
-              <p className="text-slate-500 text-sm mt-2 mb-8">Nomor antrean Anda telah diterbitkan secara digital.</p>
+              <p className="text-slate-500 text-sm mt-2 mb-8">
+                {queueResult.isAppointment ? 'Jadwal kunjungan Anda telah dikonfirmasi.' : 'Nomor antrean Anda telah diterbitkan secara digital.'}
+              </p>
               
               <div className="w-full p-8 border-2 border-dashed border-teal-200 bg-teal-50/30 rounded-3xl mb-4">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Nomor Antrean</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Nomor Antrean / Booking</span>
                 <div className="text-7xl font-black text-teal-600 my-2 tracking-tighter">{queueResult.queueNumber}</div>
               </div>
 
-              {/* Tampilkan Estimasi Waktu Tunggu dari API */}
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 w-full flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  <span className="text-sm font-semibold text-slate-600">Estimasi Tunggu</span>
+              {/* Tampilkan Estimasi Waktu Tunggu jika pendaftaran hari ini */}
+              {!queueResult.isAppointment && queueResult.estimatedWaitTime > 0 && (
+                <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 w-full flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span className="text-sm font-semibold text-slate-600">Estimasi Tunggu</span>
+                  </div>
+                  <span className="text-sm font-extrabold text-zinc-900">{queueResult.estimatedWaitTime} Menit</span>
                 </div>
-                <span className="text-sm font-extrabold text-zinc-900">{queueResult.estimatedWaitTime} Menit</span>
-              </div>
+              )}
             </div>
           )}
         </div>
@@ -275,7 +275,7 @@ export default function BookingPanel({
           {step === 1 && (
             <button 
               onClick={onNext} 
-              disabled={!selectedDoctorId || !selectedScheduleId}
+              disabled={!selectedDoctorId || !selectedDate || !selectedScheduleId}
               className="w-full py-4 bg-teal-600 text-white font-extrabold rounded-2xl shadow-xl shadow-teal-600/20 hover:bg-teal-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
             >
               Lanjutkan Konfirmasi

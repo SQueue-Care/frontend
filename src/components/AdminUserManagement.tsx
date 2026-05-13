@@ -51,9 +51,14 @@ export default function AdminUserManagement() {
   const filteredUsers = users.filter((u) => {
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
+    
+    // Pastikan string tidak null sebelum memanggil toLowerCase()
+    const name = u.name || "";
+    const email = u.email || "";
+
     return (
-      u.name.toLowerCase().includes(lowerQuery) ||
-      u.email.toLowerCase().includes(lowerQuery)
+      name.toLowerCase().includes(lowerQuery) ||
+      email.toLowerCase().includes(lowerQuery)
     );
   });
 

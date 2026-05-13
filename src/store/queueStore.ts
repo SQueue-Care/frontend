@@ -79,7 +79,14 @@ export const useQueueStore = create<QueueState>((set) => ({
     try {
       const params = new URLSearchParams();
       if (filters.departmentId) params.append('departmentId', filters.departmentId);
-      if (filters.date) params.append('date', filters.date.toISOString().split('T')[0]);
+      
+      if (filters.date) {
+        // Ambil YYYY-MM-DD sesuai zona waktu lokal klien
+        const year = filters.date.getFullYear();
+        const month = String(filters.date.getMonth() + 1).padStart(2, '0');
+        const day = String(filters.date.getDate()).padStart(2, '0');
+        params.append('date', `${year}-${month}-${day}`);
+      }
 
       const response = await apiClient.get(`/queues?${params.toString()}`);
       set({ queues: response.data.data, isLoadingTable: false });

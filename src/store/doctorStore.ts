@@ -81,11 +81,15 @@ export const useDoctorStore = create<DoctorState>((set) => ({
   },
 
   fetchSchedules: async (doctorId) => {
+    set({ isLoading: true, error: null }); // Tambahkan indikator loading
     try {
       const response = await apiClient.get(`/doctors/${doctorId}/schedules`);
-      set({ schedules: response.data.data });
+      set({ schedules: response.data.data, isLoading: false });
     } catch (error: any) {
-      console.error("Gagal mengambil jadwal:", error);
+      set({ 
+        error: error.response?.data?.message || 'Gagal memuat jadwal dokter.', 
+        isLoading: false 
+      });
     }
   }
 }));

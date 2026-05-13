@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQueueStore } from '../store/queueStore';
+import { useDashboardFilterStore } from '../store/dashboardFilterStore'; // Tambahan: Import store filter
 import { QueueStatus } from '../lib/types';
 import apiClient from '../lib/apiClient';
 
@@ -23,6 +24,9 @@ const StatusBadge = ({ status }: { status: QueueStatus }) => {
 
 export default function AdminQueueManagement() {
   const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore();
+  
+  // SOLUSI: Tarik searchQuery dari state global
+  const { searchQuery } = useDashboardFilterStore();
 
   useEffect(() => {
     fetchQueues({ date: new Date() });
@@ -40,9 +44,15 @@ export default function AdminQueueManagement() {
   const filteredQueues = queues.filter((item) => {
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
+    
+    // Validasi opsional untuk mencegah error jika objek data tidak lengkap dari backend
+    const patientName = item.patient?.user?.name || "";
+    const departmentCode = item.department?.code || "";
+    const queueNum = item.queueNumber || "";
+
     return (
-      item.patient.user.name.toLowerCase().includes(lowerQuery) ||
-      `${item.department.code}-${item.queueNumber}`.toLowerCase().includes(lowerQuery)
+      patientName.toLowerCase().includes(lowerQuery) ||
+      `${departmentCode}-${queueNum}`.toLowerCase().includes(lowerQuery)
     );
   });
 
@@ -61,14 +71,14 @@ export default function AdminQueueManagement() {
       <tr key={item.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
         <td className="p-4 pl-6">
           <span className="inline-block px-3 py-1 bg-slate-100 text-slate-700 font-extrabold rounded-lg font-mono">
-            {item.department.code}-{item.queueNumber}
+            {item.department?.code}-{item.queueNumber}
           </span>
         </td>
         <td className="p-4">
-          <div className="font-bold text-zinc-900">{item.patient.user.name}</div>
+          <div className="font-bold text-zinc-900">{item.patient?.user?.name || '-'}</div>
         </td>
-        <td className="p-4 text-slate-500">{item.department.name}</td>
-        <td className="p-4 text-slate-500">{item.doctor?.user.name || '-'}</td>
+        <td className="p-4 text-slate-500">{item.department?.name || '-'}</td>
+        <td className="p-4 text-slate-500">{item.doctor?.user?.name || '-'}</td>
         <td className="p-4"><StatusBadge status={item.status} /></td>
         <td className="p-4 pr-6 text-right">
           <div className="flex justify-end gap-2">

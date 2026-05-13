@@ -10,7 +10,7 @@ import QueueManagementTable from '../components/QueueManagementTable';
 import AdminUserManagement from '../components/AdminUserManagement';
 import AdminQueueManagement from '../components/AdminQueueManagement';
 import { useAuthStore } from '../store/authStore';
-import { useDepartmentStore } from '../store/departmentStore';
+import { useDepartmentStore } from '../store/departmentStore'; 
 import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 
 type AdminView = 'dashboard' | 'users' | 'queues';
@@ -23,7 +23,7 @@ export default function AdminDashboard() {
   const user = useAuthStore((state) => state.user);
 
   const { departments, fetchDepartments } = useDepartmentStore();
-  const { searchQuery, setSearchQuery, selectedDepartment, setSelectedDepartment } = useDashboardFilterStore();
+  const { selectedDepartment, setSelectedDepartment } = useDashboardFilterStore();
 
   useEffect(() => {
     fetchDepartments();
@@ -55,7 +55,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Menu Navigasi Admin */}
         <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
           <button 
             onClick={() => setActiveView('dashboard')}
@@ -98,12 +97,8 @@ export default function AdminDashboard() {
       {/* ========================================== */}
       <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
 
-        {/* Navbar Atas Admin */}
         <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-end">
-
-          {/* Profil & Notifikasi Admin */}
           <div className="flex items-center gap-5 pl-4">
-            {/* Bel Notifikasi Merah */}
             <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
               <span className="absolute top-1 right-1.5 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full animate-pulse"></span>
@@ -129,10 +124,7 @@ export default function AdminDashboard() {
           </div>
         </header>
 
-        {/* Ruang Kanvas Utama */}
         <main className="flex-1 p-4 sm:p-8">
-
-          {/* TAMPILAN 1: DASHBOARD ASLI */}
           {activeView === 'dashboard' && (
             <div className="animate-in fade-in duration-500">
               <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -141,34 +133,24 @@ export default function AdminDashboard() {
                   <p className="text-slate-500 text-sm font-medium">Pantau metrik operasional seluruh poliklinik secara real-time.</p>
                 </div>
 
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                  {/* Pencarian */}
-                  <div className="flex-1 md:w-64 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <input 
-                      type="text" 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Cari ID Pasien, Nama..." 
-                      className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-zinc-900 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all placeholder:text-slate-400" 
-                    />
-                  </div>
-                  
-                  {/* Dropdown Poli Dinamis */}
+                {/* Dropdown Poli */}
+                <div className="w-full md:w-64 relative group">
                   <select 
-                    className="bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl focus:ring-teal-500 focus:border-teal-500 block px-3 py-2 shadow-sm outline-none cursor-pointer"
+                    value={selectedDepartment} 
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className="appearance-none bg-white border border-slate-200 text-zinc-800 text-sm font-bold rounded-xl focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 hover:border-teal-300 block w-full px-4 py-2.5 shadow-sm transition-all cursor-pointer relative z-10"
                   >
-                    <option value="">Semua Poli</option>
+                    <option value="">Semua Poliklinik</option>
                     {departments.map((dept) => (
                       <option key={dept.id} value={dept.id}>{dept.name}</option>
                     ))}
                   </select>
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 group-hover:text-teal-500 transition-colors z-20">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
                 </div>
               </div>
 
-              {/* 4 Kartu Statistik Utama */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <TotalPatientsStat />
                 <WaitTimeStat />
@@ -182,12 +164,14 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* Area Grafik */}
+              {/* AREA GRAFIK (Grid Layout Rasio 2:1) */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                 <div className="lg:col-span-2 min-h-[400px] bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
+                 
+                 {/* GRAFIK 1: Analitik Performa Antrean (Mengambil 2/3 Ruang) */}
+                 <div className="lg:col-span-2 min-h-[400px] bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-teal-200 transition-all duration-300 p-6 flex flex-col">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="font-extrabold text-zinc-950 font-['Manrope']">Analitik Performa Antrean</h3>
-                      <select className="text-xs font-bold bg-slate-50 border-slate-200 rounded-lg focus:ring-teal-500 text-slate-600 px-3 py-1.5 cursor-pointer outline-none">
+                      <select className="text-xs font-bold bg-slate-50 border-slate-200 rounded-lg focus:ring-teal-500 text-slate-600 px-3 py-1.5 cursor-pointer outline-none transition-colors">
                         <option>Hari Ini</option>
                         <option>7 Hari Terakhir</option>
                         <option>30 Hari Terakhir</option>
@@ -198,25 +182,23 @@ export default function AdminDashboard() {
                     </div>
                  </div>
 
-                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
+                 {/* GRAFIK 2: Beban Kerja Departemen (Mengambil 1/3 Ruang) */}
+                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-teal-200 transition-all duration-300 p-6 flex flex-col">
                     <h3 className="font-extrabold text-zinc-950 font-['Manrope'] mb-6">Beban Kerja Departemen</h3>
                     <div className="flex-1 flex items-center justify-center">
                       <DepartmentWorkloadChart />
                     </div>
                  </div>
+                 
               </div>
 
-              {/* Area Tabel Kendali */}
               <div>
                 <QueueManagementTable />
               </div>
             </div>
           )}
 
-          {/* TAMPILAN 2: MANAJEMEN PENGGUNA */}
           {activeView === 'users' && <AdminUserManagement />}
-
-          {/* TAMPILAN 3: MANAJEMEN ANTREAN */}
           {activeView === 'queues' && <AdminQueueManagement />}
 
         </main>
