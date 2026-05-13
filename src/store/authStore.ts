@@ -45,8 +45,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Profil pengguna harus diambil setelah token berhasil disimpan
       await get().fetchProfile();
     } catch (error: any) {
+      const errorMessage = error.response?.data?.error?.message 
+                        || error.response?.data?.message 
+                        || error.message 
+                        || 'Gagal melakukan otentikasi. Periksa kredensial Anda.';
       set({ 
-        error: error.message || 'Gagal melakukan otentikasi. Periksa kredensial Anda.', 
+        error: errorMessage, 
         isLoading: false 
       });
       throw error;

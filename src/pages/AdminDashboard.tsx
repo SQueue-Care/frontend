@@ -1,77 +1,37 @@
 // src/pages/AdminDashboard.tsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import StatCard from '../components/StatCard';
 import TotalPatientsStat from '../components/TotalPatientsStat';
 import ActiveQueuesStat from '../components/ActiveQueuesStat';
 import WaitTimeStat from '../components/WaitTimeStat';
 import DepartmentWorkloadChart from '../components/DepartmentWorkloadChart';
 import QueueManagementTable from '../components/QueueManagementTable';
-import { useNavigate } from 'react-router-dom';
+import AdminUserManagement from '../components/AdminUserManagement';
+import AdminQueueManagement from '../components/AdminQueueManagement';
 import { useAuthStore } from '../store/authStore';
-import { useUserStore } from '../store/userStore'; // Tambahan store pengguna
+import { useDepartmentStore } from '../store/departmentStore';
+import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 
-type AdminView = 'dashboard' | 'users';
+type AdminView = 'dashboard' | 'users' | 'queues';
 
 export default function AdminDashboard() {
   const [activeView, setActiveView] = useState<AdminView>('dashboard');
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', password: '' });
-
+  
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
 
-  // Mengambil state dan fungsi dari useUserStore
-  const { users, fetchUsers, updateUser, deleteUser, isLoading: isUserLoading } = useUserStore();
+  const { departments, fetchDepartments } = useDepartmentStore();
+  const { searchQuery, setSearchQuery, selectedDepartment, setSelectedDepartment } = useDashboardFilterStore();
 
-  // Memuat data pengguna hanya saat tab Manajemen Pengguna aktif
   useEffect(() => {
-    if (activeView === 'users') {
-      fetchUsers();
-    }
-  }, [activeView, fetchUsers]);
+    fetchDepartments();
+  }, [fetchDepartments]);
 
   const handleLogout = async () => {
     await logout();
     navigate('/auth');
-  };
-
-  const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
-    try {
-      await updateUser(userId, { isActive: !currentStatus });
-    } catch (err) {
-      alert("Gagal mengubah status pengguna.");
-    }
-  };
-
-  const handleDeleteUser = async (userId: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini secara permanen?")) {
-      try {
-        await deleteUser(userId);
-      } catch (err) {
-        alert("Gagal menghapus pengguna.");
-      }
-    }
-  };
-
-  const handleAddUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      // Panggil fungsi createUser dari useUserStore
-      await useUserStore.getState().createUser(newUser);
-      setIsAddModalOpen(false);
-      setNewUser({ name: '', email: '', password: '' }); // Reset formulir
-      alert("Pengguna berhasil didaftarkan.");
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "Gagal mendaftarkan pengguna.";
-      alert(msg);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (
@@ -105,7 +65,6 @@ export default function AdminDashboard() {
             Command Center
           </button>
 
-          {/* Tombol Baru: Manajemen Pengguna */}
           <button 
             onClick={() => setActiveView('users')}
             className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'users' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
@@ -114,7 +73,10 @@ export default function AdminDashboard() {
             Manajemen Pengguna
           </button>
 
-          <button className="w-full text-left flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-white/10 hover:text-white rounded-xl font-medium transition-colors">
+          <button 
+            onClick={() => setActiveView('queues')}
+            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'queues' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             Manajemen Antrean
           </button>
@@ -137,21 +99,7 @@ export default function AdminDashboard() {
       <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
 
         {/* Navbar Atas Admin */}
-        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between">
-
-          {/* Pencarian Global Admin */}
-          <div className="flex-1 max-w-md relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari ID Pasien, Nama Dokter, atau Poli..." 
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-zinc-900 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all placeholder:text-slate-400" 
-            />
-          </div>
+        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-end">
 
           {/* Profil & Notifikasi Admin */}
           <div className="flex items-center gap-5 pl-4">
@@ -187,29 +135,44 @@ export default function AdminDashboard() {
           {/* TAMPILAN 1: DASHBOARD ASLI */}
           {activeView === 'dashboard' && (
             <div className="animate-in fade-in duration-500">
-              <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <h1 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">Overview Antrean Hari Ini</h1>
                   <p className="text-slate-500 text-sm font-medium">Pantau metrik operasional seluruh poliklinik secara real-time.</p>
                 </div>
 
-                {/* Filter Departemen (Aktivitas 9) */}
-                <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
-                  <button className="px-4 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow-md shadow-teal-600/20">Semua Poli</button>
-                  <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Umum</button>
-                  <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Gigi</button>
-                  <button className="px-4 py-2 text-slate-500 text-xs font-bold hover:bg-slate-50 rounded-lg transition-colors">Anak</button>
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                  {/* Pencarian */}
+                  <div className="flex-1 md:w-64 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input 
+                      type="text" 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Cari ID Pasien, Nama..." 
+                      className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-zinc-900 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all placeholder:text-slate-400" 
+                    />
+                  </div>
+                  
+                  {/* Dropdown Poli Dinamis */}
+                  <select 
+                    className="bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl focus:ring-teal-500 focus:border-teal-500 block px-3 py-2 shadow-sm outline-none cursor-pointer"
+                  >
+                    <option value="">Semua Poli</option>
+                    {departments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>{dept.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
               {/* 4 Kartu Statistik Utama */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <TotalPatientsStat />
-
                 <WaitTimeStat />
-
                 <ActiveQueuesStat />
-
                 <StatCard 
                   title="Kepuasan Pasien" 
                   value="4.8/5" 
@@ -251,119 +214,10 @@ export default function AdminDashboard() {
           )}
 
           {/* TAMPILAN 2: MANAJEMEN PENGGUNA */}
-          {activeView === 'users' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">Manajemen Pengguna</h1>
-                  <p className="text-slate-500 text-sm font-medium">Kelola peran, status, dan akses seluruh akun sistem RS Ethereal.</p>
-                </div>
-                <button 
-                  onClick={() => setIsAddModalOpen(true)}
-                  className="px-5 py-2.5 bg-teal-600 text-white text-sm font-bold rounded-xl shadow-md shadow-teal-600/20 hover:bg-teal-700 transition-all active:scale-95 flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-                  Tambah Pengguna
-                </button>
-              </div>
+          {activeView === 'users' && <AdminUserManagement />}
 
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-                <table className="w-full text-left border-collapse">
-                  <thead className="bg-slate-50 border-b border-slate-200">
-                    <tr>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama & Email</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {isUserLoading ? (
-                      <tr><td colSpan={4} className="px-6 py-10 text-center text-slate-400 font-medium italic">Mengambil data pengguna...</td></tr>
-                    ) : users.length === 0 ? (
-                      <tr><td colSpan={4} className="px-6 py-10 text-center text-slate-400 font-medium italic">Tidak ada pengguna ditemukan.</td></tr>
-                    ) : users.map((u) => (
-                      <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="font-bold text-zinc-900">{u.name}</div>
-                          <div className="text-xs text-slate-500">{u.email}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`px-2 py-1 text-[10px] font-bold rounded-md uppercase ${
-                            u.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
-                            u.role === 'DOCTOR' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'
-                          }`}>
-                            {u.role}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <button 
-                            onClick={() => handleToggleStatus(u.id, u.isActive)}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                              u.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
-                            }`}
-                          >
-                            <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? 'bg-emerald-500' : 'bg-rose-500'}`} />
-                            {u.isActive ? 'Aktif' : 'Nonaktif'}
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button 
-                            onClick={() => handleDeleteUser(u.id)}
-                            className="p-2 text-slate-400 hover:text-rose-600 transition-colors"
-                            title="Hapus Pengguna"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-                    {isAddModalOpen && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
-                  <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
-                    <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                      <div>
-                        <h3 className="font-extrabold text-zinc-900 text-lg">Daftarkan Pengguna Biasa</h3>
-                        <p className="text-xs text-slate-500 font-medium mt-1">Akun baru akan mendapatkan peran default (Pasien).</p>
-                      </div>
-                      <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:bg-slate-200 p-2 rounded-lg transition-colors">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                      </button>
-                    </div>
-
-                    <form onSubmit={handleAddUser} className="p-6 space-y-5">
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Nama Lengkap</label>
-                        <input type="text" required value={newUser.name} onChange={(e) => setNewUser({...newUser, name: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 transition-all outline-none" placeholder="Masukkan nama lengkap" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Alamat Email</label>
-                        <input type="email" required value={newUser.email} onChange={(e) => setNewUser({...newUser, email: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 transition-all outline-none" placeholder="email@contoh.com" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Kata Sandi</label>
-                        <input type="password" required minLength={8} value={newUser.password} onChange={(e) => setNewUser({...newUser, password: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 transition-all outline-none" placeholder="Minimal 8 karakter" />
-                      </div>
-
-                      <div className="pt-4 flex gap-3">
-                        <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
-                          Batal
-                        </button>
-                        <button type="submit" disabled={isSubmitting} className="flex-1 py-3 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-lg shadow-teal-600/20 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2">
-                          {isSubmitting ? 'Memproses...' : 'Daftarkan Akun'}
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              )}
-
-            </div>
-          )}
+          {/* TAMPILAN 3: MANAJEMEN ANTREAN */}
+          {activeView === 'queues' && <AdminQueueManagement />}
 
         </main>
       </div>

@@ -74,8 +74,8 @@ export const usePatientStore = create<PatientState>((set) => ({
 
       set({ 
         patients: response.data.data, 
-        pagination: response.data.pagination,
-        totalPatients: response.data.pagination.total,
+        pagination: response.data.meta?.pagination || null,
+        totalPatients: response.data.meta?.pagination?.total || 0,
         isLoading: false 
       });
     } catch (error: any) {

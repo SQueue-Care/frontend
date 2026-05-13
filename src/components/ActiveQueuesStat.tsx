@@ -1,11 +1,13 @@
 import { useEffect, useMemo } from 'react';
 import StatCard from './StatCard';
 import { useQueueStore } from '../store/queueStore';
+import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 import { ExclamationTriangleIcon, ArrowPathIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 import { QueueStatus } from '../lib/types';
 
 export default function ActiveQueuesStat() {
   const { overviewStats, isLoadingStats, errorStats, fetchOverviewStats } = useQueueStore();
+  const { selectedDepartment } = useDashboardFilterStore();
 
   useEffect(() => {
     fetchOverviewStats();
@@ -14,13 +16,18 @@ export default function ActiveQueuesStat() {
   const activeQueuesCount = useMemo(() => {
     if (!overviewStats) return 0;
 
-    return overviewStats.departments.reduce((total, dept) => {
+    let deptsToCount = overviewStats.departments;
+    if (selectedDepartment) {
+      deptsToCount = deptsToCount.filter(d => d.departmentId === selectedDepartment);
+    }
+
+    return deptsToCount.reduce((total, dept) => {
       const waiting = dept.counts[QueueStatus.WAITING] ?? 0;
       const inProgress = dept.counts[QueueStatus.IN_PROGRESS] ?? 0;
       const called = dept.counts[QueueStatus.CALLED] ?? 0;
       return total + waiting + inProgress + called;
     }, 0);
-  }, [overviewStats]);
+  }, [overviewStats, selectedDepartment]);
 
   if (isLoadingStats && !overviewStats) {
     return (
