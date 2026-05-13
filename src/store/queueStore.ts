@@ -28,6 +28,7 @@ export interface Queue {
   department: {
     id: string;
     name: string;
+    code: string;
   };
   doctor: {
     user: {
@@ -70,7 +71,8 @@ export const useQueueStore = create<QueueState>((set) => ({
   activeQueueDetail: null,
 
   patientHistory: [],
-fetchPatientHistory: async (patientId) => {
+
+  fetchPatientHistory: async (patientId) => {
   set({ isLoadingTable: true, errorTable: null });
   try {
     const response = await apiClient.get(`/patients/${patientId}/queues`);

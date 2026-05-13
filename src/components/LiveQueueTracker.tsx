@@ -19,7 +19,7 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
 
     fetchActiveQueue(queueId);
 
-    // Saran: Polling setiap 10 detik memberikan keseimbangan optimal antara data real-time dan beban server
+    // Polling setiap 10 detik
     const timer = setInterval(() => {
       fetchActiveQueue(queueId);
     }, 10000);
