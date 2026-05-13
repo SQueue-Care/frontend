@@ -81,13 +81,20 @@ export const useBookingStore = create<BookingState>((set) => ({
       const isToday = selectedDate === today;
       const endpoint = isToday ? '/queues' : '/appointments';
       
-      const response = await apiClient.post(endpoint, payload);
+      // Sinkronisasi field: /appointments mengharuskan 'scheduledAt'
+      const body = isToday ? payload : {
+        ...payload,
+        scheduledAt: payload.date
+      };
+      
+      const response = await apiClient.post(endpoint, body);
       set({ isSubmitting: false });
 
+      const data = response.data.data;
       return {
-        id: response.data.data.id,
-        queueNumber: response.data.data.queueNumber || 'RES',
-        estimatedWaitTime: response.data.data.estimatedWaitMinutes || response.data.data.estimatedWaitTime || 0,
+        id: data.id,
+        queueNumber: data.queueNumber || data.id.substring(data.id.length - 6).toUpperCase(),
+        estimatedWaitTime: data.estimatedWaitMinutes || data.estimatedWaitTime || 0,
         isAppointment: !isToday
       };
     } catch (error: any) {
