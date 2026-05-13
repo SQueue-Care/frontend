@@ -1,7 +1,9 @@
 // src/pages/AdminDashboard.tsx
 import { useState, useEffect } from 'react';
 import StatCard from '../components/StatCard';
-import WaitTimeChart from '../components/WaitTimeChart';
+import TotalPatientsStat from '../components/TotalPatientsStat';
+import ActiveQueuesStat from '../components/ActiveQueuesStat';
+import WaitTimeStat from '../components/WaitTimeStat';
 import DepartmentWorkloadChart from '../components/DepartmentWorkloadChart';
 import QueueManagementTable from '../components/QueueManagementTable';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +19,7 @@ export default function AdminDashboard() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', password: '' });
-  
+
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
@@ -74,7 +76,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-['Inter'] flex">
-      
+
       {/* ========================================== */}
       {/* 1. SIDEBAR PERMANEN (Khusus Admin) */}
       {/* ========================================== */}
@@ -102,7 +104,7 @@ export default function AdminDashboard() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             Command Center
           </button>
-          
+
           {/* Tombol Baru: Manajemen Pengguna */}
           <button 
             onClick={() => setActiveView('users')}
@@ -133,10 +135,10 @@ export default function AdminDashboard() {
       {/* 2. AREA KONTEN UTAMA (Kanan) */}
       {/* ========================================== */}
       <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
-        
+
         {/* Navbar Atas Admin */}
         <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between">
-          
+
           {/* Pencarian Global Admin */}
           <div className="flex-1 max-w-md relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -158,7 +160,7 @@ export default function AdminDashboard() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
               <span className="absolute top-1 right-1.5 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full animate-pulse"></span>
             </button>
-            
+
             <div className="h-8 w-px bg-slate-200"></div>
 
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
@@ -181,7 +183,7 @@ export default function AdminDashboard() {
 
         {/* Ruang Kanvas Utama */}
         <main className="flex-1 p-4 sm:p-8">
-          
+
           {/* TAMPILAN 1: DASHBOARD ASLI */}
           {activeView === 'dashboard' && (
             <div className="animate-in fade-in duration-500">
@@ -190,7 +192,7 @@ export default function AdminDashboard() {
                   <h1 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">Overview Antrean Hari Ini</h1>
                   <p className="text-slate-500 text-sm font-medium">Pantau metrik operasional seluruh poliklinik secara real-time.</p>
                 </div>
-                
+
                 {/* Filter Departemen (Aktivitas 9) */}
                 <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
                   <button className="px-4 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow-md shadow-teal-600/20">Semua Poli</button>
@@ -202,26 +204,12 @@ export default function AdminDashboard() {
 
               {/* 4 Kartu Statistik Utama */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard 
-                  title="Total Pasien" 
-                  value="1,284" 
-                  icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>}
-                  trend={{ value: "12%", isPositive: true }}
-                  description="Dibandingkan kemarin"
-                />
-                <StatCard 
-                  title="Rata-rata Waktu Tunggu" 
-                  value="24 Menit" 
-                  icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
-                  trend={{ value: "4m", isPositive: false }}
-                  description="Lebih lambat dari rata-rata"
-                />
-                <StatCard 
-                  title="Antrean Aktif" 
-                  value="42" 
-                  icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>}
-                  description="Pasien menunggu saat ini"
-                />
+                <TotalPatientsStat />
+
+                <WaitTimeStat />
+
+                <ActiveQueuesStat />
+
                 <StatCard 
                   title="Kepuasan Pasien" 
                   value="4.8/5" 
@@ -235,18 +223,18 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                  <div className="lg:col-span-2 min-h-[400px] bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="font-extrabold text-zinc-950 font-['Manrope']">Analitik Waktu Tunggu</h3>
+                      <h3 className="font-extrabold text-zinc-950 font-['Manrope']">Analitik Performa Antrean</h3>
                       <select className="text-xs font-bold bg-slate-50 border-slate-200 rounded-lg focus:ring-teal-500 text-slate-600 px-3 py-1.5 cursor-pointer outline-none">
                         <option>Hari Ini</option>
                         <option>7 Hari Terakhir</option>
                         <option>30 Hari Terakhir</option>
                       </select>
                     </div>
-                    <div className="flex-1">
-                      <WaitTimeChart />
+                    <div className="flex-1 items-center justify-center flex">
+                      <p className="text-sm text-slate-400 italic">Grafik performa akan ditampilkan di sini.</p>
                     </div>
                  </div>
-                 
+
                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col">
                     <h3 className="font-extrabold text-zinc-950 font-['Manrope'] mb-6">Beban Kerja Departemen</h3>
                     <div className="flex-1 flex items-center justify-center">
@@ -346,7 +334,7 @@ export default function AdminDashboard() {
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                       </button>
                     </div>
-                    
+
                     <form onSubmit={handleAddUser} className="p-6 space-y-5">
                       <div>
                         <label className="block text-sm font-bold text-slate-700 mb-1.5">Nama Lengkap</label>
