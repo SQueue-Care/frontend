@@ -27,7 +27,8 @@ export default function QueueManagementTable() {
   const { searchQuery, setSearchQuery, selectedDepartment } = useDashboardFilterStore();
 
   useEffect(() => {
-    fetchQueues({ date: new Date() });
+    // FIX: Hapus filter tanggal agar antrean yang masih aktif dari hari sebelumnya tetap muncul
+    fetchQueues(); 
   }, [fetchQueues]);
 
   const filteredQueues = useMemo(() => {
@@ -50,8 +51,15 @@ export default function QueueManagementTable() {
         );
       });
     }
-    
-    return result;
+
+    // Urutkan: Aktif (WAITING, CALLED, IN_PROGRESS) di atas
+    const activeStatuses = [QueueStatus.WAITING, QueueStatus.CALLED, QueueStatus.IN_PROGRESS];
+    return [...result].sort((a, b) => {
+      const aActive = activeStatuses.includes(a.status) ? 0 : 1;
+      const bActive = activeStatuses.includes(b.status) ? 0 : 1;
+      if (aActive !== bActive) return aActive - bActive;
+      return new Date(b.queueDate).getTime() - new Date(a.queueDate).getTime();
+    });
   }, [queues, searchQuery, selectedDepartment]);
 
   const renderTableBody = () => {
@@ -79,7 +87,7 @@ export default function QueueManagementTable() {
       return (
         <tr>
           <td colSpan={5} className="p-8 text-center text-slate-400 italic">
-            {queues.length === 0 ? "Tidak ada antrean untuk hari ini." : "Pasien tidak ditemukan dalam daftar antrean."}
+            {queues.length === 0 ? "Tidak ada antrean terdeteksi." : "Pasien tidak ditemukan dalam daftar antrean."}
           </td>
         </tr>
       );
@@ -110,7 +118,7 @@ export default function QueueManagementTable() {
       <div className="p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h3 className="font-extrabold text-zinc-950 font-['Manrope'] text-lg">Live Queue Control</h3>
-          <p className="text-slate-500 text-sm font-medium">Memantau antrean pasien hari ini.</p>
+          <p className="text-slate-500 text-sm font-medium">Memantau antrean aktif dan riwayat terbaru.</p>
         </div>
 
         <div className="flex items-center w-full lg:w-auto">

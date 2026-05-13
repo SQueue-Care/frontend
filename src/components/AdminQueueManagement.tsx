@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQueueStore } from '../store/queueStore';
-import { useDashboardFilterStore } from '../store/dashboardFilterStore'; // Tambahan: Import store filter
+import { useDashboardFilterStore } from '../store/dashboardFilterStore'; 
 import { QueueStatus } from '../lib/types';
 import apiClient from '../lib/apiClient';
 
@@ -24,18 +24,17 @@ const StatusBadge = ({ status }: { status: QueueStatus }) => {
 
 export default function AdminQueueManagement() {
   const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore();
-  
-  // SOLUSI: Tarik searchQuery dari state global
   const { searchQuery } = useDashboardFilterStore();
 
   useEffect(() => {
-    fetchQueues({ date: new Date() });
+    // FIX: Ambil semua antrean agar yang masih WAITING dari hari sebelumnya tetap terlihat
+    fetchQueues(); 
   }, [fetchQueues]);
 
   const handleUpdateStatus = async (id: string, newStatus: QueueStatus) => {
     try {
       await apiClient.patch(`/queues/${id}/status`, { status: newStatus });
-      fetchQueues({ date: new Date() }); // Refresh data
+      fetchQueues(); // Refresh data tanpa filter tanggal
     } catch (error: any) {
       alert(error.response?.data?.message || 'Gagal mengubah status antrean.');
     }
@@ -45,7 +44,6 @@ export default function AdminQueueManagement() {
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
     
-    // Validasi opsional untuk mencegah error jika objek data tidak lengkap dari backend
     const patientName = item.patient?.user?.name || "";
     const departmentCode = item.department?.code || "";
     const queueNum = item.queueNumber || "";
@@ -64,10 +62,19 @@ export default function AdminQueueManagement() {
       return <tr><td colSpan={6} className="p-8 text-center text-red-500 italic">{errorTable}</td></tr>;
     }
     if (filteredQueues.length === 0) {
-      return <tr><td colSpan={6} className="p-8 text-center text-slate-400 italic">{queues.length === 0 ? "Tidak ada antrean hari ini." : "Antrean tidak ditemukan."}</td></tr>;
+      return <tr><td colSpan={6} className="p-8 text-center text-slate-400 italic">{queues.length === 0 ? "Tidak ada antrean terdeteksi." : "Antrean tidak ditemukan."}</td></tr>;
     }
 
-    return filteredQueues.map((item) => (
+    // Urutkan: Aktif di atas, yang Selesai/Batal di bawah
+    const activeStatuses = [QueueStatus.WAITING, QueueStatus.CALLED, QueueStatus.IN_PROGRESS];
+    const sortedQueues = [...filteredQueues].sort((a, b) => {
+      const aActive = activeStatuses.includes(a.status) ? 0 : 1;
+      const bActive = activeStatuses.includes(b.status) ? 0 : 1;
+      if (aActive !== bActive) return aActive - bActive;
+      return new Date(b.queueDate).getTime() - new Date(a.queueDate).getTime();
+    });
+
+    return sortedQueues.map((item) => (
       <tr key={item.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
         <td className="p-4 pl-6">
           <span className="inline-block px-3 py-1 bg-slate-100 text-slate-700 font-extrabold rounded-lg font-mono">
@@ -135,7 +142,7 @@ export default function AdminQueueManagement() {
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">Manajemen Antrean</h1>
-          <p className="text-slate-500 text-sm font-medium">Kelola dan perbarui status antrean pasien secara manual.</p>
+          <p className="text-slate-500 text-sm font-medium">Kelola dan perbarui status antrean aktif (Layanan Real-time).</p>
         </div>
       </div>
 

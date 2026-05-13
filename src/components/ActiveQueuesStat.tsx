@@ -6,41 +6,43 @@ import { ExclamationTriangleIcon, ArrowPathIcon, ClipboardDocumentListIcon } fro
 import { QueueStatus } from '../lib/types';
 
 export default function ActiveQueuesStat() {
-  const { overviewStats, isLoadingStats, errorStats, fetchOverviewStats } = useQueueStore();
+  // Gunakan 'queues' sebagai basis data karena sudah ditarik tanpa filter tanggal di tabel
+  const { queues, overviewStats, isLoadingTable, errorStats, fetchOverviewStats, fetchQueues } = useQueueStore();
   const { selectedDepartment } = useDashboardFilterStore();
 
   useEffect(() => {
+    // Jalankan fetchOverviewStats untuk data departemen (opsional)
+    // Tapi pastikan fetchQueues (tanpa param) juga dipanggil agar data 'queues' tersedia
     fetchOverviewStats();
-  }, [fetchOverviewStats]);
+    fetchQueues(); 
+  }, [fetchOverviewStats, fetchQueues]);
 
   const activeQueuesCount = useMemo(() => {
-    if (!overviewStats) return 0;
+    // Kita filter antrean yang statusnya aktif (Waiting, Called, In Progress) dari manapun tanggalnya
+    const activeStatuses = [QueueStatus.WAITING, QueueStatus.CALLED, QueueStatus.IN_PROGRESS];
+    
+    let result = queues.filter(q => activeStatuses.includes(q.status));
 
-    let deptsToCount = overviewStats.departments;
     if (selectedDepartment) {
-      deptsToCount = deptsToCount.filter(d => d.departmentId === selectedDepartment);
+      result = result.filter(q => q.department?.id === selectedDepartment);
     }
 
-    return deptsToCount.reduce((total, dept) => {
-      const waiting = dept.counts[QueueStatus.WAITING] ?? 0;
-      const inProgress = dept.counts[QueueStatus.IN_PROGRESS] ?? 0;
-      const called = dept.counts[QueueStatus.CALLED] ?? 0;
-      return total + waiting + inProgress + called;
-    }, 0);
-  }, [overviewStats, selectedDepartment]);
+    return result.length;
+  }, [queues, selectedDepartment]);
 
-  if (isLoadingStats && !overviewStats) {
+  // Loading state menggunakan indikator tabel karena 'queues' adalah sumber data kita sekarang
+  if (isLoadingTable && queues.length === 0) {
     return (
       <StatCard
         title="Antrean Aktif"
         value={<ArrowPathIcon className="w-6 h-6 animate-spin text-slate-500" />}
         icon={<ClipboardDocumentListIcon className="w-6 h-6" />}
-        description="Memuat data..."
+        description="Sinkronisasi data..."
       />
     );
   }
 
-  if (errorStats) {
+  if (errorStats && queues.length === 0) {
     return (
       <StatCard
         title="Antrean Aktif"
@@ -56,7 +58,7 @@ export default function ActiveQueuesStat() {
       title="Antrean Aktif"
       value={activeQueuesCount}
       icon={<ClipboardDocumentListIcon className="w-6 h-6" />}
-      description="Pasien menunggu & dipanggil"
+      description="Pasien menunggu & dipanggil (Global)"
     />
   );
 }

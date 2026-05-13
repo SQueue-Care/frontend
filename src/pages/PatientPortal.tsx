@@ -77,6 +77,30 @@ export default function PatientPortal() {
     fetchDepartments();
   }, [fetchDepartments]);
 
+  // Fetch antrian aktif saat user pertama kali load page
+  useEffect(() => {
+    const patientId = user?.patient?.id || (user?.role === 'PATIENT' ? user.id : null);
+    if (patientId) {
+      fetchPatientHistory(patientId);
+    }
+  }, [user, fetchPatientHistory]);
+
+  // Set activeQueueId jika ada antrian aktif (WAITING/CALLED/IN_PROGRESS)
+  useEffect(() => {
+    if (patientHistory && patientHistory.length > 0) {
+      const activeQueue = patientHistory.find(q => 
+        ['WAITING', 'CALLED', 'IN_PROGRESS'].includes(q.status)
+      );
+      if (activeQueue) {
+        setActiveQueueId(activeQueue.id);
+      } else {
+        setActiveQueueId(null);
+      }
+    } else {
+      setActiveQueueId(null);
+    }
+  }, [patientHistory]);
+
   useEffect(() => {
   const patientId = user?.patient?.id || (user?.role === 'PATIENT' ? user.id : null);
   if (activeView === 'history' && patientId) {

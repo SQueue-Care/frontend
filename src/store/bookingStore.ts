@@ -74,23 +74,71 @@ export const useBookingStore = create<BookingState>((set) => ({
   submitBooking: async (payload) => {
     set({ isSubmitting: true, error: null });
     try {
-      const today = new Date().toISOString().split('T')[0];
+      // Gunakan local date tanpa konversi UTC
+      const now = new Date();
+      const todayString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      
       const selectedDate = payload.date.split('T')[0];
       
-      // Smart Branching Logic
-      const isToday = selectedDate === today;
-      const endpoint = isToday ? '/queues' : '/appointments';
+      const isToday = selectedDate === todayString;
       
-      // Sinkronisasi field: /appointments mengharuskan 'scheduledAt'
-      const body = isToday ? payload : {
-        ...payload,
-        scheduledAt: payload.date
-      };
+      // Jika hari ini: kirim ke KEDUA /queues dan /appointments
+      // Jika bukan hari ini: kirim hanya ke /appointments
       
-      const response = await apiClient.post(endpoint, body);
+      let queueData: any = null;
+      let appointmentData: any = null;
+      
+      if (isToday) {
+        // Kirim ke /queues untuk hari ini (hapus field 'date' karena backend tidak expect)
+        const queueBody = {
+          departmentId: payload.departmentId,
+          doctorId: payload.doctorId,
+          scheduleId: payload.scheduleId,
+        };
+        try {
+          const queueResponse = await apiClient.post('/queues', queueBody);
+          queueData = queueResponse.data.data;
+        } catch (error: any) {
+          // Jangan throw, lanjutkan ke appointments
+        }
+        
+        // Juga kirim ke /appointments untuk hari ini
+        const appointmentBody = {
+          departmentId: payload.departmentId,
+          doctorId: payload.doctorId,
+          scheduleId: payload.scheduleId,
+          scheduledAt: payload.date
+        };
+        try {
+          const appointmentResponse = await apiClient.post('/appointments', appointmentBody);
+          appointmentData = appointmentResponse.data.data;
+        } catch (error: any) {
+          // Jangan throw error di sini, gunakan data dari queue
+        }
+      } else {
+        // Hanya kirim ke /appointments untuk hari lain
+        const appointmentBody = {
+          departmentId: payload.departmentId,
+          doctorId: payload.doctorId,
+          scheduleId: payload.scheduleId,
+          scheduledAt: payload.date
+        };
+        try {
+          const appointmentResponse = await apiClient.post('/appointments', appointmentBody);
+          appointmentData = appointmentResponse.data.data;
+        } catch (error: any) {
+          throw error;
+        }
+      }
+      
       set({ isSubmitting: false });
 
-      const data = response.data.data;
+      // Gunakan data dari queue jika ada, atau appointment
+      const data = queueData || appointmentData;
+      if (!data) {
+        throw new Error('Gagal menyimpan data booking ke database.');
+      }
+
       return {
         id: data.id,
         queueNumber: data.queueNumber || data.id.substring(data.id.length - 6).toUpperCase(),
@@ -98,8 +146,8 @@ export const useBookingStore = create<BookingState>((set) => ({
         isAppointment: !isToday
       };
     } catch (error: any) {
-      const msg = error.response?.data?.error?.message || error.response?.data?.message || 'Gagal mengirim pendaftaran.';
-      set({ error: msg, isSubmitting: false });
+      const errorMsg = error.response?.data?.error?.message || error.response?.data?.message || error.message || 'Gagal mengirim pendaftaran.';
+      set({ error: errorMsg, isSubmitting: false });
       throw error;
     }
   },
