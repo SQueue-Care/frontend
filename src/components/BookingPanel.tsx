@@ -53,8 +53,9 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
 
   useEffect(() => {
     if (selectedDoctorId && selectedDate) {
-      const day = new Date(selectedDate).getDay(); 
-      fetchSchedulesByDoctor(selectedDoctorId, day);
+      const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+      const dayName = days[new Date(selectedDate).getDay()]; 
+      fetchSchedulesByDoctor(selectedDoctorId, dayName);
       setSelectedScheduleId(null);
     }
   }, [selectedDoctorId, selectedDate, fetchSchedulesByDoctor]);
@@ -220,8 +221,16 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
                   ) : (
                     <div className="grid grid-cols-2 gap-3">
                       {doctorSchedules.map((sched) => {
-                        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                        const dayName = days[sched.dayOfWeek];
+                        const dayNames: Record<string, string> = {
+                          'MONDAY': 'Senin',
+                          'TUESDAY': 'Selasa',
+                          'WEDNESDAY': 'Rabu',
+                          'THURSDAY': 'Kamis',
+                          'FRIDAY': 'Jumat',
+                          'SATURDAY': 'Sabtu',
+                          'SUNDAY': 'Minggu'
+                        };
+                        const dayNameIndo = dayNames[sched.dayOfWeek] || sched.dayOfWeek;
                         const isSelected = selectedScheduleId === sched.id;
                         
                         return (
@@ -230,10 +239,10 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
                             onClick={() => setSelectedScheduleId(sched.id)}
                             className={`relative p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all duration-300 ${isSelected ? 'border-teal-500 bg-gradient-to-b from-teal-50/50 to-white shadow-md shadow-teal-500/10 scale-[1.02]' : 'border-slate-100 bg-white hover:border-teal-200 hover:bg-slate-50/50'}`}
                           >
-                            <span className={`text-[10px] font-black uppercase tracking-wider ${isSelected ? 'text-teal-600' : 'text-slate-400'}`}>{dayName}</span>
+                            <span className={`text-[10px] font-black uppercase tracking-wider ${isSelected ? 'text-teal-600' : 'text-slate-400'}`}>{dayNameIndo}</span>
                             <span className={`text-base font-black ${isSelected ? 'text-zinc-900' : 'text-slate-700'}`}>{sched.startTime} - {sched.endTime}</span>
                             <div className={`mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${isSelected ? 'bg-teal-100 border-teal-200 text-teal-700' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
-                              Sisa Kuota: {sched.quota}
+                              Kapasitas: {sched.capacity}
                             </div>
                           </button>
                         );

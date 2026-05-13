@@ -14,10 +14,10 @@ export interface DepartmentDoctor {
 
 export interface DoctorSchedule {
   id: string;
-  dayOfWeek: number;
+  dayOfWeek: string; // Enum dari backend (MONDAY, etc)
   startTime: string;
   endTime: string;
-  quota: number;
+  capacity: number; // Sebelumnya quota
 }
 
 interface BookingState {
@@ -29,15 +29,15 @@ interface BookingState {
   error: string | null;
 
   fetchDoctorsByDepartment: (departmentId: string) => Promise<void>;
-  // Update: Sekarang menerima dayOfWeek
-  fetchSchedulesByDoctor: (doctorId: string, dayOfWeek: number) => Promise<void>;
+  // Update: Sekarang menerima string DayOfWeek
+  fetchSchedulesByDoctor: (doctorId: string, dayOfWeek: string) => Promise<void>;
   // Fungsi baru untuk integrasi Smart Submit
   submitBooking: (payload: {
     departmentId: string;
     doctorId: string;
     scheduleId: string;
     date: string;
-  }) => Promise<{ queueNumber?: string; estimatedWaitTime?: number; isAppointment: boolean }>;
+  }) => Promise<{ id?: string; queueNumber?: string; estimatedWaitTime?: number; isAppointment: boolean }>;
   
   resetBookingState: () => void;
 }
@@ -85,13 +85,13 @@ export const useBookingStore = create<BookingState>((set) => ({
       set({ isSubmitting: false });
 
       return {
-        id: response.data.data.id, // <-- KOREKSI MUTLAK: Tambahkan baris ini
+        id: response.data.data.id,
         queueNumber: response.data.data.queueNumber || 'RES',
-        estimatedWaitTime: response.data.data.estimatedWaitTime || 0,
+        estimatedWaitTime: response.data.data.estimatedWaitMinutes || response.data.data.estimatedWaitTime || 0,
         isAppointment: !isToday
       };
     } catch (error: any) {
-      const msg = error.response?.data?.message || 'Gagal mengirim pendaftaran.';
+      const msg = error.response?.data?.error?.message || error.response?.data?.message || 'Gagal mengirim pendaftaran.';
       set({ error: msg, isSubmitting: false });
       throw error;
     }

@@ -167,21 +167,36 @@ export default function DoctorDashboard() {
               {/* Tampilan Jadwal Dokter */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
                  <h3 className="text-lg font-bold text-zinc-900 mb-4 border-b border-slate-100 pb-3">Jadwal Praktik Anda</h3>
-                 {schedules.length === 0 ? (
+                 {isLoading ? (
+                   <div className="flex justify-center py-4">
+                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                   </div>
+                 ) : schedules.length === 0 ? (
                    <p className="text-slate-500 italic text-sm">Tidak ada jadwal praktik yang terdaftar dalam sistem.</p>
                  ) : (
                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                     {schedules.map((sched) => (
-                       <div key={sched.id} className="p-4 border border-slate-100 bg-slate-50 rounded-xl flex items-center justify-between">
-                         <div>
-                           <p className="font-bold text-slate-800">Hari {sched.dayOfWeek}</p>
-                           <p className="text-xs text-slate-500 font-medium mt-1">{sched.startTime} - {sched.endTime} WIB</p>
+                     {schedules.map((sched) => {
+                       const dayNames: Record<string, string> = {
+                         'MONDAY': 'Senin',
+                         'TUESDAY': 'Selasa',
+                         'WEDNESDAY': 'Rabu',
+                         'THURSDAY': 'Kamis',
+                         'FRIDAY': 'Jumat',
+                         'SATURDAY': 'Sabtu',
+                         'SUNDAY': 'Minggu'
+                       };
+                       return (
+                         <div key={sched.id} className="p-4 border border-slate-100 bg-slate-50 rounded-xl flex items-center justify-between">
+                           <div>
+                             <p className="font-bold text-slate-800">Hari {dayNames[sched.dayOfWeek] || sched.dayOfWeek}</p>
+                             <p className="text-xs text-slate-500 font-medium mt-1">{sched.startTime} - {sched.endTime} WIB</p>
+                           </div>
+                           <div className="text-right">
+                             <span className="inline-block px-2 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded uppercase">Kapasitas: {sched.capacity}</span>
+                           </div>
                          </div>
-                         <div className="text-right">
-                           <span className="inline-block px-2 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded uppercase">Kuota: {sched.quota}</span>
-                         </div>
-                       </div>
-                     ))}
+                       );
+                     })}
                    </div>
                  )}
               </div>

@@ -26,10 +26,10 @@ export interface DoctorSchedule {
   id: string;
   doctorId: string;
   departmentId: string;
-  dayOfWeek: number;
+  dayOfWeek: string; // Enum dari backend (MONDAY, etc)
   startTime: string;
   endTime: string;
-  quota: number;
+  capacity: number; // Sebelumnya quota
   department: {
     name: string;
   };
