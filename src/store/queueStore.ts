@@ -42,6 +42,9 @@ interface QueueState {
   isLoadingStats: boolean;
   errorStats: string | null;
   fetchOverviewStats: () => Promise<void>;
+  activeQueueDetail: Queue | null;
+  fetchActiveQueue: (id: string) => Promise<void>;
+  cancelQueue: (id: string) => Promise<void>;
 
   // State untuk daftar antrean tabel
   queues: Queue[];
@@ -60,6 +63,27 @@ export const useQueueStore = create<QueueState>((set) => ({
   queues: [],
   isLoadingTable: false,
   errorTable: null,
+
+  activeQueueDetail: null,
+
+  fetchActiveQueue: async (id) => {
+    try {
+      const response = await apiClient.get(`/queues/${id}`);
+      set({ activeQueueDetail: response.data.data });
+    } catch (error: any) {
+      console.error('Gagal memuat detail antrean:', error);
+    }
+  },
+
+  cancelQueue: async (id) => {
+    try {
+      await apiClient.post(`/queues/${id}/cancel`);
+      set({ activeQueueDetail: null });
+      // Saran: Bersihkan state lokal setelah pembatalan berhasil agar UI langsung kembali ke mode kosong
+    } catch (error: any) {
+      throw error;
+    }
+  },
 
   fetchOverviewStats: async () => {
     set({ isLoadingStats: true, errorStats: null });

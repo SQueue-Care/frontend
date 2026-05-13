@@ -21,7 +21,7 @@ export default function PatientPortal() {
   const [selectedDept, setSelectedDept] = useState<{id: string, name: string} | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeView, setActiveView] = useState<PortalView>('polyclinics');
-  const [hasActiveQueue, setHasActiveQueue] = useState(false);
+  const [activeQueueId, setActiveQueueId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     nik: '', bpjsNumber: '', phone: '', gender: '', birthDate: '', address: ''
@@ -330,8 +330,11 @@ export default function PatientPortal() {
             </div>
 
             {/* CONDITIONAL RENDERING: Live Queue Tracker ATAU Empty State */}
-            {hasActiveQueue ? (
-              <LiveQueueTracker />
+            {activeQueueId ? (
+              <LiveQueueTracker 
+                queueId={activeQueueId} 
+                onCancelSuccess={() => setActiveQueueId(null)} 
+              />
             ) : (
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 mb-8 text-center flex flex-col items-center justify-center">
                 <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
@@ -480,6 +483,11 @@ export default function PatientPortal() {
         selectedDept={selectedDept}
         onNext={handleNextStep}
         onPrev={handlePrevStep}
+        // Saran Rekayasa: Properti ini akan menangkap ID dari BookingPanel dan menyalakannya di Live Tracker
+        onBookingSuccess={(queueId) => {
+          setActiveQueueId(queueId);
+          setActiveView('polyclinics'); // Memaksa UI kembali ke halaman utama untuk melihat tracker
+        }}
       />
     </div>
   );

@@ -85,6 +85,7 @@ export const useBookingStore = create<BookingState>((set) => ({
       set({ isSubmitting: false });
 
       return {
+        id: response.data.data.id, // <-- KOREKSI MUTLAK: Tambahkan baris ini
         queueNumber: response.data.data.queueNumber || 'RES',
         estimatedWaitTime: response.data.data.estimatedWaitTime || 0,
         isAppointment: !isToday

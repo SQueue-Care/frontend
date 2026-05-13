@@ -1,5 +1,5 @@
 // src/components/BookingPanel.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useBookingStore } from '../store/bookingStore';
 
 interface BookingPanelProps {
@@ -9,11 +9,22 @@ interface BookingPanelProps {
   selectedDept: { id: string; name: string } | null;
   onNext: () => void;
   onPrev: () => void;
+  onBookingSuccess?: (queueId: string) => void;
 }
 
-export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNext, onPrev }: BookingPanelProps) {
-  
-  // 1. Integrasi dengan Store
+// Fungsi Bantuan untuk menghasilkan N hari ke depan
+const generateNextDays = (daysCount: number) => {
+  const dates = [];
+  const today = new Date();
+  for (let i = 0; i < daysCount; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    dates.push(date);
+  }
+  return dates;
+};
+
+export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNext, onPrev, onBookingSuccess }: BookingPanelProps) {  
   const { 
     departmentDoctors, 
     doctorSchedules, 
@@ -26,29 +37,28 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
     resetBookingState 
   } = useBookingStore();
 
-  // 2. State Lokal
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(""); 
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
   const [queueResult, setQueueResult] = useState<any>(null);
 
-  // 3. Efek 1: Ambil daftar dokter saat panel dibuka
+  // Menyediakan 14 hari ke depan secara dinamis untuk UI Horizontal Slider
+  const availableDates = useMemo(() => generateNextDays(14), []);
+
   useEffect(() => {
     if (isOpen && selectedDept) {
       fetchDoctorsByDepartment(selectedDept.id);
     }
   }, [isOpen, selectedDept, fetchDoctorsByDepartment]);
 
-  // 4. Efek 2: Ambil jadwal saat dokter ATAU tanggal berubah
   useEffect(() => {
     if (selectedDoctorId && selectedDate) {
-      const day = new Date(selectedDate).getDay(); // Mendapatkan 0-6 (Minggu-Sabtu)
+      const day = new Date(selectedDate).getDay(); 
       fetchSchedulesByDoctor(selectedDoctorId, day);
-      setSelectedScheduleId(null); // Reset pilihan jadwal saat tanggal diubah
+      setSelectedScheduleId(null);
     }
   }, [selectedDoctorId, selectedDate, fetchSchedulesByDoctor]);
 
-  // 5. Fungsi Bantuan (Helpers)
   const handleClose = () => {
     setSelectedDoctorId(null);
     setSelectedDate("");
@@ -60,14 +70,16 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
 
   const getSelectedDoctorName = () => {
     const doc = departmentDoctors.find(d => d.id === selectedDoctorId);
-    return doc ? doc.user.name : '-';
+    return doc ? doc.user.name.toUpperCase() : '-';
   };
 
   const getSelectedScheduleDetail = () => {
     const sched = doctorSchedules.find(s => s.id === selectedScheduleId);
     if (!sched || !selectedDate) return '-';
-    // Format: YYYY-MM-DD | 08:00 - 12:00
-    return `${selectedDate} | ${sched.startTime} - ${sched.endTime}`;
+    
+    // Format Tampilan Ringkasan: 15 Mei 2026 | 08:00 - 12:00
+    const formattedDate = new Date(selectedDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    return `${formattedDate} | ${sched.startTime} - ${sched.endTime}`;
   };
 
   const handleConfirmBooking = async () => {
@@ -81,6 +93,11 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
       });
       setQueueResult(result);
       onNext();
+      
+      // Saran Rekayasa: Tembakkan ID ke PatientPortal hanya jika ini adalah pendaftaran HARI INI (bukan reservasi masa depan)
+      if (onBookingSuccess && !result.isAppointment && result.id) {
+         onBookingSuccess(result.id);
+      }
     } catch (err) {
       alert("Gagal melakukan reservasi. Silakan coba lagi.");
     }
@@ -121,13 +138,13 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
         )}
 
         {/* Konten Dinamis */}
-        <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
+        <div className="flex-1 overflow-y-auto p-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           
           {/* STEP 1: PILIH DOKTER, TANGGAL, & JADWAL */}
           {step === 1 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
               
-              {/* BAGIAN A: PILIH DOKTER (Radio Cards Premium) */}
+              {/* BAGIAN A: PILIH DOKTER (Lebar Penuh) */}
               <section>
                 <label className="block text-xs font-black text-slate-400 mb-3 uppercase tracking-widest">Pilih Dokter Spesialis</label>
                 {isLoadingDoctors ? (
@@ -135,21 +152,22 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
                 ) : departmentDoctors.length === 0 ? (
                   <div className="p-6 text-center text-slate-500 text-sm font-semibold border border-slate-100 rounded-3xl bg-slate-50">Belum ada dokter di poliklinik ini.</div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  // PERBAIKAN LEBAR KARTU: Menghapus grid-cols ganda, menggantinya dengan grid 1 kolom mutlak
+                  <div className="grid grid-cols-1 gap-4">
                     {departmentDoctors.map(doc => {
                       const isSelected = selectedDoctorId === doc.id;
                       return (
                         <button
                           key={doc.id}
                           onClick={() => setSelectedDoctorId(doc.id)}
-                          className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 flex items-center gap-4 overflow-hidden group ${isSelected ? 'border-teal-500 bg-teal-50/30 shadow-md shadow-teal-500/10' : 'border-slate-100 bg-white hover:border-teal-200 hover:shadow-sm'}`}
+                          className={`relative w-full p-4 rounded-2xl border-2 text-left transition-all duration-300 flex items-center gap-4 overflow-hidden group ${isSelected ? 'border-teal-500 bg-teal-50/30 shadow-md shadow-teal-500/10' : 'border-slate-100 bg-white hover:border-teal-200 hover:shadow-sm'}`}
                         >
                           {isSelected && <div className="absolute top-0 left-0 w-1.5 h-full bg-teal-500 animate-in slide-in-from-left-1" />}
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0 transition-colors ${isSelected ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-600'}`}>
                             {doc.user.name.charAt(0)}
                           </div>
                           <div>
-                            <div className={`font-extrabold text-sm ${isSelected ? 'text-teal-800' : 'text-zinc-900'}`}>{doc.user.name}</div>
+                            <div className={`font-extrabold text-sm uppercase ${isSelected ? 'text-teal-800' : 'text-zinc-900'}`}>{doc.user.name}</div>
                             <div className="text-xs text-slate-500 mt-0.5 font-medium">{doc.specialization}</div>
                           </div>
                         </button>
@@ -159,22 +177,33 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
                 )}
               </section>
 
-              {/* BAGIAN B: PILIH TANGGAL (Custom Date Picker) */}
+              {/* BAGIAN B: PILIH TANGGAL (Premium Horizontal Slider) */}
               {selectedDoctorId && (
                 <section className="animate-in fade-in slide-in-from-bottom-4">
                   <label className="block text-xs font-black text-slate-400 mb-3 uppercase tracking-widest">Pilih Tanggal Kunjungan</label>
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                      <svg className="w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    {/* HACK CSS: Menyembunyikan ikon kalender bawaan browser namun tetap fungsional */}
-                    <input 
-                      type="date"
-                      min={new Date().toISOString().split('T')[0]} 
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-slate-100 rounded-2xl text-sm font-extrabold text-zinc-800 shadow-sm hover:border-teal-200 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all cursor-pointer relative [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-                    />
+                  
+                  <div className="flex gap-3 overflow-x-auto pb-4 pt-1 px-1 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    {availableDates.map(date => {
+                      // Hasilkan string YYYY-MM-DD lokal dengan penyesuaian zona waktu
+                      const dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                      const isSelected = selectedDate === dateString;
+                      
+                      const dayName = date.toLocaleDateString('id-ID', { weekday: 'short' });
+                      const dateNum = date.getDate();
+                      const monthName = date.toLocaleDateString('id-ID', { month: 'short' });
+
+                      return (
+                        <button
+                          key={dateString}
+                          onClick={() => setSelectedDate(dateString)}
+                          className={`snap-center shrink-0 w-20 py-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all duration-300 ${isSelected ? 'border-teal-500 bg-teal-500 text-white shadow-lg shadow-teal-500/30 scale-105' : 'border-slate-100 bg-white text-zinc-600 hover:border-teal-200 hover:bg-teal-50'}`}
+                        >
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-teal-100' : 'text-slate-400'}`}>{dayName}</span>
+                          <span className={`text-2xl font-black ${isSelected ? 'text-white' : 'text-zinc-900'}`}>{dateNum}</span>
+                          <span className={`text-[10px] font-bold uppercase ${isSelected ? 'text-teal-100' : 'text-slate-400'}`}>{monthName}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </section>
               )}
@@ -231,7 +260,7 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-500">Jadwal</span>
-                  <span className="font-bold text-zinc-950">{getSelectedScheduleDetail()}</span>
+                  <span className="font-bold text-zinc-950 text-right">{getSelectedScheduleDetail()}</span>
                 </div>
               </div>
               <p className="text-[11px] text-slate-500 leading-relaxed italic text-center">
