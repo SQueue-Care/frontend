@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import QueueDetailsModal from './QueueDetailModal';
 import { useQueueStore } from '../store/queueStore';
+import { QueueStatus } from '../lib/types';
 
 // Saran: Terapkan antarmuka props yang ketat agar komponen ini tidak dapat dirender tanpa ID antrean
 interface LiveQueueTrackerProps {
@@ -44,17 +45,42 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
     return <div className="p-8 text-center text-teal-100 font-bold animate-pulse">Menghubungkan ke satelit pelacak...</div>;
   }
 
-  const isWaiting = activeQueueDetail.status === 'WAITING';
-  const isInService = activeQueueDetail.status === 'IN_PROGRESS' || activeQueueDetail.status === 'CALLED';
-  const mappedModalStatus = isWaiting ? 'waiting' : (isInService ? 'in-service' : 'completed');
+  const status = activeQueueDetail.status as QueueStatus;
+  const isWaiting = status === QueueStatus.WAITING;
+  const isCalled = status === QueueStatus.CALLED;
+  const isInProgress = status === QueueStatus.IN_PROGRESS;
+  const isFinal = [QueueStatus.DONE, QueueStatus.SKIPPED, QueueStatus.CANCELLED].includes(status);
+  const statusLabel = isWaiting
+    ? 'Menunggu panggilan sistem...'
+    : isCalled
+      ? 'Anda sudah dipanggil'
+      : isInProgress
+        ? 'Silakan masuk ke ruangan dokter'
+        : status === QueueStatus.DONE
+          ? 'Antrean selesai'
+          : status === QueueStatus.SKIPPED
+            ? 'Antrean dilewati'
+            : 'Antrean dibatalkan';
+
+  const statusBadgeText = isWaiting
+    ? 'Live'
+    : isCalled
+      ? 'Dipanggil'
+      : isInProgress
+        ? 'Giliran Anda'
+        : status === QueueStatus.DONE
+          ? 'Selesai'
+          : status === QueueStatus.SKIPPED
+            ? 'Dilewati'
+            : 'Dibatalkan';
 
   return (
     <>
-      <div className={`mb-12 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transform transition-all duration-500 hover:scale-[1.01] ${isInService ? 'bg-gradient-to-r from-emerald-600 to-teal-800 shadow-emerald-900/20' : 'bg-gradient-to-r from-teal-900 to-slate-900 shadow-teal-900/10'}`}>
+      <div className={`mb-12 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transform transition-all duration-500 hover:scale-[1.01] ${isInProgress ? 'bg-gradient-to-r from-emerald-600 to-teal-800 shadow-emerald-900/20' : 'bg-gradient-to-r from-teal-900 to-slate-900 shadow-teal-900/10'}`}>
         
         {/* Efek Cahaya Blur */}
-        <div className={`absolute -right-10 -top-10 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-1000 ${isInService ? 'bg-emerald-400/30' : 'bg-teal-500/20'}`} />
-        <div className={`absolute -left-10 -bottom-10 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-1000 ${isInService ? 'bg-teal-400/30' : 'bg-blue-500/20'}`} />
+        <div className={`absolute -right-10 -top-10 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-1000 ${isInProgress ? 'bg-emerald-400/30' : 'bg-teal-500/20'}`} />
+        <div className={`absolute -left-10 -bottom-10 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-1000 ${isInProgress ? 'bg-teal-400/30' : 'bg-blue-500/20'}`} />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative z-10 w-full md:w-auto">
           
@@ -69,9 +95,9 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
           {/* Informasi Status Asli */}
           <div>
             <div className="flex items-center gap-2.5 mb-1.5">
-              <span className={`flex items-center gap-1.5 border text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider transition-colors ${isInService ? 'bg-emerald-500/20 text-emerald-100 border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30'}`}>
-                <span className={`w-1.5 h-1.5 rounded-full animate-ping ${isInService ? 'bg-emerald-400' : 'bg-rose-500'}`} />
-                {isInService ? 'Giliran Anda' : 'Live'}
+              <span className={`flex items-center gap-1.5 border text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider transition-colors ${isInProgress ? 'bg-emerald-500/20 text-emerald-100 border-emerald-500/30' : isFinal ? 'bg-slate-500/20 text-slate-200 border-slate-400/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30'}`}>
+                <span className={`w-1.5 h-1.5 rounded-full animate-ping ${isInProgress ? 'bg-emerald-400' : isFinal ? 'bg-slate-300' : 'bg-rose-500'}`} />
+                {statusBadgeText}
               </span>
               <h4 className="text-xl font-bold font-['Manrope'] text-white">{activeQueueDetail.department?.name || '-'}</h4>
             </div>
@@ -80,13 +106,9 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
             </p>
             
             <div className="flex flex-wrap items-center gap-3 text-xs font-semibold bg-black/20 w-max px-3 py-1.5 rounded-lg border border-white/5">
-              {isWaiting ? (
-                <span className="text-amber-300 animate-pulse">Menunggu panggilan sistem...</span>
-              ) : (
-                <span className="flex items-center gap-1.5 text-emerald-300 animate-pulse">
-                  Silakan masuk ke ruangan dokter
-                </span>
-              )}
+              <span className={`animate-pulse ${isWaiting ? 'text-amber-300' : isCalled ? 'text-cyan-200' : isInProgress ? 'text-emerald-300' : isFinal ? 'text-slate-300' : 'text-slate-200'}`}>
+                {statusLabel}
+              </span>
             </div>
           </div>
         </div>
@@ -104,9 +126,9 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
           )}
           <button 
             onClick={() => setIsModalOpen(true)}
-            className={`px-6 py-4 text-sm font-extrabold rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ${isInService ? 'bg-emerald-50 text-emerald-900 hover:bg-white' : 'bg-white text-teal-900 hover:bg-slate-50'}`}
+            className={`px-6 py-4 text-sm font-extrabold rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ${isInProgress ? 'bg-emerald-50 text-emerald-900 hover:bg-white' : isFinal ? 'bg-slate-100 text-slate-800 hover:bg-slate-50' : 'bg-white text-teal-900 hover:bg-slate-50'}`}
           >
-            {isInService ? 'Lihat Detail Pemeriksaan' : 'Buka Pelacak'}
+            {isInProgress ? 'Lihat Detail Pemeriksaan' : isFinal ? 'Lihat Riwayat Status' : 'Buka Pelacak'}
           </button>
         </div>
       </div> {/* <-- DIV PENUTUP INI YANG SEBELUMNYA HILANG */}
@@ -114,7 +136,7 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
       <QueueDetailsModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        status={mappedModalStatus} 
+        status={status} 
       />
     </>
   );

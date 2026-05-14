@@ -1,8 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useQueueStore } from '../store/queueStore';
 import { useDashboardFilterStore } from '../store/dashboardFilterStore'; 
 import { QueueStatus } from '../lib/types';
 import apiClient from '../lib/apiClient';
+import {
+  getAllowedQueueTransitions,
+  isValidQueueTransition,
+  QUEUE_TRANSITION_CLASSES,
+  QUEUE_TRANSITION_LABELS,
+  QUEUE_TRANSITION_TITLES,
+} from '../lib/queueStateMachine';
 
 const statusStyles: Record<QueueStatus, { text: string; bg: string; border: string }> = {
   [QueueStatus.WAITING]: { text: 'Menunggu', bg: 'bg-slate-50', border: 'border-slate-200' },
@@ -31,7 +38,12 @@ export default function AdminQueueManagement() {
     fetchQueues(); 
   }, [fetchQueues]);
 
-  const handleUpdateStatus = async (id: string, newStatus: QueueStatus) => {
+  const handleUpdateStatus = async (id: string, currentStatus: QueueStatus, newStatus: QueueStatus) => {
+    if (!isValidQueueTransition(currentStatus, newStatus)) {
+      alert('Transisi status tidak valid.');
+      return;
+    }
+
     try {
       await apiClient.patch(`/queues/${id}/status`, { status: newStatus });
       fetchQueues(); // Refresh data tanpa filter tanggal
@@ -89,48 +101,16 @@ export default function AdminQueueManagement() {
         <td className="p-4"><StatusBadge status={item.status} /></td>
         <td className="p-4 pr-6 text-right">
           <div className="flex justify-end gap-2">
-            {[QueueStatus.WAITING, QueueStatus.SKIPPED].includes(item.status) && (
-              <button 
-                onClick={() => handleUpdateStatus(item.id, QueueStatus.CALLED)}
-                className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white text-xs font-bold rounded-lg transition-colors border border-blue-100 hover:border-blue-600"
+            {getAllowedQueueTransitions(item.status).map((nextStatus) => (
+              <button
+                key={nextStatus}
+                onClick={() => handleUpdateStatus(item.id, item.status, nextStatus)}
+                className={QUEUE_TRANSITION_CLASSES[nextStatus]}
+                title={QUEUE_TRANSITION_TITLES[nextStatus]}
               >
-                Panggil
+                {QUEUE_TRANSITION_LABELS[nextStatus]}
               </button>
-            )}
-            {item.status === QueueStatus.CALLED && (
-              <button 
-                onClick={() => handleUpdateStatus(item.id, QueueStatus.IN_PROGRESS)}
-                className="px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-600 hover:text-white text-xs font-bold rounded-lg transition-colors border border-amber-100 hover:border-amber-600"
-              >
-                Periksa
-              </button>
-            )}
-             {item.status === QueueStatus.IN_PROGRESS && (
-              <button 
-                onClick={() => handleUpdateStatus(item.id, QueueStatus.DONE)}
-                className="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white text-xs font-bold rounded-lg transition-colors border border-emerald-100 hover:border-emerald-600"
-              >
-                Selesai
-              </button>
-            )}
-            {[QueueStatus.WAITING, QueueStatus.CALLED, QueueStatus.SKIPPED].includes(item.status) && (
-              <button 
-                onClick={() => handleUpdateStatus(item.id, QueueStatus.CANCELLED)}
-                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200" 
-                title="Batalkan Antrean"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-              </button>
-            )}
-            {item.status === QueueStatus.CALLED && (
-              <button 
-                onClick={() => handleUpdateStatus(item.id, QueueStatus.SKIPPED)}
-                className="px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-500 hover:text-white text-xs font-bold rounded-lg transition-colors" 
-                title="Lewati Antrean"
-              >
-                Lewati
-              </button>
-            )}
+            ))}
           </div>
         </td>
       </tr>
