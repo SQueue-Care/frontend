@@ -13,45 +13,221 @@ import { useAuthStore } from '../store/authStore';
 import { useDepartmentStore } from '../store/departmentStore'; 
 import { useQueueStore } from '../store/queueStore';
 import { useDashboardFilterStore } from '../store/dashboardFilterStore';
+import apiClient from '../lib/apiClient';
+
 
 type AdminView = 'dashboard' | 'users' | 'queues';
 
 // Komponen Tabel Pengguna Dinamis
+// Komponen Tabel Pengguna Dinamis dengan Integrasi API
 function UserTable({ role, title }: { role: 'PATIENT' | 'DOCTOR' | 'ADMIN', title: string }) {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // LOGIKA 1: Deklarasi State yang Hilang (Penyebab Layar Putih)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: role,
+    specialization: '',
+    nik: ''
+  });
+
+  // LOGIKA 2: Fungsi Pengambilan Data dengan Filter Role yang Ketat
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      let endpoint = '/users';
+      if (role === 'PATIENT') endpoint = '/patients';
+      if (role === 'DOCTOR') endpoint = '/doctors';
+      
+      const response = await apiClient.get(endpoint);
+      let result = response.data.data || [];
+      
+      // KOREKSI: Pastikan filter hanya mengambil role yang sesuai
+      // Terutama untuk Admin yang mengambil dari endpoint /users
+      if (endpoint === '/users') {
+        result = result.filter((u: any) => u.role === role);
+      }
+      
+      setData(result);
+    } catch (error) {
+      console.error(`Gagal sinkronisasi data ${role}:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    // Reset form saat berpindah submenu agar data tidak bocor
+    setFormData({ name: '', email: '', password: '', role: role, specialization: '', nik: '' });
+  }, [role]);
+
+  // LOGIKA 3: Integrasi Fungsi Simpan (Tambah User)
+  // LOGIKA 3: Integrasi Fungsi Simpan (Revisi Payload Builder)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // PERHATIAN: Jika masih gagal, ubah endpoint ini secara mutlak menjadi '/auth/register' untuk semua role.
+      let endpoint = '/auth/register'; 
+      if (role === 'DOCTOR') endpoint = '/doctors';
+      if (role === 'PATIENT') endpoint = '/patients';
+
+      const payload: any = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: role
+      };
+
+      if (role === 'DOCTOR') payload.specialization = formData.specialization;
+      
+      // KOREKSI MUTLAK: Hanya kirim NIK ke backend JIKA input tidak kosong.
+      // Mengirim nik: "" akan langsung memicu error 400 Bad Request.
+      if (role === 'PATIENT' && formData.nik && formData.nik.trim() !== '') {
+        payload.nik = formData.nik;
+      }
+
+      await apiClient.post(endpoint, payload);
+      
+      setIsModalOpen(false);
+      setFormData({ name: '', email: '', password: '', role: role, specialization: '', nik: '' });
+      fetchData(); 
+      alert(`Berhasil mendaftarkan ${role} baru!`);
+    } catch (error: any) {
+      // LOGIKA DEBUGGING PRESISI:
+      // Menangkap pesan spesifik dari backend (contoh: "email already exists" atau "nik must be 16 chars")
+      const backendResponse = error.response?.data;
+      const specificError = backendResponse?.message || backendResponse?.error || "Validasi payload gagal.";
+      
+      console.error("Detail Penolakan 400 Bad Request:", backendResponse);
+      alert("Gagal membuat akun: " + (typeof specificError === 'object' ? JSON.stringify(specificError) : specificError));
+    }
+  };
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="mb-8">
-        <h2 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">{title}</h2>
-        <p className="text-slate-500 text-sm font-medium">Manajemen data akun khusus untuk peran {role}.</p>
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h2 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">{title}</h2>
+          <p className="text-slate-500 text-sm font-medium">Manajemen kredensial dan hak akses untuk unit {role}.</p>
+        </div>
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="px-6 py-3 bg-teal-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/20"
+        >
+          + Tambah {role} Baru
+        </button>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+        <div className="p-6 border-b border-slate-100 bg-slate-50/50">
           <input 
             type="text" 
             placeholder={`Cari ${title.toLowerCase()}...`}
             className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm w-72 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
           />
-          <button className="px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 transition-colors shadow-sm shadow-teal-500/20">
-            + Tambah {role}
-          </button>
         </div>
+
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
+              <div className="p-8 border-b border-slate-100 bg-slate-50/50 text-center">
+                <h3 className="text-xl font-black text-zinc-900 uppercase tracking-tighter">Registrasi {role}</h3>
+                <p className="text-slate-500 text-[10px] font-bold mt-1 uppercase tracking-widest">Input Kredensial Baru</p>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="p-8 space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nama Lengkap</label>
+                  <input type="text" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 outline-none transition-all" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Alamat Email</label>
+                  <input type="email" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 outline-none transition-all" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kata Sandi</label>
+                  <input type="password" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 outline-none transition-all" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+                </div>
+
+                {/* Field Khusus Dokter */}
+                {role === 'DOCTOR' && (
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Spesialisasi</label>
+                    <input type="text" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 outline-none transition-all" value={formData.specialization} onChange={(e) => setFormData({...formData, specialization: e.target.value})} />
+                  </div>
+                )}
+
+                {/* Field Khusus Pasien (Sifat: Opsional) */}
+                {role === 'PATIENT' && (
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                      Nomor Induk Kependudukan (NIK) - <span className="text-slate-300">Opsional</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 outline-none transition-all" 
+                      value={formData.nik} 
+                      onChange={(e) => setFormData({...formData, nik: e.target.value})} 
+                    />
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-3 border border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-slate-50 transition-all">Batal</button>
+                  <button type="submit" className="flex-1 px-4 py-3 bg-teal-600 text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/20">Simpan Akun</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         <table className="w-full text-left border-collapse">
           <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">
             <tr>
-              <th className="p-5 pl-8">Nama & Email</th>
-              <th className="p-5">Hak Akses (Role)</th>
-              <th className="p-5">Status</th>
+              <th className="p-5 pl-8">Identitas Pengguna</th>
+              <th className="p-5">Hak Akses</th>
+              <th className="p-5">Status Akun</th>
               <th className="p-5 text-right pr-8">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm font-medium">
-            <tr className="hover:bg-slate-50/50 transition-colors">
-              <td className="p-5 pl-8 text-slate-500 italic">
-                Sistem sedang menyinkronkan data dari server...
-              </td>
-              <td></td><td></td><td></td>
-            </tr>
+            {loading ? (
+              <tr><td colSpan={4} className="p-10 text-center text-slate-400 animate-pulse font-bold">Sinkronisasi Database...</td></tr>
+            ) : data.length === 0 ? (
+              <tr><td colSpan={4} className="p-10 text-center text-slate-400 italic">Belum ada data {role.toLowerCase()} ditemukan.</td></tr>
+            ) : (
+              data.map((item: any) => {
+                const userObj = item.user || item; 
+                return (
+                  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="p-5 pl-8">
+                      <div className="font-extrabold text-zinc-950 uppercase group-hover:text-teal-600 transition-colors">{userObj.name}</div>
+                      <div className="text-[10px] text-slate-400 font-bold">{userObj.email}</div>
+                    </td>
+                    <td className="p-5">
+                      <span className="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-black rounded-lg uppercase tracking-widest">
+                        {role}
+                      </span>
+                    </td>
+                    <td className="p-5">
+                      <span className={`px-3 py-1 text-[10px] font-black rounded-lg uppercase border tracking-widest ${
+                        userObj.isActive !== false ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'
+                      }`}>
+                        {userObj.isActive !== false ? 'Aktif' : 'Blokir'}
+                      </span>
+                    </td>
+                    <td className="p-5 text-right pr-8">
+                      <button className="text-teal-600 hover:text-teal-700 font-bold text-xs uppercase tracking-tighter">Kelola</button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
@@ -360,7 +536,17 @@ export default function AdminDashboard() {
           {activeView === 'users_patient' && <UserTable role="PATIENT" title="Data Pasien" />}
           {activeView === 'users_doctor' && <UserTable role="DOCTOR" title="Data Dokter Spesialis" />}
           {activeView === 'users_admin' && <UserTable role="ADMIN" title="Akses Administrator" />}        
-          {activeView === 'services' && <DepartmentManager />}
+          {activeView === 'services' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center h-[60vh] bg-white rounded-3xl border-2 border-dashed border-slate-200">
+              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-extrabold text-zinc-900 font-['Manrope'] mb-2">Manajemen Layanan</h2>
+              <p className="text-slate-500 text-sm font-medium">Modul pengelolaan Poliklinik sedang dalam tahap pengembangan (Under Construction).</p>
+            </div>
+          )}
           {activeView === 'queues' && <AdminQueueManagement />}
 
         </main>
