@@ -495,76 +495,130 @@ export default function PatientPortal() {
           </div>
         )}
 
-        {/* TAMPILAN 3: PROFIL PASIEN */}
+        {/* TAMPILAN 3: PROFIL PASIEN (Premium Layout) */}
         {activeView === 'profile' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="mb-8">
               <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tighter mb-2">Profil Pasien</h1>
-              <p className="text-slate-600">Kelola data rekam medis dan informasi pribadi Anda.</p>
+              <p className="text-slate-600">Kelola identitas medis dan informasi kontak Anda.</p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm max-w-3xl">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm max-w-4xl overflow-hidden">
               {isProfileLoading ? (
-                <div className="text-center py-10 text-slate-500 font-medium">Memuat data profil...</div>
+                <div className="flex flex-col items-center justify-center py-20">
+                  <div className="w-10 h-10 border-4 border-teal-100 border-t-teal-600 rounded-full animate-spin mb-4"></div>
+                  <p className="text-slate-500 font-bold animate-pulse">Menyinkronkan data rekam medis...</p>
+                </div>
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-8">
+                  {/* Header Profil (Kartu Atas) */}
+                  <div className="bg-gradient-to-r from-slate-50 to-white p-8 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
-                      <div className="w-24 h-24 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-4xl font-bold">
-                        {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      <div className="relative">
+                        <div className="w-24 h-24 rounded-full bg-teal-500 text-white flex items-center justify-center text-4xl font-black shadow-lg shadow-teal-500/20">
+                          {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 border-4 border-white rounded-full flex items-center justify-center" title="Akun Aktif">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold text-zinc-900">{user?.name || 'Nama Pasien'}</h2>
-                        <p className="text-slate-500 font-medium">{user?.email || 'email@contoh.com'}</p>
-                        <span className="inline-block mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full uppercase tracking-wider">Terverifikasi</span>
+                        <h2 className="text-2xl font-extrabold text-zinc-950 tracking-tight">{user?.name || 'Nama Pasien'}</h2>
+                        <p className="text-slate-500 font-medium mb-2.5">{user?.email || 'email@contoh.com'}</p>
+                        <span className="inline-flex px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black rounded-lg uppercase tracking-widest">
+                          Pasien Terverifikasi
+                        </span>
                       </div>
                     </div>
                     {!isEditing && (
-                      <button onClick={() => setIsEditing(true)} className="px-4 py-2 bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 rounded-lg text-sm font-bold transition-colors">
+                      <button 
+                        onClick={() => setIsEditing(true)} 
+                        className="w-full md:w-auto px-6 py-3 bg-white text-zinc-900 border-2 border-slate-200 hover:border-teal-500 hover:text-teal-700 rounded-xl text-sm font-extrabold transition-all shadow-sm"
+                      >
                         Edit Profil
                       </button>
                     )}
                   </div>
 
-                  <form onSubmit={handleSaveProfile} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Nomor Induk Kependudukan (NIK)</label>
-                        <input type="text" maxLength={16} disabled={!isEditing} value={formData.nik} onChange={(e) => setFormData({...formData, nik: e.target.value})} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 disabled:opacity-60" placeholder="16 Digit NIK" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Nomor BPJS</label>
-                        <input type="text" disabled={!isEditing} value={formData.bpjsNumber} onChange={(e) => setFormData({...formData, bpjsNumber: e.target.value})} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 disabled:opacity-60" placeholder="Nomor BPJS Kesehatan" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Nomor Telepon</label>
-                        <input type="tel" disabled={!isEditing} value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 disabled:opacity-60" placeholder="08123456789" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Jenis Kelamin</label>
-                        <select disabled={!isEditing} value={formData.gender} onChange={(e) => setFormData({...formData, gender: e.target.value})} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 disabled:opacity-60">
-                          <option value="">Pilih Jenis Kelamin</option>
-                          <option value="MALE">Laki-laki</option>
-                          <option value="FEMALE">Perempuan</option>
-                        </select>
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Tanggal Lahir</label>
-                        <input type="date" disabled={!isEditing} value={formData.birthDate} onChange={(e) => setFormData({...formData, birthDate: e.target.value})} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 disabled:opacity-60" />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Alamat Lengkap</label>
-                        <textarea disabled={!isEditing} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} rows={3} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 disabled:opacity-60" placeholder="Alamat domisili saat ini"></textarea>
+                  {/* Formulir Profil */}
+                  <form onSubmit={handleSaveProfile} className="p-8">
+                    
+                    {/* Seksi 1: Identitas Pribadi */}
+                    <div className="mb-8">
+                      <h3 className="text-sm font-black text-zinc-900 uppercase tracking-widest border-b border-slate-100 pb-3 mb-5">Identitas Pribadi</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nomor Induk Kependudukan (NIK)</label>
+                          {isEditing ? (
+                            <input type="text" maxLength={16} value={formData.nik} onChange={(e) => setFormData({...formData, nik: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="16 Digit NIK" />
+                          ) : (
+                            <div className="text-base font-bold text-zinc-900">{formData.nik || <span className="text-slate-400 italic font-medium">Belum diatur</span>}</div>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nomor BPJS (Opsional)</label>
+                          {isEditing ? (
+                            <input type="text" value={formData.bpjsNumber} onChange={(e) => setFormData({...formData, bpjsNumber: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="Nomor BPJS Kesehatan" />
+                          ) : (
+                            <div className="text-base font-bold text-zinc-900">{formData.bpjsNumber || <span className="text-slate-400 italic font-medium">Tidak ada BPJS</span>}</div>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Jenis Kelamin</label>
+                          {isEditing ? (
+                            <select value={formData.gender} onChange={(e) => setFormData({...formData, gender: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all cursor-pointer">
+                              <option value="">Pilih Jenis Kelamin</option>
+                              <option value="MALE">Laki-laki</option>
+                              <option value="FEMALE">Perempuan</option>
+                            </select>
+                          ) : (
+                            <div className="text-base font-bold text-zinc-900">{formData.gender === 'MALE' ? 'Laki-laki' : formData.gender === 'FEMALE' ? 'Perempuan' : <span className="text-slate-400 italic font-medium">Belum diatur</span>}</div>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tanggal Lahir</label>
+                          {isEditing ? (
+                            <input type="date" value={formData.birthDate} onChange={(e) => setFormData({...formData, birthDate: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all cursor-pointer" />
+                          ) : (
+                            <div className="text-base font-bold text-zinc-900">{formData.birthDate ? new Date(formData.birthDate).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}) : <span className="text-slate-400 italic font-medium">Belum diatur</span>}</div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
+                    {/* Seksi 2: Kontak & Domisili */}
+                    <div>
+                      <h3 className="text-sm font-black text-zinc-900 uppercase tracking-widest border-b border-slate-100 pb-3 mb-5">Kontak & Domisili</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nomor WhatsApp / Telepon</label>
+                          {isEditing ? (
+                            <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="0812xxxxxxx" />
+                          ) : (
+                            <div className="text-base font-bold text-zinc-900">{formData.phone || <span className="text-slate-400 italic font-medium">Belum diatur</span>}</div>
+                          )}
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Alamat Lengkap Saat Ini</label>
+                          {isEditing ? (
+                            <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} rows={3} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all resize-none" placeholder="Tuliskan nama jalan, RT/RW, dan kota..."></textarea>
+                          ) : (
+                            <div className="text-base font-bold text-zinc-900 leading-relaxed max-w-2xl">{formData.address || <span className="text-slate-400 italic font-medium">Alamat belum ditambahkan.</span>}</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Aksi Form (Hanya Muncul Saat Edit) */}
                     {isEditing && (
-                      <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
-                        <button type="button" onClick={() => setIsEditing(false)} className="px-5 py-2.5 text-slate-600 bg-slate-100 hover:bg-slate-200 font-bold rounded-xl text-sm transition-colors">
-                          Batal
+                      <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-8 animate-in slide-in-from-bottom-2">
+                        <button type="button" onClick={() => setIsEditing(false)} className="px-6 py-3.5 text-slate-600 bg-slate-100 hover:bg-slate-200 font-extrabold rounded-xl text-sm transition-colors">
+                          Batalkan
                         </button>
-                        <button type="submit" disabled={isSaving} className="px-5 py-2.5 text-white bg-teal-600 hover:bg-teal-700 font-bold rounded-xl text-sm transition-colors flex items-center gap-2">
-                          {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                        <button type="submit" disabled={isSaving} className="px-6 py-3.5 text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/20 font-extrabold rounded-xl text-sm transition-all active:scale-95 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                          {isSaving ? (
+                            <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" strokeWidth="4" className="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path></svg> Menyimpan Data...</>
+                          ) : 'Simpan Profil'}
                         </button>
                       </div>
                     )}
@@ -583,12 +637,17 @@ export default function PatientPortal() {
         onClose={closeBooking}
         step={bookingStep}
         selectedDept={selectedDept}
+        // Teruskan data profil dari usePatientStore
+        patientProfile={profile ? { 
+          name: user?.name || '', 
+          nik: profile.nik, 
+          birthDate: profile.birthDate 
+        } : null}
         onNext={handleNextStep}
         onPrev={handlePrevStep}
-        // Saran Rekayasa: Properti ini akan menangkap ID dari BookingPanel dan menyalakannya di Live Tracker
         onBookingSuccess={(queueId) => {
           setActiveQueueId(queueId);
-          setActiveView('polyclinics'); // Memaksa UI kembali ke halaman utama untuk melihat tracker
+          setActiveView('polyclinics');
         }}
       />
     </div>
