@@ -452,82 +452,99 @@ export default function PatientPortal() {
           </div>
         )}
             
-        {/* TAMPILAN 2: RIWAYAT ANTREAN & RESERVASI */}
+        {/* TAMPILAN 2: RIWAYAT ANTREAN & RESERVASI (Detail Sinkron) */}
         {activeView === 'history' && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-10">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
+            
             <div className="mb-2">
               <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tighter mb-2">Riwayat & Reservasi</h1>
-              <p className="text-slate-600">Daftar kunjungan medis Anda yang sedang berlangsung maupun yang dijadwalkan.</p>
+              <p className="text-slate-600">Detail lengkap seluruh aktivitas kunjungan medis Anda.</p>
             </div>
             
-            {/* TABEL 1: RESERVASI MENDATANG (APPOINTMENTS) */}
+            {/* TABEL 1: RESERVASI MENDATANG (Data Appointment) */}
             <div>
-              <h3 className="text-lg font-bold text-zinc-900 mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-zinc-900 mb-5 flex items-center gap-2">
                 <div className="w-2 h-6 bg-teal-500 rounded-full" />
                 Jadwal Reservasi Mendatang
               </h3>
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <table className="w-full text-left border-collapse min-w-[700px]">
-                  <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                    <tr>
-                      <th className="p-5 pl-8">Poliklinik & Dokter</th>
-                      <th className="p-5">Waktu Reservasi</th>
-                      <th className="p-5 text-right pr-8">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm font-medium divide-y divide-slate-100">
-                    {isLoadingAppointments ? (
-                      <tr><td colSpan={3} className="p-10 text-center animate-pulse text-slate-400 font-bold">Memuat jadwal booking...</td></tr>
-                    ) : !patientAppointments || patientAppointments.length === 0 ? (
-                      <tr><td colSpan={3} className="p-10 text-center text-slate-400 italic">Tidak ada reservasi mendatang.</td></tr>
-                    ) : (
-                      patientAppointments.map((apt: any) => (
-                        <tr key={apt.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="p-5 pl-8">
-                            <div className="font-extrabold text-zinc-950">{apt?.department?.name || 'Poliklinik'}</div>
-                            <div className="text-[10px] text-slate-400 font-black uppercase mt-1">{apt?.doctor?.user?.name || 'Dokter Umum'}</div>
-                          </td>
-                          <td className="p-5">
-                            <div className="text-zinc-800 font-bold">
-                              {new Date(apt.scheduledAt).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                            </div>
-                            <div className="text-[10px] text-teal-600 font-black mt-1">JAM: {new Date(apt.scheduledAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
-                          </td>
-                          <td className="p-5 text-right pr-8">
-                            <span className={`inline-flex px-4 py-2 rounded-xl text-[10px] font-black border uppercase tracking-widest ${getAppointmentStatusStyle(apt.status)}`}>
-                              {getAppointmentStatusText(apt.status)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto no-scrollbar">
+                  <table className="w-full text-left border-collapse min-w-[900px]">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                        <th className="p-5 pl-8">Layanan & Dokter</th>
+                        <th className="p-5">Waktu Kunjungan</th>
+                        <th className="p-5">Catatan Keluhan</th>
+                        <th className="p-5">Tgl. Daftar</th>
+                        <th className="p-5 text-right pr-8">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm font-medium divide-y divide-slate-100">
+                      {isLoadingAppointments ? (
+                        <tr><td colSpan={5} className="p-12 text-center animate-pulse text-slate-400 font-bold uppercase tracking-widest text-xs">Menyinkronkan reservasi...</td></tr>
+                      ) : patientAppointments.length === 0 ? (
+                        <tr><td colSpan={5} className="p-12 text-center text-slate-400 italic">Tidak ada jadwal reservasi aktif.</td></tr>
+                      ) : (
+                        patientAppointments.map((apt: any) => (
+                          <tr key={apt.id} className="hover:bg-slate-50/50 transition-colors group">
+                            <td className="p-5 pl-8">
+                              <div className="font-extrabold text-zinc-950 text-base">{apt?.department?.name || 'Poliklinik'}</div>
+                              <div className="text-[10px] text-slate-400 font-black uppercase mt-1">{apt?.doctor?.user?.name || 'Dokter Umum'}</div>
+                            </td>
+                            <td className="p-5">
+                              <div className="text-zinc-800 font-bold">
+                                {new Date(apt.scheduledAt).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                              </div>
+                              <div className="text-[10px] text-teal-600 font-black mt-1 uppercase">Sesi: {new Date(apt.scheduledAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
+                            </td>
+                            <td className="p-5">
+                              <div className="max-w-[200px] text-xs text-slate-600 italic font-medium leading-relaxed line-clamp-2" title={apt.notes}>
+                                {apt.notes || "Tidak ada catatan."}
+                              </div>
+                            </td>
+                            <td className="p-5">
+                              <span className="text-[11px] text-slate-500 font-bold">
+                                {new Date(apt.createdAt).toLocaleDateString('id-ID')}
+                              </span>
+                            </td>
+                            <td className="p-5 text-right pr-8">
+                              <span className={`inline-flex px-4 py-2 rounded-xl text-[10px] font-black border uppercase tracking-widest ${getAppointmentStatusStyle(apt.status)}`}>
+                                {getAppointmentStatusText(apt.status)}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
-            {/* TABEL 2: RIWAYAT ANTREAN HARIAN (QUEUES) */}
+            {/* TABEL 2: RIWAYAT ANTREAN (Data Queue) */}
             <div>
-              <h3 className="text-lg font-bold text-zinc-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <h3 className="text-lg font-bold text-zinc-900 mb-5 flex items-center gap-2">
+                <div className="w-2 h-6 bg-blue-500 rounded-full" />
                 Riwayat Antrean Kunjungan
               </h3>
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto no-scrollbar">
-                  <table className="w-full text-left border-collapse min-w-[700px]">
+                  <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                        <th className="p-5 pl-8 w-40">Nomor</th>
-                        <th className="p-5">Layanan & Tenaga Medis</th>
+                        <th className="p-5 pl-8 w-32">Nomor</th>
+                        <th className="p-5">Layanan & Dokter</th>
                         <th className="p-5">Waktu Kunjungan</th>
-                        <th className="p-5 text-right pr-8">Status Antrean</th>
+                        <th className="p-5">Catatan Keluhan</th>
+                        <th className="p-5">Tgl. Daftar</th>
+                        <th className="p-5 text-right pr-8">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                    <tbody className="text-sm font-medium divide-y divide-slate-100">
                       {isLoadingTable ? (
-                        <tr><td colSpan={4} className="p-8 text-center text-slate-400 font-bold animate-pulse text-xs">Menyinkronkan data riwayat...</td></tr>
-                      ) : !patientHistory || patientHistory.length === 0 ? (
-                        <tr><td colSpan={4} className="p-8 text-center text-slate-400 italic">Tidak ada data riwayat kunjungan.</td></tr>
+                        <tr><td colSpan={6} className="p-12 text-center animate-pulse text-slate-400 font-bold uppercase tracking-widest text-xs">Menyinkronkan riwayat...</td></tr>
+                      ) : patientHistory.length === 0 ? (
+                        <tr><td colSpan={6} className="p-12 text-center text-slate-400 italic">Tidak ada riwayat kunjungan.</td></tr>
                       ) : (
                         patientHistory.map((item) => (
                           <tr key={item.id} className="hover:bg-slate-50/70 transition-colors group">
@@ -537,12 +554,22 @@ export default function PatientPortal() {
                               </span>
                             </td>
                             <td className="p-5">
-                              <div className="font-extrabold text-zinc-950 text-base leading-tight">{item?.department?.name || 'Poliklinik'}</div>
-                              <div className="text-[10px] text-slate-400 uppercase tracking-wider mt-1 font-black">{item?.doctor?.user?.name || 'Dokter Umum'}</div>
+                              <div className="font-extrabold text-zinc-950 text-base">{item?.department?.name || 'Poliklinik'}</div>
+                              <div className="text-[10px] text-slate-400 font-black uppercase mt-1">{item?.doctor?.user?.name || 'Dokter Umum'}</div>
                             </td>
                             <td className="p-5">
                               <div className="text-zinc-800 font-bold">{new Date(item.queueDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
-                              <div className="text-[10px] text-slate-400 font-bold uppercase mt-1">{new Date(item.queueDate).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
+                              <div className="text-[10px] text-slate-400 font-black uppercase mt-1">Sesi: {new Date(item.queueDate).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
+                            </td>
+                            <td className="p-5">
+                              <div className="max-w-[180px] text-xs text-slate-600 italic font-medium leading-relaxed line-clamp-2" title={item.notes}>
+                                {item.notes || "Tidak ada catatan."}
+                              </div>
+                            </td>
+                            <td className="p-5">
+                              <span className="text-[11px] text-slate-500 font-bold">
+                                {new Date(item.createdAt).toLocaleDateString('id-ID')}
+                              </span>
                             </td>
                             <td className="p-5 text-right pr-8">
                               <span className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border min-w-[140px] transition-colors ${getHistoryStatusStyle(item.status)}`}>

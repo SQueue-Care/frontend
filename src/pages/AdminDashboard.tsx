@@ -16,8 +16,52 @@ import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 
 type AdminView = 'dashboard' | 'users' | 'queues';
 
+// Komponen Tabel Pengguna Dinamis
+function UserTable({ role, title }: { role: 'PATIENT' | 'DOCTOR' | 'ADMIN', title: string }) {
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="mb-8">
+        <h2 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">{title}</h2>
+        <p className="text-slate-500 text-sm font-medium">Manajemen data akun khusus untuk peran {role}.</p>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <input 
+            type="text" 
+            placeholder={`Cari ${title.toLowerCase()}...`}
+            className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm w-72 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+          />
+          <button className="px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 transition-colors shadow-sm shadow-teal-500/20">
+            + Tambah {role}
+          </button>
+        </div>
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+            <tr>
+              <th className="p-5 pl-8">Nama & Email</th>
+              <th className="p-5">Hak Akses (Role)</th>
+              <th className="p-5">Status</th>
+              <th className="p-5 text-right pr-8">Aksi</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 text-sm font-medium">
+            <tr className="hover:bg-slate-50/50 transition-colors">
+              <td className="p-5 pl-8 text-slate-500 italic">
+                Sistem sedang menyinkronkan data dari server...
+              </td>
+              <td></td><td></td><td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
-  const [activeView, setActiveView] = useState<AdminView>('dashboard');
+  const [activeView, setActiveView] = useState('dashboard');
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
@@ -68,14 +112,126 @@ export default function AdminDashboard() {
             Command Center
           </button>
 
-          <button 
-            onClick={() => setActiveView('users')}
-            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'users' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            Manajemen Pengguna
-          </button>
+          {/* MENU UTAMA: MANAJEMEN PENGGUNA */}
+          <div className="flex flex-col gap-2">
+            
+            {/* INJEKSI CSS ANIMASI LOKAL */}
+            <style>{`
+              @keyframes auto-scroll-text {
+                0%, 15% { transform: translateX(0); }
+                45%, 55% { transform: translateX(-45px); } 
+                85%, 100% { transform: translateX(0); }
+              }
+              .animate-marquee-custom {
+                display: inline-block;
+                animation: auto-scroll-text 5s ease-in-out infinite;
+              }
+            `}</style>
 
+            <button 
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                activeView.startsWith('users_') 
+                  ? 'bg-teal-500/20 text-teal-400 font-semibold' 
+                  : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+              }`}
+            >
+              <div className="flex items-center gap-3 overflow-hidden flex-1">
+                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                
+                {/* KONTINER ANIMASI: Masking diposisikan untuk menjaga ukuran teks tetap default */}
+                <div 
+                  className="relative flex-1 overflow-hidden flex items-center"
+                  style={{ 
+                    maskImage: 'linear-gradient(to right, black 95%, transparent 100%)', 
+                    WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' 
+                  }}
+                >
+                  <span className="animate-marquee-custom whitespace-nowrap">
+                    Manajemen Pengguna
+                  </span>
+                </div>
+              </div>
+              
+              <svg 
+                className={`w-4 h-4 shrink-0 transition-transform duration-300 ml-2 ${isUserMenuOpen ? 'rotate-180' : ''}`} 
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* SUB-MENU (Dihilangkan titiknya, disamakan padding/hover-nya, teks menjorok presisi dengan pl-12) */}
+            {isUserMenuOpen && (
+              <div className="flex flex-col gap-2 animate-in slide-in-from-top-2 duration-200">
+                <button 
+                  onClick={() => setActiveView('users_patient')}
+                  className={`w-full text-left flex items-center gap-3 px-4 py-3 pl-10 rounded-xl transition-colors ${
+                    activeView === 'users_patient' 
+                      ? 'bg-teal-500/20 text-teal-400 font-semibold' 
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+                  }`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <span>Daftar Pasien</span>
+                </button>
+
+                <button 
+                  onClick={() => setActiveView('users_doctor')}
+                  className={`w-full text-left flex items-center gap-3 px-4 py-3 pl-10 rounded-xl transition-colors ${
+                    activeView === 'users_doctor' 
+                      ? 'bg-teal-500/20 text-teal-400 font-semibold' 
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+                  }`}
+                >
+                  {/* Ikon Stetoskop Baru: Lebih detail dan proporsional */}
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
+                    <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
+                    <circle cx="20" cy="10" r="2" />
+                  </svg>
+                  <span>Daftar Dokter</span>
+                </button>
+
+                <button 
+                  onClick={() => setActiveView('users_admin')}
+                  className={`w-full text-left flex items-center gap-3 px-4 py-3 pl-10 rounded-xl transition-colors ${
+                    activeView === 'users_admin' 
+                      ? 'bg-teal-500/20 text-teal-400 font-semibold' 
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+                  }`}
+                >
+                  {/* Ikon Admin: Orang dengan Headset Support */}
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                    <path d="M21 19a2 2 0 0 1-2 2h-1v-6h3v4z" />
+                    <path d="M3 19a2 2 0 0 0 2 2h1v-6H3v4z" />
+                    <path d="M12 17v4" />
+                    <path d="M8 21h8" />
+                    <circle cx="12" cy="9" r="3" />
+                  </svg>
+                  <span>Administrator</span>
+                </button>
+              </div>
+            )}
+          </div>
+          {/* Layanan & Jadwal  */}
+          <button 
+            onClick={() => setActiveView('services')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+              activeView === 'services' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span>Manajemen Layanan</span>
+          </button>
           <button 
             onClick={() => setActiveView('queues')}
             className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'queues' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
@@ -201,8 +357,10 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
-
-          {activeView === 'users' && <AdminUserManagement />}
+          {activeView === 'users_patient' && <UserTable role="PATIENT" title="Data Pasien" />}
+          {activeView === 'users_doctor' && <UserTable role="DOCTOR" title="Data Dokter Spesialis" />}
+          {activeView === 'users_admin' && <UserTable role="ADMIN" title="Akses Administrator" />}        
+          {activeView === 'services' && <DepartmentManager />}
           {activeView === 'queues' && <AdminQueueManagement />}
 
         </main>
