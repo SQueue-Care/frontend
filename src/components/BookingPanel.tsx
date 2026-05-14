@@ -7,7 +7,7 @@ interface BookingPanelProps {
   onClose: () => void;
   step: number;
   selectedDept: { id: string; name: string } | null;
-  // Tambahkan data profil pasien di sini
+  // TAMBAHKAN INI: Agar panel bisa menerima data pasien
   patientProfile: {
     name: string;
     nik: string;
