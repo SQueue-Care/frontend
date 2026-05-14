@@ -28,7 +28,16 @@ export default function DoctorDashboard() {
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
   
-  const { profile, schedules, fetchProfile, fetchSchedules, updateProfile, isLoading, isSaving } = useDoctorStore();
+  const {
+    profile,
+    schedules,
+    fetchProfile,
+    fetchSchedules,
+    updateProfile,
+    isLoadingProfile,
+    isLoadingSchedules,
+    isSaving,
+  } = useDoctorStore();
   const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore();
 
   // Efek untuk memuat data profil dan jadwal
@@ -37,11 +46,11 @@ export default function DoctorDashboard() {
     // pada respon login/auth, mirip dengan implementasi 'patient' sebelumnya.
     const doctorId = (user as any)?.doctor?.id || (user?.role === 'DOCTOR' ? user.id : null);
     
-    if (doctorId) {
+    if (doctorId && !profile) {
       fetchProfile(doctorId);
       fetchSchedules(doctorId);
     }
-  }, [user, fetchProfile, fetchSchedules]);
+  }, [user, profile, fetchProfile, fetchSchedules]);
 
   useEffect(() => {
     const departmentId = profile?.department?.id || profile?.departmentId;
@@ -236,10 +245,10 @@ export default function DoctorDashboard() {
               {/* Tampilan Jadwal Dokter */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
                  <h3 className="text-lg font-bold text-zinc-900 mb-4 border-b border-slate-100 pb-3">Jadwal Praktik Anda</h3>
-                 {isLoading ? (
-                   <div className="flex justify-center py-4">
-                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                   </div>
+                  {isLoadingProfile || isLoadingSchedules ? (
+                    <div className="flex justify-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    </div>
                  ) : schedules.length === 0 ? (
                    <p className="text-slate-500 italic text-sm">Tidak ada jadwal praktik yang terdaftar dalam sistem.</p>
                  ) : (
@@ -382,7 +391,7 @@ export default function DoctorDashboard() {
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm max-w-3xl">
-                {isLoading ? (
+                {isLoadingProfile ? (
                    <div className="text-center py-10 text-slate-500 font-medium">Memuat data profil dokter...</div>
                 ) : (
                   <>

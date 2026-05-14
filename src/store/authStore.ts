@@ -18,6 +18,8 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  hasCheckedAuth: boolean;
+  isCheckingAuth: boolean;
   
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -30,6 +32,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   isLoading: true, // Diatur true di awal agar aplikasi menunggu pengecekan sesi sebelum merender
   error: null,
+  hasCheckedAuth: false,
+  isCheckingAuth: false,
 
   login: async (email, password) => {
     set({ isLoading: true, error: null });
@@ -83,24 +87,35 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         user: userData, 
         isAuthenticated: true, 
         isLoading: false,
-        error: null
+        error: null,
+        hasCheckedAuth: true,
+        isCheckingAuth: false,
       });
     } catch (error: any) {
       set({ 
         user: null, 
         isAuthenticated: false, 
         isLoading: false,
-        error: error.message || 'Sesi tidak valid atau telah kedaluwarsa.'
+        error: error.message || 'Sesi tidak valid atau telah kedaluwarsa.',
+        hasCheckedAuth: true,
+        isCheckingAuth: false,
       });
     }
   },
 
   checkAuth: async () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      set({ isLoading: false, isAuthenticated: false });
+    const state = get();
+    if (state.hasCheckedAuth || state.isCheckingAuth) {
       return;
     }
+
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      set({ isLoading: false, isAuthenticated: false, hasCheckedAuth: true, isCheckingAuth: false });
+      return;
+    }
+
+    set({ isCheckingAuth: true });
     // Jika token ada, validasi dengan mengambil data profil terbaru
     await get().fetchProfile();
   }

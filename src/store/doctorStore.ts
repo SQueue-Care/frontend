@@ -38,7 +38,8 @@ export interface DoctorSchedule {
 interface DoctorState {
   profile: DoctorProfile | null;
   schedules: DoctorSchedule[];
-  isLoading: boolean;
+  isLoadingProfile: boolean;
+  isLoadingSchedules: boolean;
   isSaving: boolean;
   error: string | null;
   fetchProfile: (doctorId: string) => Promise<void>;
@@ -46,22 +47,25 @@ interface DoctorState {
   fetchSchedules: (doctorId: string) => Promise<void>;
 }
 
-export const useDoctorStore = create<DoctorState>((set) => ({
+export const useDoctorStore = create<DoctorState>((set, get) => ({
   profile: null,
   schedules: [],
-  isLoading: false,
+  isLoadingProfile: false,
+  isLoadingSchedules: false,
   isSaving: false,
   error: null,
 
   fetchProfile: async (doctorId) => {
-    set({ isLoading: true, error: null });
+    if (get().isLoadingProfile) return;
+
+    set({ isLoadingProfile: true, error: null });
     try {
       const response = await apiClient.get(`/doctors/${doctorId}`);
-      set({ profile: response.data.data, isLoading: false });
+      set({ profile: response.data.data, isLoadingProfile: false });
     } catch (error: any) {
       set({ 
         error: error.response?.data?.message || 'Gagal memuat profil dokter.', 
-        isLoading: false 
+        isLoadingProfile: false 
       });
     }
   },
@@ -81,14 +85,16 @@ export const useDoctorStore = create<DoctorState>((set) => ({
   },
 
   fetchSchedules: async (doctorId) => {
-    set({ isLoading: true, error: null }); // Tambahkan indikator loading
+    if (get().isLoadingSchedules) return;
+
+    set({ isLoadingSchedules: true, error: null });
     try {
       const response = await apiClient.get(`/doctors/${doctorId}/schedules`);
-      set({ schedules: response.data.data, isLoading: false });
+      set({ schedules: response.data.data, isLoadingSchedules: false });
     } catch (error: any) {
       set({ 
         error: error.response?.data?.message || 'Gagal memuat jadwal dokter.', 
-        isLoading: false 
+        isLoadingSchedules: false 
       });
     }
   }
