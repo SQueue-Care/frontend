@@ -16,12 +16,14 @@ interface DepartmentState {
   fetchDepartments: () => Promise<void>;
 }
 
-export const useDepartmentStore = create<DepartmentState>((set) => ({
+export const useDepartmentStore = create<DepartmentState>((set, get) => ({
   departments: [],
   isLoading: false,
   error: null,
 
   fetchDepartments: async () => {
+    if (get().isLoading) return;
+
     set({ isLoading: true, error: null });
     try {
       // Endpoint disesuaikan dengan arsitektur backend Anda

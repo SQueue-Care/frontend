@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import StatCard from './StatCard';
 import { useQueueStore } from '../store/queueStore';
 import { useDashboardFilterStore } from '../store/dashboardFilterStore';
@@ -6,16 +6,8 @@ import { ExclamationTriangleIcon, ArrowPathIcon, ClipboardDocumentListIcon } fro
 import { QueueStatus } from '../lib/types';
 
 export default function ActiveQueuesStat() {
-  // Gunakan 'queues' sebagai basis data karena sudah ditarik tanpa filter tanggal di tabel
-  const { queues, overviewStats, isLoadingTable, errorStats, fetchOverviewStats, fetchQueues } = useQueueStore();
+  const { queues, isLoadingTable, errorTable } = useQueueStore();
   const { selectedDepartment } = useDashboardFilterStore();
-
-  useEffect(() => {
-    // Jalankan fetchOverviewStats untuk data departemen (opsional)
-    // Tapi pastikan fetchQueues (tanpa param) juga dipanggil agar data 'queues' tersedia
-    fetchOverviewStats();
-    fetchQueues(); 
-  }, [fetchOverviewStats, fetchQueues]);
 
   const activeQueuesCount = useMemo(() => {
     // Kita filter antrean yang statusnya aktif (Waiting, Called, In Progress) dari manapun tanggalnya
@@ -42,7 +34,7 @@ export default function ActiveQueuesStat() {
     );
   }
 
-  if (errorStats && queues.length === 0) {
+  if (errorTable && queues.length === 0) {
     return (
       <StatCard
         title="Antrean Aktif"
@@ -58,7 +50,7 @@ export default function ActiveQueuesStat() {
       title="Antrean Aktif"
       value={activeQueuesCount}
       icon={<ClipboardDocumentListIcon className="w-6 h-6" />}
-      description="Pasien menunggu & dipanggil (Global)"
+      description="Pasien menunggu & dipanggil"
     />
   );
 }

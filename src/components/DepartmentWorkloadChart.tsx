@@ -1,5 +1,5 @@
 // src/components/DepartmentWorkloadChart.tsx
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { useQueueStore } from '../store/queueStore';
@@ -22,15 +22,8 @@ const COLOR_PALETTE = [
 ];
 
 export default function DepartmentWorkloadChart() {
-  const { overviewStats, isLoadingStats, errorStats, fetchOverviewStats } = useQueueStore();
-  const { departments, isLoading: isLoadingDepartments, error: departmentError, fetchDepartments } = useDepartmentStore();
-
-  useEffect(() => {
-    fetchOverviewStats();
-    if (departments.length === 0) {
-      fetchDepartments();
-    }
-  }, [departments.length, fetchDepartments, fetchOverviewStats]);
+  const { overviewStats, isLoadingStats, errorStats } = useQueueStore();
+  const { departments, isLoading: isLoadingDepartments, error: departmentError } = useDepartmentStore();
 
   // Calculate workload percentage for each department
   const chartData = useMemo(() => {

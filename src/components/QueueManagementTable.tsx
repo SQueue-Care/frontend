@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
-import { useQueueStore, type Queue } from '../store/queueStore';
+import { useMemo } from 'react';
+import { useQueueStore } from '../store/queueStore';
 import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 import { QueueStatus } from '../lib/types';
 
@@ -23,13 +23,8 @@ const StatusBadge = ({ status }: { status: QueueStatus }) => {
 };
 
 export default function QueueManagementTable() {
-  const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore();
+  const { queues, isLoadingTable, errorTable } = useQueueStore();
   const { searchQuery, setSearchQuery, selectedDepartment } = useDashboardFilterStore();
-
-  useEffect(() => {
-    // FIX: Hapus filter tanggal agar antrean yang masih aktif dari hari sebelumnya tetap muncul
-    fetchQueues(); 
-  }, [fetchQueues]);
 
   const filteredQueues = useMemo(() => {
     let result = queues;

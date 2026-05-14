@@ -11,6 +11,7 @@ import AdminUserManagement from '../components/AdminUserManagement';
 import AdminQueueManagement from '../components/AdminQueueManagement';
 import { useAuthStore } from '../store/authStore';
 import { useDepartmentStore } from '../store/departmentStore'; 
+import { useQueueStore } from '../store/queueStore';
 import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 
 type AdminView = 'dashboard' | 'users' | 'queues';
@@ -23,11 +24,14 @@ export default function AdminDashboard() {
   const user = useAuthStore((state) => state.user);
 
   const { departments, fetchDepartments } = useDepartmentStore();
+  const { fetchOverviewStats, fetchQueues } = useQueueStore();
   const { selectedDepartment, setSelectedDepartment } = useDashboardFilterStore();
 
   useEffect(() => {
     fetchDepartments();
-  }, [fetchDepartments]);
+    fetchOverviewStats();
+    fetchQueues();
+  }, [fetchDepartments, fetchOverviewStats, fetchQueues]);
 
   const handleLogout = async () => {
     await logout();

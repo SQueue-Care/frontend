@@ -24,6 +24,7 @@ export interface Queue {
   queueNumber: number;
   status: QueueStatus;
   queueDate: string;
+  actualWaitMinutes?: number | null;
   patient: PatientProfile;
   department: {
     id: string;
@@ -57,7 +58,7 @@ interface QueueState {
   fetchPatientHistory: (patientId: string) => Promise<void>;
 }
 
-export const useQueueStore = create<QueueState>((set) => ({
+export const useQueueStore = create<QueueState>((set, get) => ({
   // Statistik
   overviewStats: null,
   isLoadingStats: false,
@@ -105,6 +106,8 @@ export const useQueueStore = create<QueueState>((set) => ({
   },
 
   fetchOverviewStats: async () => {
+    if (get().isLoadingStats) return;
+
     set({ isLoadingStats: true, errorStats: null });
     try {
       const response = await apiClient.get('/queues/stats/overview');
@@ -118,6 +121,8 @@ export const useQueueStore = create<QueueState>((set) => ({
   },
 
   fetchQueues: async (filters = {}) => {
+    if (get().isLoadingTable) return;
+
     set({ isLoadingTable: true, errorTable: null });
     try {
       const params = new URLSearchParams();

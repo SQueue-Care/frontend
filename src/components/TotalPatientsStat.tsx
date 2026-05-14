@@ -1,16 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import StatCard from './StatCard';
 import { useQueueStore } from '../store/queueStore';
 import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 import { UsersIcon, ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export default function TotalPatientsStat() {
-  const { overviewStats, isLoadingStats, errorStats, fetchOverviewStats } = useQueueStore();
+  const { overviewStats, isLoadingStats, errorStats } = useQueueStore();
   const { selectedDepartment } = useDashboardFilterStore();
-
-  useEffect(() => {
-    fetchOverviewStats();
-  }, [fetchOverviewStats]);
 
   const totalPatientsCount = useMemo(() => {
     if (!overviewStats) return 0;

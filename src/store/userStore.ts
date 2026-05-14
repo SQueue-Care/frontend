@@ -15,7 +15,7 @@ interface UserState {
   users: UserAccount[];
   isLoading: boolean;
   error: string | null;
-  fetchUsers: () => Promise<void>;
+  fetchUsers: (force?: boolean) => Promise<void>;
   updateUser: (id: string, data: Partial<UserAccount>) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
   // 1. Tambahkan definisi tipe untuk createUser
@@ -27,7 +27,9 @@ export const useUserStore = create<UserState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  fetchUsers: async () => {
+  fetchUsers: async (force = false) => {
+    if (get().isLoading && !force) return;
+
     set({ isLoading: true, error: null });
     try {
       const response = await apiClient.get('/users');
@@ -72,7 +74,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         password: data.password
       });
       // Sinkronisasi ulang tabel setelah data berhasil masuk database
-      await get().fetchUsers();
+      await get().fetchUsers(true);
     } catch (error: any) {
       throw error;
     }
