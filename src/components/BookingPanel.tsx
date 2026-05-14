@@ -7,6 +7,12 @@ interface BookingPanelProps {
   onClose: () => void;
   step: number;
   selectedDept: { id: string; name: string } | null;
+  // Tambahkan data profil pasien di sini
+  patientProfile: {
+    name: string;
+    nik: string;
+    birthDate: string;
+  } | null;
   onNext: () => void;
   onPrev: () => void;
   onBookingSuccess?: (queueId: string) => void;
@@ -24,7 +30,7 @@ const generateNextDays = (daysCount: number) => {
   return dates;
 };
 
-export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNext, onPrev, onBookingSuccess }: BookingPanelProps) {  
+export default function BookingPanel({ isOpen, onClose, step, selectedDept, patientProfile, onNext, onPrev, onBookingSuccess }: BookingPanelProps) {
   const { 
     departmentDoctors, 
     doctorSchedules, 
@@ -41,6 +47,7 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
   const [selectedDate, setSelectedDate] = useState<string>(""); 
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
   const [queueResult, setQueueResult] = useState<any>(null);
+  const [notes, setNotes] = useState("");
 
   // Menyediakan 14 hari ke depan secara dinamis untuk UI Horizontal Slider
   const availableDates = useMemo(() => generateNextDays(14), []);
@@ -90,7 +97,8 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
         departmentId: selectedDept.id,
         doctorId: selectedDoctorId,
         scheduleId: selectedScheduleId,
-        date: new Date(selectedDate).toISOString()
+        date: new Date(selectedDate).toISOString(),
+        notes: notes
       });
       setQueueResult(result);
       onNext();
@@ -251,6 +259,24 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
                   )}
                 </section>
               )}
+              {/* BAGIAN D: KELUHAN / NOTES (Tampil jika jadwal sudah dipilih) */}
+              {selectedScheduleId && (
+                <section className="animate-in fade-in slide-in-from-bottom-4">
+                  <label className="block text-xs font-black text-slate-400 mb-3 uppercase tracking-widest">
+                    Keluhan atau Catatan Tambahan
+                  </label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Tuliskan gejala atau alasan kunjungan Anda..."
+                    rows={4}
+                    className="w-full px-4 py-3 bg-white border-2 border-slate-100 rounded-2xl text-sm font-medium text-zinc-800 shadow-sm hover:border-teal-200 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all resize-none"
+                  />
+                  <p className="mt-2 text-[10px] text-slate-400 italic">
+                    *Catatan ini akan langsung dibaca oleh dokter saat pemeriksaan.
+                  </p>
+                </section>
+              )}
             </div>
           )}
 
@@ -259,21 +285,62 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, onNe
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
                 <h4 className="font-bold text-zinc-900 border-b border-slate-200 pb-3">Ringkasan Reservasi</h4>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Layanan</span>
-                  <span className="font-bold text-teal-700">{selectedDept?.name}</span>
+                
+                {/* BAGIAN DATA PASIEN */}
+                <div className="space-y-2 pb-3 border-b border-slate-200">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Informasi Pasien</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500 font-medium">Nama</span>
+                    <span className="font-bold text-zinc-950 uppercase">{patientProfile?.name || '-'}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500 font-medium">NIK</span>
+                    <span className="font-bold text-zinc-950">{patientProfile?.nik || 'Belum diatur'}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500 font-medium">Tgl Lahir</span>
+                    <span className="font-bold text-zinc-950">
+                      {patientProfile?.birthDate ? new Date(patientProfile.birthDate).toLocaleDateString('id-ID') : '-'}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Dokter</span>
-                  <span className="font-bold text-zinc-950">{getSelectedDoctorName()}</span>
+
+                {/* BAGIAN DETAIL LAYANAN (Data Lama Tetap Masuk) */}
+                <div className="space-y-2 pb-3 border-b border-slate-200">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Detail Kunjungan</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500 font-medium">Poliklinik</span>
+                    <span className="font-bold text-teal-700">{selectedDept?.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500 font-medium">Dokter</span>
+                    <span className="font-bold text-zinc-950 uppercase">{getSelectedDoctorName()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500 font-medium">Jadwal</span>
+                    <span className="font-bold text-zinc-950 text-right">{getSelectedScheduleDetail()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500 font-medium">Tgl Dibuat</span>
+                    <span className="font-bold text-zinc-600 italic">
+                      {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Jadwal</span>
-                  <span className="font-bold text-zinc-950 text-right">{getSelectedScheduleDetail()}</span>
+
+                {/* BAGIAN KELUHAN */}
+                <div className="pt-1 flex flex-col gap-1.5">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Keluhan / Catatan</span>
+                  <div className="p-3 bg-white border border-slate-200 rounded-xl">
+                    <p className="text-sm font-bold text-zinc-800 italic leading-relaxed">
+                      {notes.trim() || "Tidak ada catatan tambahan."}
+                    </p>
+                  </div>
                 </div>
               </div>
+
               <p className="text-[11px] text-slate-500 leading-relaxed italic text-center">
-                *Dengan menekan konfirmasi, Anda menyetujui jadwal yang dipilih.
+                *Data di atas akan disimpan sebagai rekam medis pendaftaran Anda.
               </p>
             </div>
           )}

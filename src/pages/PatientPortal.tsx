@@ -13,32 +13,24 @@ import { useQueueStore } from '../store/queueStore';
 type PortalView = 'polyclinics' | 'history' | 'profile';
 
 // Helper untuk menerjemahkan status dan warna (Tambahkan di luar fungsi komponen utama)
-const getStatusBadgeStyle = (status: string) => {
+const getHistoryStatusStyle = (status: string) => {
   switch (status) {
-    case 'CANCELLED': 
-      return 'bg-rose-50 text-rose-600 border-rose-200'; // Merah
-    case 'DONE': 
-      return 'bg-emerald-50 text-emerald-600 border-emerald-200'; // Hijau
+    case 'CANCELLED': return 'bg-rose-50 text-rose-600 border-rose-200'; // Merah
+    case 'DONE': return 'bg-emerald-50 text-emerald-600 border-emerald-200'; // Hijau
     case 'IN_PROGRESS':
-    case 'CALLED': 
-      return 'bg-amber-50 text-amber-600 border-amber-200'; // Kuning
-    case 'WAITING': 
-      return 'bg-blue-50 text-blue-600 border-blue-200'; // Biru
-    case 'SKIPPED': 
-      return 'bg-slate-50 text-slate-500 border-slate-200'; // Abu-abu
-    default: 
-      return 'bg-slate-50 text-slate-500 border-slate-200';
+    case 'CALLED': return 'bg-amber-50 text-amber-600 border-amber-200'; // Kuning
+    case 'WAITING': return 'bg-blue-50 text-blue-600 border-blue-200'; // Biru
+    default: return 'bg-slate-50 text-slate-500 border-slate-200';
   }
 };
 
-const getStatusBadgeText = (status: string) => {
+const getHistoryStatusText = (status: string) => {
   switch (status) {
     case 'CANCELLED': return 'Dibatalkan';
     case 'DONE': return 'Selesai';
     case 'IN_PROGRESS': return 'Sedang Diperiksa';
     case 'CALLED': return 'Dipanggil';
     case 'WAITING': return 'Menunggu / Reservasi';
-    case 'SKIPPED': return 'Dilewati';
     default: return status;
   }
 };
@@ -83,7 +75,7 @@ export default function PatientPortal() {
     if (patientId) {
       fetchPatientHistory(patientId);
     }
-  }, [user, fetchPatientHistory]);
+  }, [activeView, user, fetchPatientHistory]);
 
   // Set activeQueueId jika ada antrian aktif (WAITING/CALLED/IN_PROGRESS)
   useEffect(() => {
@@ -447,65 +439,59 @@ export default function PatientPortal() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="mb-8">
               <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tighter mb-2">Riwayat Antrean</h1>
-              <p className="text-slate-600">Pantau tiket antrean aktif dan riwayat kunjungan Anda sebelumnya.</p>
+              <p className="text-slate-600">Daftar kunjungan medis Anda yang sedang berlangsung maupun sebelumnya.</p>
             </div>
             
-            {isLoadingTable ? (
-              <div className="p-12 text-center text-slate-400 font-bold animate-pulse">Memuat riwayat kunjungan...</div>
-            ) : patientHistory.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
-                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                  <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <h3 className="text-lg font-bold text-zinc-900">Belum Ada Riwayat</h3>
-                <p className="text-slate-500 mt-1">Anda belum pernah melakukan pendaftaran antrean.</p>
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto no-scrollbar">
+                <table className="w-full text-left border-collapse min-w-[700px]">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                      <th className="p-5 pl-8 w-40">Nomor</th>
+                      <th className="p-5">Layanan & Tenaga Medis</th>
+                      <th className="p-5">Waktu Kunjungan</th>
+                      <th className="p-5 text-right pr-8">Status Antrean</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                    {isLoadingTable ? (
+                      <tr>
+                        <td colSpan={4} className="p-12 text-center text-slate-400 font-bold animate-pulse uppercase tracking-widest text-xs">Menyinkronkan data riwayat...</td>
+                      </tr>
+                    ) : patientHistory.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="p-12 text-center text-slate-400 italic">Tidak ada data riwayat ditemukan.</td>
+                      </tr>
+                    ) : (
+                      patientHistory.map((item) => (
+                        <tr key={item.id} className="hover:bg-slate-50/70 transition-colors group">
+                          <td className="p-5 pl-8">
+                            <span className="inline-block px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 font-black rounded-lg font-mono text-sm group-hover:bg-teal-50 group-hover:text-teal-700 group-hover:border-teal-200 transition-colors">
+                              {item.department?.code || 'XX'}-{item.queueNumber}
+                            </span>
+                          </td>
+                          <td className="p-5">
+                            <div className="font-extrabold text-zinc-950 text-base leading-tight">{item.department?.name}</div>
+                            <div className="text-[10px] text-slate-400 uppercase tracking-wider mt-1 font-black">{item.doctor?.user?.name || 'Dokter Umum'}</div>
+                          </td>
+                          <td className="p-5">
+                            <div className="text-zinc-800 font-bold">
+                              {new Date(item.queueDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}
+                            </div>
+                            <div className="text-[10px] text-slate-400 font-bold uppercase">{new Date(item.queueDate).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
+                          </td>
+                          <td className="p-5 text-right pr-8">
+                            <span className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border min-w-[140px] transition-colors ${getHistoryStatusStyle(item.status)}`}>
+                              {getHistoryStatusText(item.status)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {patientHistory.map((item) => (
-                  <div key={item.id} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-teal-200 transition-all group flex flex-col md:flex-row md:items-center justify-between gap-5">
-                    
-                    {/* Kolom 1: Nomor & Layanan (Kiri) */}
-                    <div className="flex items-center gap-4 flex-[2]">
-                      <div className="w-14 h-14 bg-slate-50 rounded-xl flex flex-col items-center justify-center border border-slate-100 group-hover:bg-teal-50 transition-colors shrink-0">
-                        <span className="text-[10px] font-black text-slate-400 uppercase leading-none mb-1 group-hover:text-teal-600">No</span>
-                        <span className="text-lg font-black text-zinc-900 leading-none group-hover:text-teal-700">
-                          {item.department?.code || 'XX'}-{item.queueNumber}
-                        </span>
-                      </div>
-                      <div>
-                        <h4 className="font-extrabold text-zinc-900 text-sm md:text-base leading-tight">
-                          {item.department?.name}
-                        </h4>
-                        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1">
-                          {item.doctor?.user?.name || 'Dokter Umum'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Kolom 2: Tanggal & Waktu (Tengah) */}
-                    <div className="flex-[1.5] border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-5">
-                      <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
-                        Tanggal Kunjungan
-                      </span>
-                      <span className="block text-sm font-bold text-zinc-800">
-                        {new Date(item.queueDate).toLocaleDateString('id-ID', { 
-                          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-                        })}
-                      </span>
-                    </div>
-
-                    {/* Kolom 3: Status (Kanan) */}
-                    <div className="flex-[1] flex md:justify-end w-full md:w-auto">
-                      <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border w-full md:w-auto text-center ${getStatusBadgeStyle(item.status)}`}>
-                        {getStatusBadgeText(item.status)}
-                      </span>
-                    </div>
-
-                  </div>
-                ))}
-              </div>
-            )}
+            </div>
           </div>
         )}
 
