@@ -47,7 +47,6 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
   const isDone = status === QueueStatus.DONE;
   const isSkipped = status === QueueStatus.SKIPPED;
   const isCancelled = status === QueueStatus.CANCELLED;
-  const isFinal = isDone || isSkipped || isCancelled;
 
   return (
     <>
