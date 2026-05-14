@@ -43,7 +43,7 @@ interface BookingState {
   resetBookingState: () => void;
 }
 
-export const useBookingStore = create<BookingState>((set) => ({
+export const useBookingStore = create<BookingState>((set, get) => ({
   departmentDoctors: [],
   doctorSchedules: [],
   isLoadingDoctors: false,
@@ -77,83 +77,68 @@ export const useBookingStore = create<BookingState>((set) => ({
     doctorId: string;
     scheduleId: string;
     date: string;
-    notes: string; // Penambahan properti notes
+    notes: string;
   }) => {
     set({ isSubmitting: true, error: null });
     try {
-      // Gunakan local date tanpa konversi UTC
+      // 1. Ambil jam dari jadwal (Fallback ke 08:00 jika tidak ditemukan)
+      const selectedSchedule = get().doctorSchedules.find(s => s.id === payload.scheduleId);
+      const startTime = selectedSchedule?.startTime || "08:00"; 
+      const selectedDateOnly = payload.date.split('T')[0];
+
+      // 2. KOREKSI MUTLAK WAKTU: Konversi ke UTC ISO-8601 murni agar tidak ditolak Database
+      // Ini mengatasi bug waktu tertahan di 00:00:00
+      const scheduledAtIso = new Date(`${selectedDateOnly}T${startTime}:00`).toISOString();
+
+      // 3. Deteksi Hari Ini dengan zona waktu lokal klien
       const now = new Date();
       const todayString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      
-      const selectedDate = payload.date.split('T')[0];
-      
-      const isToday = selectedDate === todayString;
-      
-      let queueData: any = null;
-      let appointmentData: any = null;
-      
+      const isToday = selectedDateOnly === todayString;
+
+      let responseData: any = null;
+
+      // 4. Payload Universal (Memastikan backend menerima semua variasi properti yang diminta)
+      const apiPayload = {
+        departmentId: payload.departmentId,
+        doctorId: payload.doctorId,
+        scheduleId: payload.scheduleId,
+        date: selectedDateOnly,          // Fallback untuk validasi strict
+        queueDate: selectedDateOnly,     // Untuk tabel Queue
+        scheduledAt: scheduledAtIso,     // Untuk tabel Appointment
+        notes: payload.notes || ""       // Keluhan / Catatan
+      };
+
       if (isToday) {
-        // Kirim ke /queues untuk hari ini
-        const queueBody = {
-          departmentId: payload.departmentId,
-          doctorId: payload.doctorId,
-          scheduleId: payload.scheduleId,
-          notes: payload.notes // Memasukkan notes ke payload queues
-        };
+        // Alur Pendaftaran Hari Ini -> Prioritas ke /queues
         try {
-          const queueResponse = await apiClient.post('/queues', queueBody);
-          queueData = queueResponse.data.data;
-        } catch (error: any) {
-          // Jangan throw, lanjutkan ke appointments
-        }
-        
-        // Juga kirim ke /appointments untuk hari ini
-        const appointmentBody = {
-          departmentId: payload.departmentId,
-          doctorId: payload.doctorId,
-          scheduleId: payload.scheduleId,
-          scheduledAt: payload.date,
-          notes: payload.notes // Memasukkan notes ke payload appointments
-        };
-        try {
-          const appointmentResponse = await apiClient.post('/appointments', appointmentBody);
-          appointmentData = appointmentResponse.data.data;
-        } catch (error: any) {
-          // Jangan throw error di sini, gunakan data dari queue
+          const response = await apiClient.post('/queues', apiPayload);
+          responseData = response.data.data;
+        } catch (queueError: any) {
+          console.warn("Penuh/Gagal di Queue, mengalihkan ke Appointment...", queueError.response?.data);
+          const response = await apiClient.post('/appointments', apiPayload);
+          responseData = response.data.data;
         }
       } else {
-        // Hanya kirim ke /appointments untuk hari lain
-        const appointmentBody = {
-          departmentId: payload.departmentId,
-          doctorId: payload.doctorId,
-          scheduleId: payload.scheduleId,
-          scheduledAt: payload.date,
-          notes: payload.notes // Memasukkan notes ke payload appointments
-        };
-        try {
-          const appointmentResponse = await apiClient.post('/appointments', appointmentBody);
-          appointmentData = appointmentResponse.data.data;
-        } catch (error: any) {
-          throw error;
-        }
+        // Alur Reservasi Masa Depan -> Langsung ke /appointments
+        const response = await apiClient.post('/appointments', apiPayload);
+        responseData = response.data.data;
       }
-      
+
+      if (!responseData) throw new Error("Gagal menerima respons data dari server.");
+
       set({ isSubmitting: false });
 
-      // Gunakan data dari queue jika ada, atau appointment
-      const data = queueData || appointmentData;
-      if (!data) {
-        throw new Error('Gagal menyimpan data booking ke database.');
-      }
-
       return {
-        id: data.id,
-        queueNumber: data.queueNumber || data.id.substring(data.id.length - 6).toUpperCase(),
-        estimatedWaitTime: data.estimatedWaitMinutes || data.estimatedWaitTime || 0,
+        id: responseData.id,
+        queueNumber: responseData.queueNumber || responseData.id.substring(responseData.id.length - 6).toUpperCase(),
+        estimatedWaitTime: responseData.estimatedWaitMinutes || responseData.estimatedWaitTime || 0,
         isAppointment: !isToday
       };
+      
     } catch (error: any) {
+      // 5. Audit Error Asli: Jangan disembunyikan
       const errorMsg = error.response?.data?.error?.message || error.response?.data?.message || error.message || 'Gagal mengirim pendaftaran.';
+      console.error("GAGAL SUBMIT API:", errorMsg); // Akan terlihat merah di console browser
       set({ error: errorMsg, isSubmitting: false });
       throw error;
     }

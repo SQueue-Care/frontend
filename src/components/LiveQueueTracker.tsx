@@ -86,6 +86,10 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
           : status === QueueStatus.SKIPPED
             ? 'Dilewati'
             : 'Dibatalkan';
+  
+  const mappedModalStatus = isWaiting 
+    ? 'waiting' 
+    : (isInProgress || isCalled ? 'in-service' : 'completed');          
 
   return (
     <>
@@ -149,7 +153,7 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
       <QueueDetailsModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        status={status} 
+        status={mappedModalStatus}
       />
     </>
   );

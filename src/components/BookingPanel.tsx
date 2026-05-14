@@ -30,26 +30,21 @@ const generateNextDays = (daysCount: number) => {
   return dates;
 };
 
-export default function BookingPanel({ isOpen, onClose, step, selectedDept, patientProfile, onNext, onPrev, onBookingSuccess }: BookingPanelProps) {
+export default function BookingPanel({ 
+  isOpen, onClose, step, selectedDept, patientProfile, onNext, onPrev, onBookingSuccess 
+}: BookingPanelProps) {  
   const { 
-    departmentDoctors, 
-    doctorSchedules, 
-    isLoadingDoctors, 
-    isLoadingSchedules, 
-    isSubmitting,
-    fetchDoctorsByDepartment, 
-    fetchSchedulesByDoctor, 
-    submitBooking, 
-    resetBookingState 
+    departmentDoctors, doctorSchedules, isLoadingDoctors, isLoadingSchedules, isSubmitting,
+    fetchDoctorsByDepartment, fetchSchedulesByDoctor, submitBooking, resetBookingState 
   } = useBookingStore();
 
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(""); 
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
+  // KOREKSI: Deklarasikan state notes agar tidak terjadi ReferenceError
+  const [notes, setNotes] = useState<string>(""); 
   const [queueResult, setQueueResult] = useState<any>(null);
-  const [notes, setNotes] = useState("");
 
-  // Menyediakan 14 hari ke depan secara dinamis untuk UI Horizontal Slider
   const availableDates = useMemo(() => generateNextDays(14), []);
 
   useEffect(() => {
@@ -60,9 +55,9 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, pati
 
   useEffect(() => {
     if (selectedDoctorId && selectedDate) {
+      const dateObj = new Date(selectedDate);
       const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-      const dayName = days[new Date(selectedDate).getDay()]; 
-      fetchSchedulesByDoctor(selectedDoctorId, dayName);
+      fetchSchedulesByDoctor(selectedDoctorId, days[dateObj.getDay()]);
       setSelectedScheduleId(null);
     }
   }, [selectedDoctorId, selectedDate, fetchSchedulesByDoctor]);
@@ -71,6 +66,7 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, pati
     setSelectedDoctorId(null);
     setSelectedDate("");
     setSelectedScheduleId(null);
+    setNotes(""); // Reset notes saat tutup
     setQueueResult(null);
     resetBookingState();
     onClose();
@@ -84,8 +80,6 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, pati
   const getSelectedScheduleDetail = () => {
     const sched = doctorSchedules.find(s => s.id === selectedScheduleId);
     if (!sched || !selectedDate) return '-';
-    
-    // Format Tampilan Ringkasan: 15 Mei 2026 | 08:00 - 12:00
     const formattedDate = new Date(selectedDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     return `${formattedDate} | ${sched.startTime} - ${sched.endTime}`;
   };
@@ -97,18 +91,18 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, pati
         departmentId: selectedDept.id,
         doctorId: selectedDoctorId,
         scheduleId: selectedScheduleId,
-        date: new Date(selectedDate).toISOString(),
-        notes: notes
+        date: selectedDate, // Pastikan ini string asli (contoh: "2026-05-15")
+        notes: notes        // Payload Notes wajib terkirim
       });
       setQueueResult(result);
       onNext();
       
-      // Saran Rekayasa: Tembakkan ID ke PatientPortal hanya jika ini adalah pendaftaran HARI INI (bukan reservasi masa depan)
       if (onBookingSuccess && !result.isAppointment && result.id) {
          onBookingSuccess(result.id);
       }
-    } catch (err) {
-      alert("Gagal melakukan reservasi. Silakan coba lagi.");
+    } catch (err: any) {
+      // Menampilkan pesan error ASLI dari backend agar kita tahu apa yang salah
+      alert(`Pendaftaran Ditolak Sistem:\n\n${err.message || 'Silakan cek console browser (F12) untuk detail error.'}`);
     }
   };
 
@@ -269,12 +263,9 @@ export default function BookingPanel({ isOpen, onClose, step, selectedDept, pati
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Tuliskan gejala atau alasan kunjungan Anda..."
-                    rows={4}
+                    rows={3}
                     className="w-full px-4 py-3 bg-white border-2 border-slate-100 rounded-2xl text-sm font-medium text-zinc-800 shadow-sm hover:border-teal-200 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all resize-none"
                   />
-                  <p className="mt-2 text-[10px] text-slate-400 italic">
-                    *Catatan ini akan langsung dibaca oleh dokter saat pemeriksaan.
-                  </p>
                 </section>
               )}
             </div>
