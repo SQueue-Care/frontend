@@ -16,15 +16,28 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
   const { activeQueueDetail, fetchActiveQueue, cancelQueue } = useQueueStore();
 
   useEffect(() => {
+    // Jika tidak ada ID, jangan lakukan apa-apa
     if (!queueId) return;
 
+    // 1. Tembakan Pertama saat komponen pelacak muncul
     fetchActiveQueue(queueId);
 
-    // Polling setiap 10 detik
+    // 2. Mesin Polling (Detak Jantung API)
     const timer = setInterval(() => {
+      // OPTIMASI: Hentikan penarikan data jika antrean sudah selesai atau dibatalkan
+      // Menggunakan useQueueStore.getState() agar tidak memicu re-render loop
+      const currentStatus = useQueueStore.getState().activeQueueDetail?.status;
+      if (currentStatus === 'DONE' || currentStatus === 'CANCELLED' || currentStatus === 'SKIPPED') {
+        clearInterval(timer);
+        return;
+      }
+      
+      // Jika masih WAITING, IN_PROGRESS, atau CALLED, tembak API
       fetchActiveQueue(queueId);
-    }, 10000);
+      
+    }, 10000); // KOREKSI MUTLAK: Harus 10000 (10 detik), bukan 1000!
 
+    // 3. Pembersihan Mutlak (Mencegah API terus berjalan saat komponen ditutup)
     return () => clearInterval(timer);
   }, [queueId, fetchActiveQueue]);
 

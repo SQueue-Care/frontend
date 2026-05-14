@@ -56,6 +56,10 @@ interface QueueState {
 
   patientHistory: Queue[];
   fetchPatientHistory: (patientId: string) => Promise<void>;
+
+  patientAppointments: any[]; // Bisa diganti dengan interface spesifik nanti
+  isLoadingAppointments: boolean;
+  fetchPatientAppointments: (patientId: string) => Promise<void>;
 }
 
 export const useQueueStore = create<QueueState>((set, get) => ({
@@ -72,6 +76,22 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   activeQueueDetail: null,
 
   patientHistory: [],
+
+  patientAppointments: [],
+  isLoadingAppointments: false,
+
+  fetchPatientAppointments: async (patientId) => {
+    set({ isLoadingAppointments: true });
+    try {
+      // Menarik data dari tabel Appointment. 
+      // Asumsi: Backend mengizinkan pasien melihat data mereka sendiri via endpoint ini.
+      const response = await apiClient.get(`/appointments?patientId=${patientId}`);
+      set({ patientAppointments: response.data.data, isLoadingAppointments: false });
+    } catch (error: any) {
+      console.error('Gagal memuat reservasi mendatang:', error);
+      set({ isLoadingAppointments: false });
+    }
+  },
 
   fetchPatientHistory: async (patientId) => {
   set({ isLoadingTable: true, errorTable: null });

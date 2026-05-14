@@ -37,6 +37,7 @@ interface BookingState {
     doctorId: string;
     scheduleId: string;
     date: string;
+    notes: string; // Tambahkan ini di interface
   }) => Promise<{ id?: string; queueNumber?: string; estimatedWaitTime?: number; isAppointment: boolean }>;
   
   resetBookingState: () => void;
@@ -71,7 +72,13 @@ export const useBookingStore = create<BookingState>((set) => ({
     }
   },
 
-  submitBooking: async (payload) => {
+  submitBooking: async (payload: {
+    departmentId: string;
+    doctorId: string;
+    scheduleId: string;
+    date: string;
+    notes: string; // Penambahan properti notes
+  }) => {
     set({ isSubmitting: true, error: null });
     try {
       // Gunakan local date tanpa konversi UTC
@@ -82,18 +89,16 @@ export const useBookingStore = create<BookingState>((set) => ({
       
       const isToday = selectedDate === todayString;
       
-      // Jika hari ini: kirim ke KEDUA /queues dan /appointments
-      // Jika bukan hari ini: kirim hanya ke /appointments
-      
       let queueData: any = null;
       let appointmentData: any = null;
       
       if (isToday) {
-        // Kirim ke /queues untuk hari ini (hapus field 'date' karena backend tidak expect)
+        // Kirim ke /queues untuk hari ini
         const queueBody = {
           departmentId: payload.departmentId,
           doctorId: payload.doctorId,
           scheduleId: payload.scheduleId,
+          notes: payload.notes // Memasukkan notes ke payload queues
         };
         try {
           const queueResponse = await apiClient.post('/queues', queueBody);
@@ -107,7 +112,8 @@ export const useBookingStore = create<BookingState>((set) => ({
           departmentId: payload.departmentId,
           doctorId: payload.doctorId,
           scheduleId: payload.scheduleId,
-          scheduledAt: payload.date
+          scheduledAt: payload.date,
+          notes: payload.notes // Memasukkan notes ke payload appointments
         };
         try {
           const appointmentResponse = await apiClient.post('/appointments', appointmentBody);
@@ -121,7 +127,8 @@ export const useBookingStore = create<BookingState>((set) => ({
           departmentId: payload.departmentId,
           doctorId: payload.doctorId,
           scheduleId: payload.scheduleId,
-          scheduledAt: payload.date
+          scheduledAt: payload.date,
+          notes: payload.notes // Memasukkan notes ke payload appointments
         };
         try {
           const appointmentResponse = await apiClient.post('/appointments', appointmentBody);
