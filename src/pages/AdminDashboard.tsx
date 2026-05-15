@@ -241,6 +241,7 @@ export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState<string>('');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('');
   
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
@@ -288,6 +289,19 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     await logout();
     navigate('/auth');
+  };
+
+  const getPageTitle = () => {
+    switch (activeView) {
+      case 'dashboard': return 'Command Center';
+      case 'users_patient': return 'Manajemen Pengguna - Data Pasien';
+      case 'users_doctor': return 'Manajemen Pengguna - Data Dokter Spesialis';
+      case 'users_admin': return 'Manajemen Pengguna - Akses Administrator';
+      case 'services': return 'Manajemen Layanan';
+      case 'queues': return 'Manajemen Antrean';
+      case 'appointments': return 'Manajemen Reservasi';
+      default: return 'Administrator';
+    }
   };
 
   return (
@@ -449,10 +463,30 @@ export default function AdminDashboard() {
           </button>
           <button
             onClick={() => setActiveView('appointments')}
-            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'appointments' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+              activeView === 'appointments' 
+                ? 'bg-teal-500/20 text-teal-400 font-semibold' 
+                : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+            }`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            Manajemen Reservasi
+            <div className="flex items-center gap-3 overflow-hidden flex-1">
+              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              
+              {/* KONTINER ANIMASI: Menggunakan style & class yang sama dengan Manajemen Pengguna */}
+              <div 
+                className="relative flex-1 overflow-hidden flex items-center"
+                style={{ 
+                  maskImage: 'linear-gradient(to right, black 95%, transparent 100%)', 
+                  WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' 
+                }}
+              >
+                <span className="animate-marquee-custom whitespace-nowrap">
+                  Manajemen Reservasi
+                </span>
+              </div>
+            </div>
           </button>
         </nav>
         <div className="p-4 border-t border-white/10">
@@ -468,7 +502,15 @@ export default function AdminDashboard() {
       {/* ========================================== */}
       <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
 
-        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-end">
+        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between"> 
+          <div className="flex items-center">
+            <h1 
+              key={activeView} 
+              className="text-lg font-bold text-zinc-950 font-['Manrope'] animate-in fade-in slide-in-from-left-4 duration-500"
+            >
+              {getPageTitle()}
+            </h1>
+          </div>
           <div className="flex items-center gap-5 pl-4">
             <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
@@ -587,34 +629,76 @@ export default function AdminDashboard() {
           {activeView === 'appointments' && (
             <div className="animate-in fade-in duration-500">
               <div className="mb-8">
-                <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] mb-2">Manajemen Reservasi</h1>
-                <p className="text-slate-600">Kelola dan perbarui status reservasi pasien di seluruh sistem.</p>
+                <h2 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] mb-1">
+                  Daftar Reservasi Pasien
+                </h2>
+                <p className="text-slate-500 text-sm font-medium">
+                  Kelola dan perbarui status reservasi pasien di seluruh sistem RS Ethereal.
+                </p>
               </div>
 
+              {/* KOREKSI 1: Menghapus duplikasi div pembungkus yang menyebabkan Syntax Error */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                <div className="mb-6 flex items-center gap-3">
-                  <label className="text-sm font-semibold text-slate-700">Filter Departemen:</label>
-                  <select
-                    value={selectedDepartmentFilter}
-                    onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
-                    className="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium bg-white hover:border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
-                  >
-                    <option value="">Semua Departemen</option>
-                    {departments.map((dept: any) => (
-                      <option key={dept.id} value={dept.id}>
-                        {dept.name}
-                      </option>
-                    ))}
-                  </select>
+                
+                {/* AREA FILTER GANDA DENGAN GAYA FLOATING LABEL */}
+                <div className="mb-6 flex items-center gap-4 flex-wrap">
+                  
+                  {/* 1. Dropdown Departemen */}
+                  <div className="relative min-w-[240px]">
+                    <label className="absolute -top-2.5 left-3 bg-white px-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-widest z-10">
+                      Filter Departemen
+                    </label>
+                    <select
+                      value={selectedDepartmentFilter}
+                      onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
+                      className="appearance-none w-full bg-slate-50 border border-slate-200 text-zinc-700 text-sm font-semibold rounded-xl px-4 py-3.5 pr-10 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all cursor-pointer relative z-0"
+                    >
+                      <option value="">Semua Departemen</option>
+                      {departments.map((dept: any) => (
+                        <option key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 z-10">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                  </div>
+
+                  {/* 2. Dropdown Status */}
+                  <div className="relative min-w-[240px]">
+                    <label className="absolute -top-2.5 left-3 bg-white px-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-widest z-10">
+                      Status Reservasi
+                    </label>
+                    <select
+                      value={selectedStatusFilter}
+                      onChange={(e) => setSelectedStatusFilter(e.target.value)}
+                      className="appearance-none w-full bg-slate-50 border border-slate-200 text-zinc-700 text-sm font-semibold rounded-xl px-4 py-3.5 pr-10 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all cursor-pointer relative z-0"
+                    >
+                      <option value="">Semua Status</option>
+                      <option value="BOOKED">Menunggu Konfirmasi</option>
+                      <option value="CONFIRMED">Terkonfirmasi</option>
+                      <option value="COMPLETED">Selesai</option>
+                      <option value="CANCELLED">Dibatalkan</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 z-10">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                  </div>
+
                 </div>
 
                 {isLoadingAppointments ? (
                   <div className="flex justify-center py-10">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
                   </div>
-                ) : appointments.filter((apt: any) => !selectedDepartmentFilter || apt.department?.id === selectedDepartmentFilter).length === 0 ? (
+                ) : appointments.filter((apt: any) => {
+                    const matchDept = !selectedDepartmentFilter || apt.department?.id === selectedDepartmentFilter;
+                    const matchStatus = !selectedStatusFilter || apt.status === selectedStatusFilter;
+                    return matchDept && matchStatus;
+                  }).length === 0 ? (
                   <div className="py-8 text-center text-slate-500 italic text-sm">
-                    Tidak ada jadwal reservasi.
+                    Tidak ada jadwal reservasi yang sesuai dengan filter.
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
@@ -632,13 +716,19 @@ export default function AdminDashboard() {
                       </thead>
                       <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
                         {appointments
-                          .filter((apt: any) => !selectedDepartmentFilter || apt.department?.id === selectedDepartmentFilter)
+                          .filter((apt: any) => {
+                            const matchDept = !selectedDepartmentFilter || apt.department?.id === selectedDepartmentFilter;
+                            const matchStatus = !selectedStatusFilter || apt.status === selectedStatusFilter;
+                            return matchDept && matchStatus;
+                          })
                           .map((apt: any) => {
+
+                            // KOREKSI 2: Menambahkan mapping pewarnaan label status (Reference Error fixed)
                             const statusClasses: Record<string, string> = {
-                              'BOOKED': 'bg-blue-50 text-blue-700 border-blue-200',
-                              'CONFIRMED': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                              'CANCELLED': 'bg-rose-50 text-rose-700 border-rose-200',
-                              'COMPLETED': 'bg-slate-50 text-slate-600 border-slate-200',
+                              'BOOKED': 'bg-amber-50 text-amber-600 border-amber-200',
+                              'CONFIRMED': 'bg-blue-50 text-blue-600 border-blue-200',
+                              'CANCELLED': 'bg-rose-50 text-rose-600 border-rose-200',
+                              'COMPLETED': 'bg-emerald-50 text-emerald-600 border-emerald-200',
                             };
 
                             const statusLabel: Record<string, string> = {
