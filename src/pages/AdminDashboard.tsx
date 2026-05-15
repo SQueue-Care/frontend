@@ -241,7 +241,20 @@ export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState<string>('');
-  
+  const [servicesTab, setServicesTab] = useState<'departments' | 'schedules'>('departments');
+  const [schedules, setSchedules] = useState<any[]>([]);
+  const [isLoadingSchedules, setIsLoadingSchedules] = useState(false);
+  const [selectedScheduleDeptFilter, setSelectedScheduleDeptFilter] = useState<string>('');
+  const [selectedDoctorFilter, setSelectedDoctorFilter] = useState<string>('');
+  const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
+  const [deptFormMode, setDeptFormMode] = useState<'add' | 'edit'>('add');
+  const [selectedDept, setSelectedDept] = useState<any>(null);
+  const [deptFormData, setDeptFormData] = useState({ name: '', code: '', description: '' });
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [scheduleFormMode, setScheduleFormMode] = useState<'add' | 'edit'>('add');
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
+  const [scheduleFormData, setScheduleFormData] = useState({ dayOfWeek: '', startTime: '', endTime: '', capacity: 10 });
+
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
@@ -274,6 +287,24 @@ export default function AdminDashboard() {
     }
   }, [activeView]);
 
+  useEffect(() => {
+    if (activeView === 'services' && servicesTab === 'schedules') {
+      const fetchSchedules = async () => {
+        setIsLoadingSchedules(true);
+        try {
+          const response = await apiClient.get('/schedules');
+          setSchedules(response.data.data || []);
+        } catch (error: any) {
+          console.error('Gagal memuat schedules:', error);
+          setSchedules([]);
+        } finally {
+          setIsLoadingSchedules(false);
+        }
+      };
+      fetchSchedules();
+    }
+  }, [activeView, servicesTab]);
+
   const handleUpdateAppointmentStatus = async (appointmentId: string, newStatus: string) => {
     try {
       await apiClient.patch(`/appointments/${appointmentId}`, { status: newStatus });
@@ -282,6 +313,124 @@ export default function AdminDashboard() {
       alert('Status appointment berhasil diperbarui!');
     } catch (error: any) {
       alert(error.response?.data?.message || 'Gagal mengubah status appointment.');
+    }
+  };
+
+  const handleOpenDeptModal = (mode: 'add' | 'edit', dept?: any) => {
+    setDeptFormMode(mode);
+    if (mode === 'edit' && dept) {
+      setSelectedDept(dept);
+      setDeptFormData({ name: dept.name, code: dept.code, description: dept.description || '' });
+    } else {
+      setDeptFormData({ name: '', code: '', description: '' });
+    }
+    setIsDeptModalOpen(true);
+  };
+
+  const handleCloseDeptModal = () => {
+    setIsDeptModalOpen(false);
+    setSelectedDept(null);
+    setDeptFormData({ name: '', code: '', description: '' });
+  };
+
+  const handleSaveDept = async () => {
+    if (!deptFormData.name || !deptFormData.code) {
+      alert('Nama dan kode departemen harus diisi');
+      return;
+    }
+
+    try {
+      if (deptFormMode === 'add') {
+        await apiClient.post('/departments', deptFormData);
+        alert('Departemen berhasil ditambahkan!');
+      } else {
+        await apiClient.patch(`/departments/${selectedDept.id}`, deptFormData);
+        alert('Departemen berhasil diperbarui!');
+      }
+      handleCloseDeptModal();
+      const response = await apiClient.get('/departments');
+      fetchDepartments();
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal menyimpan departemen.');
+    }
+  };
+
+  const handleDeleteDept = async (deptId: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus departemen ini?')) return;
+
+    try {
+      await apiClient.delete(`/departments/${deptId}`);
+      alert('Departemen berhasil dihapus!');
+      const response = await apiClient.get('/departments');
+      fetchDepartments();
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal menghapus departemen.');
+    }
+  };
+
+  const handleOpenScheduleModal = (mode: 'add' | 'edit', schedule?: any) => {
+    setScheduleFormMode(mode);
+    if (mode === 'edit' && schedule) {
+      setSelectedSchedule(schedule);
+      setScheduleFormData({
+        dayOfWeek: schedule.dayOfWeek,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        capacity: schedule.capacity
+      });
+    } else {
+      setScheduleFormData({ dayOfWeek: '', startTime: '', endTime: '', capacity: 10 });
+    }
+    setIsScheduleModalOpen(true);
+  };
+
+  const handleCloseScheduleModal = () => {
+    setIsScheduleModalOpen(false);
+    setSelectedSchedule(null);
+    setScheduleFormData({ dayOfWeek: '', startTime: '', endTime: '', capacity: 10 });
+  };
+
+  const handleSaveSchedule = async () => {
+    if (!scheduleFormData.dayOfWeek || !scheduleFormData.startTime || !scheduleFormData.endTime) {
+      alert('Hari, jam mulai, dan jam selesai harus diisi');
+      return;
+    }
+
+    try {
+      const payload = {
+        doctorId: selectedDoctorFilter,
+        dayOfWeek: scheduleFormData.dayOfWeek,
+        startTime: scheduleFormData.startTime,
+        endTime: scheduleFormData.endTime,
+        capacity: Number(scheduleFormData.capacity),
+        departmentId: selectedScheduleDeptFilter
+      };
+
+      if (scheduleFormMode === 'add') {
+        await apiClient.post('/schedules', payload);
+        alert('Jadwal berhasil ditambahkan!');
+      } else {
+        await apiClient.patch(`/schedules/${selectedSchedule.id}`, payload);
+        alert('Jadwal berhasil diperbarui!');
+      }
+      handleCloseScheduleModal();
+      const response = await apiClient.get('/schedules');
+      setSchedules(response.data.data || []);
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal menyimpan jadwal.');
+    }
+  };
+
+  const handleDeleteSchedule = async (scheduleId: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) return;
+
+    try {
+      await apiClient.delete(`/schedules/${scheduleId}`);
+      alert('Jadwal berhasil dihapus!');
+      const response = await apiClient.get('/schedules');
+      setSchedules(response.data.data || []);
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal menghapus jadwal.');
     }
   };
 
@@ -572,14 +721,215 @@ export default function AdminDashboard() {
           {activeView === 'users_doctor' && <UserTable role="DOCTOR" title="Data Dokter Spesialis" />}
           {activeView === 'users_admin' && <UserTable role="ADMIN" title="Akses Administrator" />}        
           {activeView === 'services' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center h-[60vh] bg-white rounded-3xl border-2 border-dashed border-slate-200">
-              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-                <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+            <div className="animate-in fade-in duration-500">
+              <div className="mb-8">
+                <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] mb-2">Manajemen Layanan</h1>
+                <p className="text-slate-600">Kelola departemen dan jadwal layanan poliklinik.</p>
               </div>
-              <h2 className="text-2xl font-extrabold text-zinc-900 font-['Manrope'] mb-2">Manajemen Layanan</h2>
-              <p className="text-slate-500 text-sm font-medium">Modul pengelolaan Poliklinik sedang dalam tahap pengembangan (Under Construction).</p>
+
+              <div className="flex gap-4 mb-6 border-b border-slate-200">
+                <button
+                  onClick={() => setServicesTab('departments')}
+                  className={`px-4 py-3 font-semibold text-sm transition-colors ${
+                    servicesTab === 'departments'
+                      ? 'text-indigo-600 border-b-2 border-indigo-600'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Manajemen Departemen
+                </button>
+                <button
+                  onClick={() => setServicesTab('schedules')}
+                  className={`px-4 py-3 font-semibold text-sm transition-colors ${
+                    servicesTab === 'schedules'
+                      ? 'text-indigo-600 border-b-2 border-indigo-600'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Manajemen Jadwal
+                </button>
+              </div>
+
+              {servicesTab === 'departments' && (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold text-zinc-900">Daftar Departemen</h2>
+                    <button onClick={() => handleOpenDeptModal('add')} className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                      + Tambah Departemen
+                    </button>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                          <th className="p-3 pl-0">Nama Departemen</th>
+                          <th className="p-3">Kode</th>
+                          <th className="p-3">Deskripsi</th>
+                          <th className="p-3 text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                        {departments.map((dept: any) => (
+                          <tr key={dept.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="p-3 pl-0 font-semibold">{dept.name}</td>
+                            <td className="p-3 font-mono text-xs bg-slate-50 px-2 py-1 rounded w-fit">{dept.code}</td>
+                            <td className="p-3 text-slate-600 text-sm truncate max-w-xs">{dept.description || '-'}</td>
+                            <td className="p-3 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <button onClick={() => handleOpenDeptModal('edit', dept)} className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200" title="Edit">
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                </button>
+                                <button onClick={() => handleDeleteDept(dept.id)} className="p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200" title="Hapus">
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {servicesTab === 'schedules' && (
+                <div className="space-y-6">
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                    <div className="flex gap-4 items-end">
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Departemen</label>
+                        <select
+                          value={selectedScheduleDeptFilter}
+                          onChange={(e) => {
+                            setSelectedScheduleDeptFilter(e.target.value);
+                            setSelectedDoctorFilter('');
+                          }}
+                          className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium bg-white hover:border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                        >
+                          <option value="">Pilih Departemen...</option>
+                          {departments.map((dept: any) => (
+                            <option key={dept.id} value={dept.id}>
+                              {dept.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Dokter</label>
+                        <select
+                          value={selectedDoctorFilter}
+                          onChange={(e) => setSelectedDoctorFilter(e.target.value)}
+                          className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium bg-white hover:border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                          disabled={!selectedScheduleDeptFilter}
+                        >
+                          <option value="">Pilih Dokter...</option>
+                          {schedules
+                            .filter((s: any) => s.departmentId === selectedScheduleDeptFilter)
+                            .reduce((acc: any[], s: any) => {
+                              if (!acc.find((d) => d.doctorId === s.doctorId)) {
+                                acc.push(s);
+                              }
+                              return acc;
+                            }, [])
+                            .map((s: any) => (
+                              <option key={s.doctorId} value={s.doctorId}>
+                                {s.doctor?.user?.name || '-'}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {selectedDoctorFilter && (
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                      <div className="flex justify-between items-center mb-6">
+                        <div>
+                          <h3 className="text-lg font-bold text-zinc-900">Jadwal Mingguan</h3>
+                          <p className="text-sm text-slate-500 mt-1">
+                            {schedules.find((s: any) => s.doctorId === selectedDoctorFilter)?.doctor?.user?.name} -
+                            {schedules.find((s: any) => s.doctorId === selectedDoctorFilter)?.department?.name}
+                          </p>
+                        </div>
+                        <button onClick={() => handleOpenScheduleModal('add')} className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                          + Tambah Jadwal
+                        </button>
+                      </div>
+
+                      {isLoadingSchedules ? (
+                        <div className="flex justify-center py-10">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                        </div>
+                      ) : schedules.filter((s: any) => s.doctorId === selectedDoctorFilter).length === 0 ? (
+                        <div className="py-8 text-center text-slate-500 italic text-sm">Tidak ada jadwal untuk dokter ini</div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse">
+                            <thead>
+                              <tr className="border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                                <th className="p-3 pl-0">Hari</th>
+                                <th className="p-3">Jam Mulai</th>
+                                <th className="p-3">Jam Selesai</th>
+                                <th className="p-3">Kapasitas</th>
+                                <th className="p-3 text-right">Aksi</th>
+                              </tr>
+                            </thead>
+                            <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                              {schedules
+                                .filter((s: any) => s.doctorId === selectedDoctorFilter)
+                                .sort((a: any, b: any) => {
+                                  const dayOrder: Record<string, number> = {
+                                    'MONDAY': 0, 'TUESDAY': 1, 'WEDNESDAY': 2, 'THURSDAY': 3,
+                                    'FRIDAY': 4, 'SATURDAY': 5, 'SUNDAY': 6
+                                  };
+                                  return dayOrder[a.dayOfWeek] - dayOrder[b.dayOfWeek];
+                                })
+                                .map((schedule: any) => {
+                                  const dayNames: Record<string, string> = {
+                                    'MONDAY': 'Senin', 'TUESDAY': 'Selasa', 'WEDNESDAY': 'Rabu',
+                                    'THURSDAY': 'Kamis', 'FRIDAY': 'Jumat', 'SATURDAY': 'Sabtu', 'SUNDAY': 'Minggu'
+                                  };
+
+                                  return (
+                                    <tr key={schedule.id} className="hover:bg-slate-50/70 transition-colors">
+                                      <td className="p-3 pl-0 font-semibold">{dayNames[schedule.dayOfWeek]}</td>
+                                      <td className="p-3 font-mono text-sm">{schedule.startTime}</td>
+                                      <td className="p-3 font-mono text-sm">{schedule.endTime}</td>
+                                      <td className="p-3">
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                          {schedule.capacity}
+                                        </span>
+                                      </td>
+                                      <td className="p-3 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                          <button onClick={() => handleOpenScheduleModal('edit', schedule)} className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200" title="Edit">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                          </button>
+                                          <button onClick={() => handleDeleteSchedule(schedule.id)} className="p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200" title="Hapus">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                          </button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
           {activeView === 'queues' && <AdminQueueManagement />}
@@ -700,6 +1050,135 @@ export default function AdminDashboard() {
                     </table>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Modal Departemen */}
+          {isDeptModalOpen && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                <h2 className="text-xl font-bold text-zinc-900 mb-4">
+                  {deptFormMode === 'add' ? 'Tambah Departemen' : 'Edit Departemen'}
+                </h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Nama Departemen</label>
+                    <input
+                      type="text"
+                      value={deptFormData.name}
+                      onChange={(e) => setDeptFormData({ ...deptFormData, name: e.target.value })}
+                      placeholder="Contoh: Poliklinik Umum"
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Kode Departemen</label>
+                    <input
+                      type="text"
+                      value={deptFormData.code}
+                      onChange={(e) => setDeptFormData({ ...deptFormData, code: e.target.value })}
+                      placeholder="Contoh: UMU"
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Deskripsi (Opsional)</label>
+                    <textarea
+                      value={deptFormData.description}
+                      onChange={(e) => setDeptFormData({ ...deptFormData, description: e.target.value })}
+                      placeholder="Deskripsi departemen"
+                      rows={3}
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3 justify-end mt-6">
+                  <button
+                    onClick={handleCloseDeptModal}
+                    className="px-4 py-2 border border-slate-200 text-slate-600 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={handleSaveDept}
+                    className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    Simpan
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Schedule */}
+          {isScheduleModalOpen && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                <h2 className="text-xl font-bold text-zinc-900 mb-4">
+                  {scheduleFormMode === 'add' ? 'Tambah Jadwal' : 'Edit Jadwal'}
+                </h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Hari</label>
+                    <select
+                      value={scheduleFormData.dayOfWeek}
+                      onChange={(e) => setScheduleFormData({ ...scheduleFormData, dayOfWeek: e.target.value })}
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    >
+                      <option value="">Pilih Hari...</option>
+                      <option value="MONDAY">Senin</option>
+                      <option value="TUESDAY">Selasa</option>
+                      <option value="WEDNESDAY">Rabu</option>
+                      <option value="THURSDAY">Kamis</option>
+                      <option value="FRIDAY">Jumat</option>
+                      <option value="SATURDAY">Sabtu</option>
+                      <option value="SUNDAY">Minggu</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Jam Mulai</label>
+                    <input
+                      type="time"
+                      value={scheduleFormData.startTime}
+                      onChange={(e) => setScheduleFormData({ ...scheduleFormData, startTime: e.target.value })}
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Jam Selesai</label>
+                    <input
+                      type="time"
+                      value={scheduleFormData.endTime}
+                      onChange={(e) => setScheduleFormData({ ...scheduleFormData, endTime: e.target.value })}
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Kapasitas</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={scheduleFormData.capacity}
+                      onChange={(e) => setScheduleFormData({ ...scheduleFormData, capacity: Number(e.target.value) })}
+                      className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3 justify-end mt-6">
+                  <button
+                    onClick={handleCloseScheduleModal}
+                    className="px-4 py-2 border border-slate-200 text-slate-600 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={handleSaveSchedule}
+                    className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    Simpan
+                  </button>
+                </div>
               </div>
             </div>
           )}
