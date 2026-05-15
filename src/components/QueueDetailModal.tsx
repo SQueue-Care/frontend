@@ -41,6 +41,10 @@ const statusMeta: Record<QueueStatus, { title: string; tone: string; message: st
 
 export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDetailsModalProps) {
   const meta = statusMeta[status];
+
+  // Safety check to prevent crash if status is invalid
+  if (!meta) return null;
+
   const isWaiting = status === QueueStatus.WAITING;
   const isCalled = status === QueueStatus.CALLED;
   const isInProgress = status === QueueStatus.IN_PROGRESS;

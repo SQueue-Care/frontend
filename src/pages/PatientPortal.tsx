@@ -62,7 +62,7 @@ export default function PatientPortal() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
-  const [selectedDept, setSelectedDept] = useState<{id: string, name: string} | null>(null);
+  const [selectedDept, setSelectedDept] = useState<{ id: string, name: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeView, setActiveView] = useState<PortalView>('polyclinics');
   const [activeQueueId, setActiveQueueId] = useState<string | null>(null);
@@ -70,6 +70,7 @@ export default function PatientPortal() {
   const [formData, setFormData] = useState({
     nik: '', bpjsNumber: '', phone: '', gender: '', birthDate: '', address: ''
   });
+
 
   // ==========================================
   // 3. STORE & ROUTER (Zustand & React Router)
@@ -79,10 +80,11 @@ export default function PatientPortal() {
   const user = useAuthStore((state) => state.user);
   const { departments, isLoading: isDeptLoading, fetchDepartments } = useDepartmentStore();
   const { profile, fetchProfile, updateProfile, isLoading: isProfileLoading, isSaving } = usePatientStore();
-  const { 
+  const {
     patientHistory, fetchPatientHistory, isLoadingTable,
-    patientAppointments, fetchPatientAppointments, isLoadingAppointments 
+    patientAppointments, fetchPatientAppointments, isLoadingAppointments
   } = useQueueStore();
+  const { addAppointmentId } = usePatientStore();
 
   // ==========================================
   // 4. EFEK SAMPING (useEffect)
@@ -92,20 +94,19 @@ export default function PatientPortal() {
     fetchDepartments();
   }, [fetchDepartments]);
 
-  // Fetch antrian aktif saat user pertama kali load page
+  // Fetch antrian dan appointments saat user pertama kali load page
   useEffect(() => {
     const patientId = user?.patient?.id || (user?.role === 'PATIENT' ? user.id : null);
-    if (activeView === 'history' && patientId) {
+    if (patientId) {
       fetchPatientHistory(patientId);
-      // TAMBAHKAN INI: Memanggil data booking/appointment
-      fetchPatientAppointments(patientId); 
+      fetchPatientAppointments(patientId);
     }
-  }, [activeView, user, fetchPatientHistory, fetchPatientAppointments]);
+  }, [user?.id, user?.patient?.id]);
 
   // Set activeQueueId jika ada antrian aktif (WAITING/CALLED/IN_PROGRESS)
   useEffect(() => {
     if (patientHistory && patientHistory.length > 0) {
-      const activeQueue = patientHistory.find(q => 
+      const activeQueue = patientHistory.find(q =>
         ['WAITING', 'CALLED', 'IN_PROGRESS'].includes(q.status)
       );
       if (activeQueue) {
@@ -118,13 +119,13 @@ export default function PatientPortal() {
     }
   }, [patientHistory]);
 
-  // Fetch profil HANYA SATU KALI dengan prioritas ID Pasien
+  // Fetch profil saat user atau patient ID berubah
   useEffect(() => {
     const patientId = user?.patient?.id || (user?.role === 'PATIENT' ? user.id : null);
-    if (patientId) { // Dihapus: pengecekan activeView === 'profile'
+    if (patientId) {
       fetchProfile(patientId);
     }
-  }, [user, fetchProfile]);
+  }, [user?.id, user?.patient?.id]);
 
   // Isi formulir jika data profil berhasil diambil
   useEffect(() => {
@@ -167,14 +168,14 @@ export default function PatientPortal() {
   // ==========================================
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const patientId = user?.patient?.id || (user?.role === 'PATIENT' ? user.id : null);
-    
+
     if (!patientId) {
       alert("Gagal mengidentifikasi ID Pasien pada sesi Anda.");
       return;
     }
-    
+
     try {
       const payload = {
         nik: formData.nik || undefined,
@@ -184,7 +185,7 @@ export default function PatientPortal() {
         birthDate: formData.birthDate ? new Date(formData.birthDate).toISOString() : undefined,
         address: formData.address || undefined,
       };
-      
+
       await updateProfile(patientId, payload);
       setIsEditing(false);
       alert('Profil berhasil diperbarui!');
@@ -210,10 +211,10 @@ export default function PatientPortal() {
 
       if (responseData?.status === "error" && responseData?.error?.details) {
         const details = responseData.error.details;
-        
+
         if (Array.isArray(details)) {
           // Petakan setiap error teknis menggunakan fungsi translateError
-          errorMessage = details.map((d: any) => 
+          errorMessage = details.map((d: any) =>
             `- ${translateError(d.path, d.code, d.message)}`
           ).join('\n');
         }
@@ -239,7 +240,7 @@ export default function PatientPortal() {
 
   const openBooking = (deptId: string, deptName: string) => {
     setSelectedDept({ id: deptId, name: deptName });
-    setBookingStep(1); 
+    setBookingStep(1);
     setIsBookingOpen(true);
   };
 
@@ -248,18 +249,18 @@ export default function PatientPortal() {
     setTimeout(() => {
       setBookingStep(1);
       setSelectedDept(null);
-    }, 500); 
+    }, 500);
   };
 
   const handleNextStep = () => setBookingStep((prev) => prev + 1);
   const handlePrevStep = () => setBookingStep((prev) => prev - 1);
   return (
     <div className="min-h-screen bg-slate-50 font-['Inter'] relative">
-      
+
       {/* ========================================== */}
       {/* 1. SIDEBAR & OVERLAY */}
       {/* ========================================== */}
-      <div 
+      <div
         className={`fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] transition-opacity duration-300 ${isSidebarOpen ? 'block opacity-100' : 'hidden opacity-0'}`}
         onClick={toggleSidebar}
       />
@@ -283,24 +284,24 @@ export default function PatientPortal() {
         </div>
 
         <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
-          <button 
-            onClick={() => handleNavigation('polyclinics')} 
+          <button
+            onClick={() => handleNavigation('polyclinics')}
             className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'polyclinics' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
             Pilih Poliklinik
           </button>
-          
-          <button 
-            onClick={() => handleNavigation('history')} 
+
+          <button
+            onClick={() => handleNavigation('history')}
             className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'history' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             Riwayat Antrean
           </button>
 
-          <button 
-            onClick={() => handleNavigation('profile')} 
+          <button
+            onClick={() => handleNavigation('profile')}
             className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'profile' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -325,7 +326,7 @@ export default function PatientPortal() {
       <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-8">
           <div className="flex justify-between h-16 items-center gap-4">
-            
+
             {/* BAGIAN KIRI: Tombol Sidebar & Logo */}
             <div className="flex items-center gap-3 shrink-0">
               <button onClick={toggleSidebar} className="p-2 -ml-2 rounded-lg text-teal-400 hover:bg-white/10 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500/50">
@@ -348,7 +349,7 @@ export default function PatientPortal() {
             </div>
 
             {/* BAGIAN KANAN: Profil User */}
-            <div 
+            <div
               onClick={() => handleNavigation('profile')}
               className="flex items-center gap-4 shrink-0 cursor-pointer group"
               title="Buka Profil"
@@ -376,38 +377,38 @@ export default function PatientPortal() {
       {/* 3. KONTEN UTAMA */}
       {/* ========================================== */}
       <main className="relative z-10 max-w-[1440px] mx-auto px-6 sm:px-8 py-10 md:py-12">
-        
+
         {/* TAMPILAN 1: PILIH POLIKLINIK */}
         {activeView === 'polyclinics' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            
+
             {/* Header & Search Bar Baru */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
               <div className="max-w-xl">
                 <h1 className="text-3xl md:text-4xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tighter mb-2.5">Pilih Layanan Poliklinik</h1>
                 <p className="text-slate-600 text-base leading-relaxed">Cek status keramaian poli secara <span className="font-semibold text-teal-700">real-time</span> sebelum mengambil nomor antrean.</p>
               </div>
-              
+
               {/* Saran: Search bar dipindah ke sini agar lebih kontekstual dengan konten di bawahnya */}
               <div className="w-full md:w-80 relative shrink-0">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari poli..." 
-                  className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-zinc-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all placeholder:text-slate-400 shadow-sm" 
+                  placeholder="Cari poli..."
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-zinc-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all placeholder:text-slate-400 shadow-sm"
                 />
               </div>
             </div>
 
             {/* CONDITIONAL RENDERING: Live Queue Tracker ATAU Empty State */}
             {activeQueueId ? (
-              <LiveQueueTracker 
-                queueId={activeQueueId} 
-                onCancelSuccess={() => setActiveQueueId(null)} 
+              <LiveQueueTracker
+                queueId={activeQueueId}
+                onCancelSuccess={() => setActiveQueueId(null)}
               />
             ) : (
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 mb-8 text-center flex flex-col items-center justify-center">
@@ -418,26 +419,26 @@ export default function PatientPortal() {
                 <p className="text-slate-500 text-sm max-w-md mx-auto">Anda belum mengambil tiket antrean hari ini. Silakan pilih layanan poliklinik di bawah ini untuk memulai sesi konsultasi.</p>
               </div>
             )}
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Tampilkan indikator loading jika data sedang diambil */}
-          {isDeptLoading ? (
-             <div className="col-span-full text-center py-10 font-bold text-slate-500">
-               Memuat data layanan poliklinik...
-             </div>
-          ) : (
-            filteredPolyclinics.map((poli) => (
-              <PolyclinicCard
-                key={poli.id} // Gunakan ID dari database
-                name={poli.name}
-                description={poli.description}
-                status={poli.status}
-                percentage={poli.percentage}
-                colorClass={poli.color}
-                onClick={() => openBooking(poli.id, poli.name)}
-              />
-            ))
-          )}
+              {/* Tampilkan indikator loading jika data sedang diambil */}
+              {isDeptLoading ? (
+                <div className="col-span-full text-center py-10 font-bold text-slate-500">
+                  Memuat data layanan poliklinik...
+                </div>
+              ) : (
+                filteredPolyclinics.map((poli) => (
+                  <PolyclinicCard
+                    key={poli.id} // Gunakan ID dari database
+                    name={poli.name}
+                    description={poli.description}
+                    status={poli.status}
+                    percentage={poli.percentage}
+                    colorClass={poli.color}
+                    onClick={() => openBooking(poli.id, poli.name)}
+                  />
+                ))
+              )}
 
               {filteredPolyclinics.length === 0 && (
                 <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16">
@@ -451,16 +452,16 @@ export default function PatientPortal() {
             </div>
           </div>
         )}
-            
+
         {/* TAMPILAN 2: RIWAYAT ANTREAN & RESERVASI (Detail Sinkron) */}
         {activeView === 'history' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
-            
+
             <div className="mb-2">
               <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tighter mb-2">Riwayat & Reservasi</h1>
               <p className="text-slate-600">Detail lengkap seluruh aktivitas kunjungan medis Anda.</p>
             </div>
-            
+
             {/* TABEL 1: RESERVASI MENDATANG (Data Appointment) */}
             <div>
               <h3 className="text-lg font-bold text-zinc-900 mb-5 flex items-center gap-2">
@@ -622,8 +623,8 @@ export default function PatientPortal() {
                       </div>
                     </div>
                     {!isEditing && (
-                      <button 
-                        onClick={() => setIsEditing(true)} 
+                      <button
+                        onClick={() => setIsEditing(true)}
                         className="w-full md:w-auto px-6 py-3 bg-white text-zinc-900 border-2 border-slate-200 hover:border-teal-500 hover:text-teal-700 rounded-xl text-sm font-extrabold transition-all shadow-sm"
                       >
                         Edit Profil
@@ -633,7 +634,7 @@ export default function PatientPortal() {
 
                   {/* Formulir Profil */}
                   <form onSubmit={handleSaveProfile} className="p-8">
-                    
+
                     {/* Seksi 1: Identitas Pribadi */}
                     <div className="mb-8">
                       <h3 className="text-sm font-black text-zinc-900 uppercase tracking-widest border-b border-slate-100 pb-3 mb-5">Identitas Pribadi</h3>
@@ -641,7 +642,7 @@ export default function PatientPortal() {
                         <div>
                           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nomor Induk Kependudukan (NIK)</label>
                           {isEditing ? (
-                            <input type="text" maxLength={16} value={formData.nik} onChange={(e) => setFormData({...formData, nik: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="16 Digit NIK" />
+                            <input type="text" maxLength={16} value={formData.nik} onChange={(e) => setFormData({ ...formData, nik: e.target.value })} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="16 Digit NIK" />
                           ) : (
                             <div className="text-base font-bold text-zinc-900">{formData.nik || <span className="text-slate-400 italic font-medium">Belum diatur</span>}</div>
                           )}
@@ -649,7 +650,7 @@ export default function PatientPortal() {
                         <div>
                           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nomor BPJS (Opsional)</label>
                           {isEditing ? (
-                            <input type="text" value={formData.bpjsNumber} onChange={(e) => setFormData({...formData, bpjsNumber: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="Nomor BPJS Kesehatan" />
+                            <input type="text" value={formData.bpjsNumber} onChange={(e) => setFormData({ ...formData, bpjsNumber: e.target.value })} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="Nomor BPJS Kesehatan" />
                           ) : (
                             <div className="text-base font-bold text-zinc-900">{formData.bpjsNumber || <span className="text-slate-400 italic font-medium">Tidak ada BPJS</span>}</div>
                           )}
@@ -657,7 +658,7 @@ export default function PatientPortal() {
                         <div>
                           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Jenis Kelamin</label>
                           {isEditing ? (
-                            <select value={formData.gender} onChange={(e) => setFormData({...formData, gender: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all cursor-pointer">
+                            <select value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all cursor-pointer">
                               <option value="">Pilih Jenis Kelamin</option>
                               <option value="MALE">Laki-laki</option>
                               <option value="FEMALE">Perempuan</option>
@@ -669,9 +670,9 @@ export default function PatientPortal() {
                         <div>
                           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tanggal Lahir</label>
                           {isEditing ? (
-                            <input type="date" value={formData.birthDate} onChange={(e) => setFormData({...formData, birthDate: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all cursor-pointer" />
+                            <input type="date" value={formData.birthDate} onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all cursor-pointer" />
                           ) : (
-                            <div className="text-base font-bold text-zinc-900">{formData.birthDate ? new Date(formData.birthDate).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}) : <span className="text-slate-400 italic font-medium">Belum diatur</span>}</div>
+                            <div className="text-base font-bold text-zinc-900">{formData.birthDate ? new Date(formData.birthDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : <span className="text-slate-400 italic font-medium">Belum diatur</span>}</div>
                           )}
                         </div>
                       </div>
@@ -684,7 +685,7 @@ export default function PatientPortal() {
                         <div>
                           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nomor WhatsApp / Telepon</label>
                           {isEditing ? (
-                            <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="0812xxxxxxx" />
+                            <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all" placeholder="0812xxxxxxx" />
                           ) : (
                             <div className="text-base font-bold text-zinc-900">{formData.phone || <span className="text-slate-400 italic font-medium">Belum diatur</span>}</div>
                           )}
@@ -692,7 +693,7 @@ export default function PatientPortal() {
                         <div className="md:col-span-2">
                           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Alamat Lengkap Saat Ini</label>
                           {isEditing ? (
-                            <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} rows={3} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all resize-none" placeholder="Tuliskan nama jalan, RT/RW, dan kota..."></textarea>
+                            <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={3} className="w-full px-4 py-3 bg-white border-2 border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 outline-none transition-all resize-none" placeholder="Tuliskan nama jalan, RT/RW, dan kota..."></textarea>
                           ) : (
                             <div className="text-base font-bold text-zinc-900 leading-relaxed max-w-2xl">{formData.address || <span className="text-slate-400 italic font-medium">Alamat belum ditambahkan.</span>}</div>
                           )}
@@ -723,21 +724,29 @@ export default function PatientPortal() {
       </main>
 
       {/* 4. BOOKING PANEL (REFACRORED) */}
-      <BookingPanel 
+      <BookingPanel
         isOpen={isBookingOpen}
         onClose={closeBooking}
         step={bookingStep}
         selectedDept={selectedDept}
         // Teruskan data profil dari usePatientStore
-        patientProfile={profile ? { 
-          name: user?.name || '', 
-          nik: profile.nik, 
-          birthDate: profile.birthDate 
+        patientProfile={profile ? {
+          name: user?.name || '',
+          nik: profile.nik || '',
+          birthDate: profile.birthDate || ''
         } : null}
         onNext={handleNextStep}
         onPrev={handlePrevStep}
-        onBookingSuccess={(queueId) => {
-          setActiveQueueId(queueId);
+        onBookingSuccess={(id, isAppointment) => {
+          const patientId = user?.patient?.id || (user?.role === 'PATIENT' ? user.id : null);
+
+          if (isAppointment && patientId) {
+            // Save appointment ID and refresh list from backend
+            addAppointmentId(patientId, id);
+            fetchPatientAppointments(patientId);
+          } else {
+            setActiveQueueId(id);
+          }
           setActiveView('polyclinics');
         }}
       />

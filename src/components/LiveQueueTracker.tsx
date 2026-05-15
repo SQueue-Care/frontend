@@ -87,10 +87,6 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
             ? 'Dilewati'
             : 'Dibatalkan';
   
-  const mappedModalStatus = isWaiting 
-    ? 'waiting' 
-    : (isInProgress || isCalled ? 'in-service' : 'completed');          
-
   return (
     <>
       <div className={`mb-12 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transform transition-all duration-500 hover:scale-[1.01] ${isInProgress ? 'bg-gradient-to-r from-emerald-600 to-teal-800 shadow-emerald-900/20' : 'bg-gradient-to-r from-teal-900 to-slate-900 shadow-teal-900/10'}`}>
@@ -153,7 +149,7 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
       <QueueDetailsModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        status={mappedModalStatus}
+        status={status}
       />
     </>
   );

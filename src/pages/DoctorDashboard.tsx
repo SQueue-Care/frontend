@@ -14,7 +14,7 @@ import {
   QUEUE_TRANSITION_TITLES,
 } from '../lib/queueStateMachine';
 
-type DoctorView = 'dashboard' | 'patients' | 'profile';
+type DoctorView = 'dashboard' | 'appointments' | 'profile';
 
 export default function DoctorDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,6 +23,8 @@ export default function DoctorDashboard() {
   const [formData, setFormData] = useState({
     specialization: '', licenseNumber: '', avgServiceMin: 10
   });
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
 
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
@@ -59,6 +61,29 @@ export default function DoctorDashboard() {
       fetchQueues({ departmentId, date: new Date() });
     }
   }, [activeView, profile?.department?.id, profile?.departmentId, fetchQueues]);
+
+  // Fetch appointments untuk doctor
+  useEffect(() => {
+    const doctorId = (user as any)?.doctor?.id || (user?.role === 'DOCTOR' ? user.id : null);
+
+    if (activeView === 'appointments' && doctorId) {
+      const fetchAppointments = async () => {
+        setIsLoadingAppointments(true);
+        try {
+          const response = await apiClient.get('/appointments', {
+            params: { doctorId }
+          });
+          setAppointments(response.data.data || []);
+        } catch (error: any) {
+          console.error('Gagal memuat appointments:', error);
+          setAppointments([]);
+        } finally {
+          setIsLoadingAppointments(false);
+        }
+      };
+      fetchAppointments();
+    }
+  }, [activeView, user]);
 
   // Efek untuk mengisi form edit profil
   useEffect(() => {
@@ -153,6 +178,23 @@ export default function DoctorDashboard() {
     }
   };
 
+  const handleUpdateAppointmentStatus = async (appointmentId: string, newStatus: string) => {
+    try {
+      await apiClient.patch(`/appointments/${appointmentId}`, { status: newStatus });
+      // Refresh appointments list
+      const doctorId = (user as any)?.doctor?.id || (user?.role === 'DOCTOR' ? user.id : null);
+      if (doctorId) {
+        const response = await apiClient.get('/appointments', {
+          params: { doctorId }
+        });
+        setAppointments(response.data.data || []);
+      }
+      alert('Status appointment berhasil diperbarui!');
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal mengubah status appointment.');
+    }
+  };
+
   const departmentQueues = useMemo(() => {
     const departmentId = profile?.department?.id || profile?.departmentId;
     if (!departmentId) return [];
@@ -191,7 +233,12 @@ export default function DoctorDashboard() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             Ruang Praktik
           </button>
-          
+
+          <button onClick={() => { setActiveView('appointments'); setIsSidebarOpen(false); }} className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'appointments' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            Jadwal Reservasi
+          </button>
+
           <button onClick={() => { setActiveView('profile'); setIsSidebarOpen(false); }} className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'profile' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             Profil Medis
@@ -216,7 +263,7 @@ export default function DoctorDashboard() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
               </button>
               <h2 className="text-lg font-bold text-zinc-800">
-                {activeView === 'dashboard' ? 'Ruang Praktik Utama' : 'Manajemen Profil'}
+                {activeView === 'dashboard' ? 'Ruang Praktik Utama' : activeView === 'appointments' ? 'Jadwal Reservasi' : 'Manajemen Profil'}
               </h2>
           </div>
           
@@ -379,6 +426,87 @@ export default function DoctorDashboard() {
                    </div>
                  )}
               </div>
+            </div>
+          )}
+
+          {/* VIEW: JADWAL RESERVASI */}
+          {activeView === 'appointments' && (
+            <div className="animate-in fade-in duration-500">
+              <div className="mb-8">
+                <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] mb-2">Jadwal Reservasi Pasien</h1>
+                <p className="text-slate-600">Kelola dan perbarui status reservasi pasien yang terjadwal dengan Anda.</p>
+              </div>
+
+              {isLoadingAppointments ? (
+                <div className="text-center py-12 text-slate-500 font-medium">Memuat jadwal reservasi...</div>
+              ) : appointments.length === 0 ? (
+                <div className="text-center py-12 text-slate-500 font-medium">Tidak ada jadwal reservasi.</div>
+              ) : (
+                <div className="space-y-4">
+                  {appointments.map((apt: any) => (
+                    <div key={apt.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-zinc-900 text-lg">{apt.patient?.user?.name || 'Pasien'}</h3>
+                          <p className="text-sm text-slate-600">{apt.department?.name || 'Departemen'}</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          apt.status === 'PENDING' ? 'bg-blue-50 text-blue-600' :
+                          apt.status === 'CONFIRMED' ? 'bg-emerald-50 text-emerald-600' :
+                          apt.status === 'CANCELLED' ? 'bg-rose-50 text-rose-600' :
+                          'bg-slate-50 text-slate-600'
+                        }`}>
+                          {apt.status === 'PENDING' ? 'Menunggu Konfirmasi' :
+                           apt.status === 'CONFIRMED' ? 'Terkonfirmasi' :
+                           apt.status === 'CANCELLED' ? 'Dibatalkan' :
+                           apt.status}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                        <div>
+                          <span className="text-slate-600">Tanggal & Waktu</span>
+                          <p className="font-semibold text-zinc-900">{new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}</p>
+                          <p className="text-slate-600">{new Date(apt.scheduledAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                        </div>
+                        <div>
+                          <span className="text-slate-600">No. Identitas</span>
+                          <p className="font-semibold text-zinc-900">{apt.patient?.nik || '-'}</p>
+                        </div>
+                      </div>
+
+                      {apt.notes && (
+                        <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                          <p className="text-xs text-slate-600 font-medium mb-1">Keluhan:</p>
+                          <p className="text-sm text-zinc-800">{apt.notes}</p>
+                        </div>
+                      )}
+
+                      {apt.status === 'PENDING' && (
+                        <div className="flex gap-2 pt-4 border-t border-slate-200">
+                          <button
+                            onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
+                            className="flex-1 px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors"
+                          >
+                            Konfirmasi
+                          </button>
+                          <button
+                            onClick={() => handleUpdateAppointmentStatus(apt.id, 'CANCELLED')}
+                            className="flex-1 px-4 py-2 bg-rose-600 text-white font-semibold rounded-lg hover:bg-rose-700 transition-colors"
+                          >
+                            Batalkan
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

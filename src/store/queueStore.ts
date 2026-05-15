@@ -60,6 +60,7 @@ interface QueueState {
   patientAppointments: any[];
   isLoadingAppointments: boolean;
   fetchPatientAppointments: (patientId: string) => Promise<void>;
+  fetchAppointmentDetails: (appointmentId: string) => Promise<any>;
 }
 
 export const useQueueStore = create<QueueState>((set, get) => ({
@@ -80,15 +81,24 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   patientAppointments: [],
   isLoadingAppointments: false,
 
-  fetchPatientAppointments: async (patientId) => {
+  fetchPatientAppointments: async (patientId: string) => {
     set({ isLoadingAppointments: true });
     try {
-      // Panggil endpoint /appointments dengan filter patientId
-      const response = await apiClient.get(`/appointments?patientId=${patientId}`);
+      const response = await apiClient.get(`/patients/${patientId}/appointments`);
       set({ patientAppointments: response.data.data || [], isLoadingAppointments: false });
     } catch (error: any) {
       console.error('Gagal memuat reservasi:', error);
       set({ isLoadingAppointments: false, patientAppointments: [] });
+    }
+  },
+
+  fetchAppointmentDetails: async (appointmentId) => {
+    try {
+      const response = await apiClient.get(`/appointments/${appointmentId}`);
+      return response.data.data;
+    } catch (error: any) {
+      console.error(`Gagal memuat appointment ${appointmentId}:`, error);
+      return null;
     }
   },
 

@@ -13,6 +13,7 @@ export interface PatientProfile {
   gender?: 'MALE' | 'FEMALE' | 'OTHER';
   birthDate?: string;
   address?: string;
+  appointmentIds?: string[];
   user: {
     id: string;
     email: string;
@@ -47,9 +48,12 @@ interface PatientState {
 
   // Fungsi baru untuk mengambil daftar pasien
   fetchPatients: (query: { page: number; pageSize: number }) => Promise<void>;
+
+  // Fungsi untuk menambahkan appointment ID ke profil pasien
+  addAppointmentId: (patientId: string, appointmentId: string) => Promise<void>;
 }
 
-export const usePatientStore = create<PatientState>((set) => ({
+export const usePatientStore = create<PatientState>((set, get) => ({
   // State yang sudah ada
   profile: null,
   isSaving: false,
@@ -90,11 +94,25 @@ export const usePatientStore = create<PatientState>((set) => ({
     set({ isLoading: true, error: null, profile: null });
     try {
       const response = await apiClient.get(`/patients/${patientId}`);
-      set({ profile: response.data.data, isLoading: false });
+      let profileData = response.data.data;
+
+      // Jika backend tidak mengembalikan appointmentIds, coba ambil dari localStorage
+      if (!profileData.appointmentIds) {
+        const stored = localStorage.getItem(`patient_appointments_${patientId}`);
+        if (stored) {
+          try {
+            profileData.appointmentIds = JSON.parse(stored);
+          } catch (e) {
+            console.warn('Gagal parse localStorage appointments');
+          }
+        }
+      }
+
+      set({ profile: profileData, isLoading: false });
     } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Gagal memuat profil pasien.', 
-        isLoading: false 
+      set({
+        error: error.response?.data?.message || 'Gagal memuat profil pasien.',
+        isLoading: false
       });
     }
   },
@@ -110,11 +128,49 @@ export const usePatientStore = create<PatientState>((set) => ({
         patients: state.patients.map((p) => p.id === patientId ? response.data.data : p),
       }));
     } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Gagal menyimpan pembaruan profil.', 
-        isSaving: false 
+      set({
+        error: error.response?.data?.message || 'Gagal menyimpan pembaruan profil.',
+        isSaving: false
       });
       throw error;
+    }
+  },
+
+  addAppointmentId: async (patientId, appointmentId) => {
+    try {
+      const state = get();
+      if (state.profile?.id !== patientId) {
+        console.warn('Profile ID mismatch, tidak menyimpan appointment');
+        return;
+      }
+
+      const currentIds = state.profile.appointmentIds || [];
+      if (currentIds.includes(appointmentId)) {
+        console.log('Appointment ID sudah ada:', appointmentId);
+        return;
+      }
+
+      const updatedIds = [...currentIds, appointmentId];
+      console.log('💾 Saving appointment IDs:', updatedIds);
+
+      // Update locally first
+      set((s) => ({
+        profile: s.profile ? { ...s.profile, appointmentIds: updatedIds } : null
+      }));
+
+      // Always save to localStorage as backup (backend might not persist it)
+      localStorage.setItem(`patient_appointments_${patientId}`, JSON.stringify(updatedIds));
+      console.log('💾 Appointment IDs saved to localStorage:', updatedIds);
+
+      // Then try to persist to backend (optional)
+      try {
+        await apiClient.patch(`/patients/${patientId}`, { appointmentIds: updatedIds });
+        console.log('✅ Appointment IDs also saved to backend');
+      } catch (backendError: any) {
+        console.warn('⚠️ Backend save failed, but localStorage is saved as backup');
+      }
+    } catch (error: any) {
+      console.error('❌ Gagal menyimpan appointment ID:', error);
     }
   }
 }));

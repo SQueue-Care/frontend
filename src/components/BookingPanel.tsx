@@ -15,7 +15,7 @@ interface BookingPanelProps {
   } | null;
   onNext: () => void;
   onPrev: () => void;
-  onBookingSuccess?: (queueId: string) => void;
+  onBookingSuccess?: (id: string, isAppointment: boolean) => void;
 }
 
 // Fungsi Bantuan untuk menghasilkan N hari ke depan
@@ -91,14 +91,14 @@ export default function BookingPanel({
         departmentId: selectedDept.id,
         doctorId: selectedDoctorId,
         scheduleId: selectedScheduleId,
-        date: selectedDate, // Pastikan ini string asli (contoh: "2026-05-15")
-        notes: notes        // Payload Notes wajib terkirim
+        date: selectedDate,
+        notes: notes
       });
       setQueueResult(result);
       onNext();
-      
-      if (onBookingSuccess && !result.isAppointment && result.id) {
-         onBookingSuccess(result.id);
+
+      if (onBookingSuccess && result.id) {
+         onBookingSuccess(result.id, result.isAppointment);
       }
     } catch (err: any) {
       // Menampilkan pesan error ASLI dari backend agar kita tahu apa yang salah
