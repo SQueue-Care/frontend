@@ -7,8 +7,9 @@ import ActiveQueuesStat from '../components/ActiveQueuesStat';
 import WaitTimeStat from '../components/WaitTimeStat';
 import DepartmentWorkloadChart from '../components/DepartmentWorkloadChart';
 import QueueManagementTable from '../components/QueueManagementTable';
-import AdminUserManagement from '../components/AdminUserManagement';
 import AdminQueueManagement from '../components/AdminQueueManagement';
+import QueuePerformanceChart from '../components/QueuePerformanceChart';
+import AnalyticsView from '../components/AnalyticsView';
 import { useAuthStore } from '../store/authStore';
 import { useDepartmentStore } from '../store/departmentStore'; 
 import { useQueueStore } from '../store/queueStore';
@@ -16,11 +17,19 @@ import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 import apiClient from '../lib/apiClient';
 
 
-type AdminView = 'dashboard' | 'users' | 'queues' | 'appointments' | 'users_patient' | 'users_doctor' | 'users_admin' | 'services';
+type AdminView = 'dashboard' | 'users' | 'queues' | 'appointments' | 'users_patient' | 'users_doctor' | 'users_admin' | 'services' | 'analytics';
 
-// Komponen Tabel Pengguna Dinamis
-// Komponen Tabel Pengguna Dinamis dengan Integrasi API
-function UserTable({ role, title }: { role: 'PATIENT' | 'DOCTOR' | 'ADMIN', title: string }) {
+function UserTable({
+  role,
+  title,
+  onManage,
+  onDelete
+}: {
+  role: 'PATIENT' | 'DOCTOR' | 'ADMIN',
+  title: string,
+  onManage: (user: any) => void,
+  onDelete: (userId: string) => void
+}) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -68,7 +77,7 @@ function UserTable({ role, title }: { role: 'PATIENT' | 'DOCTOR' | 'ADMIN', titl
 
   // LOGIKA 3: Integrasi Fungsi Simpan (Tambah User)
   // LOGIKA 3: Integrasi Fungsi Simpan (Revisi Payload Builder)
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       // PERHATIAN: Jika masih gagal, ubah endpoint ini secara mutlak menjadi '/auth/register' untuk semua role.
@@ -222,7 +231,26 @@ function UserTable({ role, title }: { role: 'PATIENT' | 'DOCTOR' | 'ADMIN', titl
                       </span>
                     </td>
                     <td className="p-5 text-right pr-8">
-                      <button className="text-teal-600 hover:text-teal-700 font-bold text-xs uppercase tracking-tighter">Kelola</button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => onManage(item)}
+                          className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200"
+                          title="Edit"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => onDelete(item.id)}
+                          className="p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200"
+                          title="Hapus"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -238,6 +266,7 @@ function UserTable({ role, title }: { role: 'PATIENT' | 'DOCTOR' | 'ADMIN', titl
 export default function AdminDashboard() {
   const [activeView, setActiveView] = useState<AdminView>('dashboard');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [analyticsDays, setAnalyticsDays] = useState(1);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState<string>('');
@@ -255,6 +284,9 @@ export default function AdminDashboard() {
   const [scheduleFormMode, setScheduleFormMode] = useState<'add' | 'edit'>('add');
   const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
   const [scheduleFormData, setScheduleFormData] = useState({ dayOfWeek: '', startTime: '', endTime: '', capacity: 10 });
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [userFormData, setUserFormData] = useState({ isActive: true });
 
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
@@ -349,7 +381,6 @@ export default function AdminDashboard() {
         alert('Departemen berhasil diperbarui!');
       }
       handleCloseDeptModal();
-      const response = await apiClient.get('/departments');
       fetchDepartments();
     } catch (error: any) {
       alert(error.response?.data?.message || 'Gagal menyimpan departemen.');
@@ -362,7 +393,6 @@ export default function AdminDashboard() {
     try {
       await apiClient.delete(`/departments/${deptId}`);
       alert('Departemen berhasil dihapus!');
-      const response = await apiClient.get('/departments');
       fetchDepartments();
     } catch (error: any) {
       alert(error.response?.data?.message || 'Gagal menghapus departemen.');
@@ -435,6 +465,45 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleOpenUserModal = (user: any) => {
+    setSelectedUser(user);
+    setUserFormData({ isActive: user.isActive !== false });
+    setIsUserModalOpen(true);
+  };
+
+  const handleCloseUserModal = () => {
+    setIsUserModalOpen(false);
+    setSelectedUser(null);
+    setUserFormData({ isActive: true });
+  };
+
+  const handleSaveUser = async () => {
+    if (!selectedUser) return;
+
+    try {
+      await apiClient.patch(`/users/${selectedUser.id}`, {
+        isActive: userFormData.isActive
+      });
+      alert('Status user berhasil diperbarui!');
+      handleCloseUserModal();
+      window.location.reload();
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal memperbarui user.');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus user ini? Tindakan ini tidak dapat dibatalkan.')) return;
+
+    try {
+      await apiClient.delete(`/users/${userId}`);
+      alert('User berhasil dihapus!');
+      window.location.reload();
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal menghapus user.');
+    }
+  };
+
   const handleLogout = async () => {
     await logout();
     navigate('/auth');
@@ -449,6 +518,7 @@ export default function AdminDashboard() {
       case 'services': return 'Manajemen Layanan';
       case 'queues': return 'Manajemen Antrean';
       case 'appointments': return 'Manajemen Reservasi';
+      case 'analytics': return 'Analitik Performa';
       default: return 'Administrator';
     }
   };
@@ -637,6 +707,13 @@ export default function AdminDashboard() {
               </div>
             </div>
           </button>
+          <button
+            onClick={() => setActiveView('analytics')}
+            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'analytics' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            Analitik Performa
+          </button>
         </nav>
         <div className="p-4 border-t border-white/10">
           <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-4 py-3 text-rose-400 hover:bg-rose-500/10 rounded-xl font-medium transition-colors">
@@ -733,14 +810,18 @@ export default function AdminDashboard() {
                  <div className="lg:col-span-2 min-h-[400px] bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-teal-200 transition-all duration-300 p-6 flex flex-col">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="font-extrabold text-zinc-950 font-['Manrope']">Analitik Performa Antrean</h3>
-                      <select className="text-xs font-bold bg-slate-50 border-slate-200 rounded-lg focus:ring-teal-500 text-slate-600 px-3 py-1.5 cursor-pointer outline-none transition-colors">
-                        <option>Hari Ini</option>
-                        <option>7 Hari Terakhir</option>
-                        <option>30 Hari Terakhir</option>
+                      <select
+                        value={analyticsDays}
+                        onChange={(e) => setAnalyticsDays(parseInt(e.target.value))}
+                        className="text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 text-slate-600 px-3 py-1.5 cursor-pointer outline-none transition-colors"
+                      >
+                        <option value="1">Hari Ini</option>
+                        <option value="7">7 Hari Terakhir</option>
+                        <option value="30">30 Hari Terakhir</option>
                       </select>
                     </div>
-                    <div className="flex-1 items-center justify-center flex">
-                      <p className="text-sm text-slate-400 italic">Grafik performa akan ditampilkan di sini.</p>
+                    <div className="flex-1">
+                      <QueuePerformanceChart days={analyticsDays} />
                     </div>
                  </div>
 
@@ -759,9 +840,9 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
-          {activeView === 'users_patient' && <UserTable role="PATIENT" title="Data Pasien" />}
-          {activeView === 'users_doctor' && <UserTable role="DOCTOR" title="Data Dokter Spesialis" />}
-          {activeView === 'users_admin' && <UserTable role="ADMIN" title="Akses Administrator" />}        
+          {activeView === 'users_patient' && <UserTable role="PATIENT" title="Data Pasien" onManage={handleOpenUserModal} onDelete={handleDeleteUser} />}
+          {activeView === 'users_doctor' && <UserTable role="DOCTOR" title="Data Dokter Spesialis" onManage={handleOpenUserModal} onDelete={handleDeleteUser} />}
+          {activeView === 'users_admin' && <UserTable role="ADMIN" title="Akses Administrator" onManage={handleOpenUserModal} onDelete={handleDeleteUser} />}        
           {activeView === 'services' && (
             <div className="animate-in fade-in duration-500">
               <div className="mb-8">
@@ -802,21 +883,21 @@ export default function AdminDashboard() {
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                          <th className="p-3 pl-0">Nama Departemen</th>
-                          <th className="p-3">Kode</th>
-                          <th className="p-3">Deskripsi</th>
-                          <th className="p-3 text-right">Aksi</th>
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="p-4 pl-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Departemen</th>
+                          <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kode</th>
+                          <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Deskripsi</th>
+                          <th className="p-4 pr-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                         </tr>
                       </thead>
-                      <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                      <tbody className="text-sm font-medium text-zinc-900 bg-white">
                         {departments.map((dept: any) => (
-                          <tr key={dept.id} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="p-3 pl-0 font-semibold">{dept.name}</td>
-                            <td className="p-3 font-mono text-xs bg-slate-50 px-2 py-1 rounded w-fit">{dept.code}</td>
-                            <td className="p-3 text-slate-600 text-sm truncate max-w-xs">{dept.description || '-'}</td>
-                            <td className="p-3 text-right">
+                          <tr key={dept.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
+                            <td className="p-4 pl-6 font-bold">{dept.name}</td>
+                            <td className="p-4"><span className="inline-block px-3 py-1 bg-slate-100 text-slate-700 font-extrabold rounded-lg font-mono text-xs">{dept.code}</span></td>
+                            <td className="p-4 text-slate-500 text-sm truncate max-w-xs">{dept.description || '-'}</td>
+                            <td className="p-4 pr-6 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <button onClick={() => handleOpenDeptModal('edit', dept)} className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200" title="Edit">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -912,16 +993,16 @@ export default function AdminDashboard() {
                       ) : (
                         <div className="overflow-x-auto">
                           <table className="w-full text-left border-collapse">
-                            <thead>
-                              <tr className="border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                                <th className="p-3 pl-0">Hari</th>
-                                <th className="p-3">Jam Mulai</th>
-                                <th className="p-3">Jam Selesai</th>
-                                <th className="p-3">Kapasitas</th>
-                                <th className="p-3 text-right">Aksi</th>
+                            <thead className="bg-slate-50 border-b border-slate-200">
+                              <tr>
+                                <th className="p-4 pl-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Hari</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Jam Mulai</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Jam Selesai</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kapasitas</th>
+                                <th className="p-4 pr-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                               </tr>
                             </thead>
-                            <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                            <tbody className="text-sm font-medium text-zinc-900 bg-white">
                               {schedules
                                 .filter((s: any) => s.doctorId === selectedDoctorFilter)
                                 .sort((a: any, b: any) => {
@@ -938,26 +1019,22 @@ export default function AdminDashboard() {
                                   };
 
                                   return (
-                                    <tr key={schedule.id} className="hover:bg-slate-50/70 transition-colors">
-                                      <td className="p-3 pl-0 font-semibold">{dayNames[schedule.dayOfWeek]}</td>
-                                      <td className="p-3 font-mono text-sm">{schedule.startTime}</td>
-                                      <td className="p-3 font-mono text-sm">{schedule.endTime}</td>
-                                      <td className="p-3">
-                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                    <tr key={schedule.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
+                                      <td className="p-4 pl-6 font-bold">{dayNames[schedule.dayOfWeek]}</td>
+                                      <td className="p-4 text-slate-500 font-mono text-sm">{schedule.startTime}</td>
+                                      <td className="p-4 text-slate-500 font-mono text-sm">{schedule.endTime}</td>
+                                      <td className="p-4">
+                                        <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
                                           {schedule.capacity}
                                         </span>
                                       </td>
-                                      <td className="p-3 text-right">
+                                      <td className="p-4 pr-6 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                          <button onClick={() => handleOpenScheduleModal('edit', schedule)} className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200" title="Edit">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
+                                          <button onClick={() => handleOpenScheduleModal('edit', schedule)} className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white text-xs font-bold rounded-lg transition-colors border border-blue-100 hover:border-blue-600" title="Edit">
+                                            Edit
                                           </button>
-                                          <button onClick={() => handleDeleteSchedule(schedule.id)} className="p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200" title="Hapus">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
+                                          <button onClick={() => handleDeleteSchedule(schedule.id)} className="px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-500 hover:text-white text-xs font-bold rounded-lg transition-colors border border-slate-200 hover:border-slate-500" title="Hapus">
+                                            Hapus
                                           </button>
                                         </div>
                                       </td>
@@ -1053,18 +1130,19 @@ export default function AdminDashboard() {
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                          <th className="p-3 pl-0">Nama Pasien</th>
-                          <th className="p-3">Dokter</th>
-                          <th className="p-3">Tanggal & Waktu</th>
-                          <th className="p-3">No. Identitas</th>
-                          <th className="p-3">Departemen</th>
-                          <th className="p-3">Status</th>
-                          <th className="p-3 text-right">Aksi</th>
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="p-4 pl-6 text-xs font-bold text-slate-500 uppercase tracking-wider">No. Booking</th>
+                          <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Pasien</th>
+                          <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Dokter</th>
+                          <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal & Waktu</th>
+                          <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">No. Identitas</th>
+                          <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Departemen</th>
+                          <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                          <th className="p-4 pr-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                         </tr>
                       </thead>
-                      <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                      <tbody className="text-sm font-medium text-zinc-900 bg-white">
                         {appointments
                           .filter((apt: any) => {
                             const matchDept = !selectedDepartmentFilter || apt.department?.id === selectedDepartmentFilter;
@@ -1089,45 +1167,42 @@ export default function AdminDashboard() {
                             };
 
                             return (
-                              <tr key={apt.id} className="hover:bg-slate-50/70 transition-colors">
-                                <td className="p-3 pl-0 font-semibold">{apt.patient?.user?.name || '-'}</td>
-                                <td className="p-3 text-sm text-slate-700">{apt.doctor?.user?.name || '-'}</td>
-                                <td className="p-3 text-xs">
-                                  <div>{new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
+                              <tr key={apt.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
+                                <td className="p-4 pl-6 font-mono text-xs font-bold text-teal-600">{apt.id?.slice(0, 8).toUpperCase() || '-'}</td>
+                                <td className="p-4 font-bold">{apt.patient?.user?.name || '-'}</td>
+                                <td className="p-4 text-slate-500 text-sm">{apt.doctor?.user?.name || '-'}</td>
+                                <td className="p-4 text-xs">
+                                  <div className="font-semibold text-zinc-900">{new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
                                     year: '2-digit',
                                     month: 'short',
                                     day: '2-digit'
                                   })}</div>
                                   <div className="text-slate-500">{new Date(apt.scheduledAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
                                 </td>
-                                <td className="p-3 font-mono text-xs">{apt.patient?.nik || '-'}</td>
-                                <td className="p-3 text-sm text-slate-700">{apt.department?.name || '-'}</td>
-                                <td className="p-3">
-                                  <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${statusClasses[apt.status] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                                <td className="p-4 font-mono text-xs text-slate-500">{apt.patient?.nik || '-'}</td>
+                                <td className="p-4 text-slate-500 text-sm">{apt.department?.name || '-'}</td>
+                                <td className="p-4">
+                                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${statusClasses[apt.status] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
                                     {statusLabel[apt.status] || apt.status}
                                   </span>
                                 </td>
-                                <td className="p-3 text-right">
+                                <td className="p-4 pr-6 text-right">
                                   <div className="flex items-center justify-end gap-2 flex-wrap">
                                     {apt.status === 'BOOKED' && (
                                       <>
                                         <button
                                           onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
-                                          className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-200"
+                                          className="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white text-xs font-bold rounded-lg transition-colors border border-emerald-100 hover:border-emerald-600"
                                           title="Konfirmasi"
                                         >
-                                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                          </svg>
+                                          Konfirmasi
                                         </button>
                                         <button
                                           onClick={() => handleUpdateAppointmentStatus(apt.id, 'CANCELLED')}
-                                          className="p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200"
+                                          className="px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-500 hover:text-white text-xs font-bold rounded-lg transition-colors border border-slate-200 hover:border-slate-500"
                                           title="Batalkan"
                                         >
-                                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                          </svg>
+                                          Batalkan
                                         </button>
                                       </>
                                     )}
@@ -1143,6 +1218,8 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+
+          {activeView === 'analytics' && <AnalyticsView />}
 
           {/* Modal Departemen */}
           {isDeptModalOpen && (
@@ -1264,6 +1341,132 @@ export default function AdminDashboard() {
                   </button>
                   <button
                     onClick={handleSaveSchedule}
+                    className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    Simpan
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal User */}
+          {isUserModalOpen && selectedUser && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 my-4">
+                <h2 className="text-xl font-bold text-zinc-900 mb-6">Kelola Akun User</h2>
+
+                {/* Informasi Akun */}
+                <div className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-4">Informasi Akun</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Nama</p>
+                      <p className="text-sm text-slate-900 font-medium">{selectedUser.user?.name || selectedUser.name || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Email</p>
+                      <p className="text-sm text-slate-900 font-medium">{selectedUser.user?.email || selectedUser.email || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Role</p>
+                      <p className="text-sm text-slate-900 font-medium">{selectedUser.user?.role || selectedUser.role || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Status</p>
+                      <span className={`inline-block px-2.5 py-1 text-xs font-bold rounded-md border ${selectedUser.user?.isActive !== false ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                        {selectedUser.user?.isActive !== false ? 'Aktif' : 'Blokir'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Informasi Profil Pasien (jika role PATIENT) */}
+                {(selectedUser.user?.role === 'PATIENT' || selectedUser.role === 'PATIENT') && (
+                  <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-4">Informasi Profil Pasien</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">NIK</p>
+                        <p className="text-sm text-slate-900 font-medium font-mono">{selectedUser.nik || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Nomor BPJS</p>
+                        <p className="text-sm text-slate-900 font-medium font-mono">{selectedUser.bpjsNumber || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Telepon</p>
+                        <p className="text-sm text-slate-900 font-medium">{selectedUser.phone || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Jenis Kelamin</p>
+                        <p className="text-sm text-slate-900 font-medium">
+                          {selectedUser.gender === 'MALE' ? 'Laki-laki' : selectedUser.gender === 'FEMALE' ? 'Perempuan' : selectedUser.gender === 'OTHER' ? 'Lainnya' : '-'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Tanggal Lahir</p>
+                        <p className="text-sm text-slate-900 font-medium">
+                          {selectedUser.birthDate ? new Date(selectedUser.birthDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : '-'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Alamat</p>
+                        <p className="text-sm text-slate-900 font-medium">{selectedUser.address || '-'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Informasi Profil Dokter (jika role DOCTOR) */}
+                {(selectedUser.user?.role === 'DOCTOR' || selectedUser.role === 'DOCTOR') && (
+                  <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                    <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-4">Informasi Profil Dokter</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Spesialisasi</p>
+                        <p className="text-sm text-slate-900 font-medium">{selectedUser.specialization || '-'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Status Akun */}
+                <div className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <label className="block text-sm font-semibold text-slate-700 mb-3">Ubah Status Akun</label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="status"
+                        checked={userFormData.isActive === true}
+                        onChange={() => setUserFormData({ isActive: true })}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm font-medium text-slate-700">Aktif</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="status"
+                        checked={userFormData.isActive === false}
+                        onChange={() => setUserFormData({ isActive: false })}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm font-medium text-slate-700">Blokir</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 justify-end">
+                  <button
+                    onClick={handleCloseUserModal}
+                    className="px-4 py-2 border border-slate-200 text-slate-600 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={handleSaveUser}
                     className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
                   >
                     Simpan
