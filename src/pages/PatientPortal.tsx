@@ -38,7 +38,7 @@ const getHistoryStatusText = (status: string) => {
 // Helper untuk status Appointment (Reservasi)
 const getAppointmentStatusStyle = (status: string) => {
   switch (status) {
-    case 'PENDING': return 'bg-blue-50 text-blue-600 border-blue-200';
+    case 'BOOKED': return 'bg-blue-50 text-blue-600 border-blue-200';
     case 'CONFIRMED': return 'bg-emerald-50 text-emerald-600 border-emerald-200';
     case 'CANCELLED': return 'bg-rose-50 text-rose-600 border-rose-200';
     default: return 'bg-slate-50 text-slate-500 border-slate-200';
@@ -47,7 +47,7 @@ const getAppointmentStatusStyle = (status: string) => {
 
 const getAppointmentStatusText = (status: string) => {
   switch (status) {
-    case 'PENDING': return 'Menunggu Konfirmasi';
+    case 'BOOKED': return 'Menunggu Konfirmasi';
     case 'CONFIRMED': return 'Terkonfirmasi';
     case 'CANCELLED': return 'Dibatalkan';
     case 'COMPLETED': return 'Selesai';

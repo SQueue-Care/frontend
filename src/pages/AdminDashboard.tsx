@@ -16,7 +16,7 @@ import { useDashboardFilterStore } from '../store/dashboardFilterStore';
 import apiClient from '../lib/apiClient';
 
 
-type AdminView = 'dashboard' | 'users' | 'queues';
+type AdminView = 'dashboard' | 'users' | 'queues' | 'appointments' | 'users_patient' | 'users_doctor' | 'users_admin' | 'services';
 
 // Komponen Tabel Pengguna Dinamis
 // Komponen Tabel Pengguna Dinamis dengan Integrasi API
@@ -236,8 +236,10 @@ function UserTable({ role, title }: { role: 'PATIENT' | 'DOCTOR' | 'ADMIN', titl
 }
 
 export default function AdminDashboard() {
-  const [activeView, setActiveView] = useState('dashboard');
+  const [activeView, setActiveView] = useState<AdminView>('dashboard');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
   
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
@@ -252,6 +254,35 @@ export default function AdminDashboard() {
     fetchOverviewStats();
     fetchQueues();
   }, [fetchDepartments, fetchOverviewStats, fetchQueues]);
+
+  useEffect(() => {
+    if (activeView === 'appointments') {
+      const fetchAppointments = async () => {
+        setIsLoadingAppointments(true);
+        try {
+          const response = await apiClient.get('/appointments');
+          setAppointments(response.data.data || []);
+        } catch (error: any) {
+          console.error('Gagal memuat appointments:', error);
+          setAppointments([]);
+        } finally {
+          setIsLoadingAppointments(false);
+        }
+      };
+      fetchAppointments();
+    }
+  }, [activeView]);
+
+  const handleUpdateAppointmentStatus = async (appointmentId: string, newStatus: string) => {
+    try {
+      await apiClient.patch(`/appointments/${appointmentId}`, { status: newStatus });
+      const response = await apiClient.get('/appointments');
+      setAppointments(response.data.data || []);
+      alert('Status appointment berhasil diperbarui!');
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal mengubah status appointment.');
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -408,16 +439,19 @@ export default function AdminDashboard() {
             </svg>
             <span>Manajemen Layanan</span>
           </button>
-          <button 
+          <button
             onClick={() => setActiveView('queues')}
             className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'queues' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             Manajemen Antrean
           </button>
-          <button className="w-full text-left flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-white/10 hover:text-white rounded-xl font-medium transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-            Analitik Performa
+          <button
+            onClick={() => setActiveView('appointments')}
+            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeView === 'appointments' ? 'bg-teal-500/20 text-teal-400 font-semibold' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'}`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            Manajemen Reservasi
           </button>
         </nav>
         <div className="p-4 border-t border-white/10">
@@ -548,6 +582,108 @@ export default function AdminDashboard() {
             </div>
           )}
           {activeView === 'queues' && <AdminQueueManagement />}
+
+          {activeView === 'appointments' && (
+            <div className="animate-in fade-in duration-500">
+              <div className="mb-8">
+                <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] mb-2">Manajemen Reservasi</h1>
+                <p className="text-slate-600">Kelola dan perbarui status reservasi pasien di seluruh sistem.</p>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                {isLoadingAppointments ? (
+                  <div className="flex justify-center py-10">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  </div>
+                ) : appointments.length === 0 ? (
+                  <div className="py-8 text-center text-slate-500 italic text-sm">
+                    Tidak ada jadwal reservasi.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                          <th className="p-3 pl-0">Nama Pasien</th>
+                          <th className="p-3">Dokter</th>
+                          <th className="p-3">Tanggal & Waktu</th>
+                          <th className="p-3">No. Identitas</th>
+                          <th className="p-3">Departemen</th>
+                          <th className="p-3">Status</th>
+                          <th className="p-3 text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                        {appointments.map((apt: any) => {
+                          const statusClasses: Record<string, string> = {
+                            'BOOKED': 'bg-blue-50 text-blue-700 border-blue-200',
+                            'CONFIRMED': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                            'CANCELLED': 'bg-rose-50 text-rose-700 border-rose-200',
+                            'COMPLETED': 'bg-slate-50 text-slate-600 border-slate-200',
+                          };
+
+                          const statusLabel: Record<string, string> = {
+                            'BOOKED': 'Menunggu Konfirmasi',
+                            'CONFIRMED': 'Terkonfirmasi',
+                            'CANCELLED': 'Dibatalkan',
+                            'COMPLETED': 'Selesai',
+                          };
+
+                          return (
+                            <tr key={apt.id} className="hover:bg-slate-50/70 transition-colors">
+                              <td className="p-3 pl-0 font-semibold">{apt.patient?.user?.name || '-'}</td>
+                              <td className="p-3 text-sm text-slate-700">{apt.doctor?.user?.name || '-'}</td>
+                              <td className="p-3 text-xs">
+                                <div>{new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
+                                  year: '2-digit',
+                                  month: 'short',
+                                  day: '2-digit'
+                                })}</div>
+                                <div className="text-slate-500">{new Date(apt.scheduledAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
+                              </td>
+                              <td className="p-3 font-mono text-xs">{apt.patient?.nik || '-'}</td>
+                              <td className="p-3 text-sm text-slate-700">{apt.department?.name || '-'}</td>
+                              <td className="p-3">
+                                <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${statusClasses[apt.status] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                                  {statusLabel[apt.status] || apt.status}
+                                </span>
+                              </td>
+                              <td className="p-3 text-right">
+                                <div className="flex items-center justify-end gap-2 flex-wrap">
+                                  {apt.status === 'BOOKED' && (
+                                    <>
+                                      <button
+                                        onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
+                                        className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-200"
+                                        title="Konfirmasi"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                      </button>
+                                      <button
+                                        onClick={() => handleUpdateAppointmentStatus(apt.id, 'CANCELLED')}
+                                        className="p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200"
+                                        title="Batalkan"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
         </main>
       </div>

@@ -70,9 +70,7 @@ export default function DoctorDashboard() {
       const fetchAppointments = async () => {
         setIsLoadingAppointments(true);
         try {
-          const response = await apiClient.get('/appointments', {
-            params: { doctorId }
-          });
+          const response = await apiClient.get(`/doctors/${doctorId}/appointments`);
           setAppointments(response.data.data || []);
         } catch (error: any) {
           console.error('Gagal memuat appointments:', error);
@@ -184,9 +182,7 @@ export default function DoctorDashboard() {
       // Refresh appointments list
       const doctorId = (user as any)?.doctor?.id || (user?.role === 'DOCTOR' ? user.id : null);
       if (doctorId) {
-        const response = await apiClient.get('/appointments', {
-          params: { doctorId }
-        });
+        const response = await apiClient.get(`/doctors/${doctorId}/appointments`);
         setAppointments(response.data.data || []);
       }
       alert('Status appointment berhasil diperbarui!');
@@ -437,76 +433,96 @@ export default function DoctorDashboard() {
                 <p className="text-slate-600">Kelola dan perbarui status reservasi pasien yang terjadwal dengan Anda.</p>
               </div>
 
-              {isLoadingAppointments ? (
-                <div className="text-center py-12 text-slate-500 font-medium">Memuat jadwal reservasi...</div>
-              ) : appointments.length === 0 ? (
-                <div className="text-center py-12 text-slate-500 font-medium">Tidak ada jadwal reservasi.</div>
-              ) : (
-                <div className="space-y-4">
-                  {appointments.map((apt: any) => (
-                    <div key={apt.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-zinc-900 text-lg">{apt.patient?.user?.name || 'Pasien'}</h3>
-                          <p className="text-sm text-slate-600">{apt.department?.name || 'Departemen'}</p>
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          apt.status === 'PENDING' ? 'bg-blue-50 text-blue-600' :
-                          apt.status === 'CONFIRMED' ? 'bg-emerald-50 text-emerald-600' :
-                          apt.status === 'CANCELLED' ? 'bg-rose-50 text-rose-600' :
-                          'bg-slate-50 text-slate-600'
-                        }`}>
-                          {apt.status === 'PENDING' ? 'Menunggu Konfirmasi' :
-                           apt.status === 'CONFIRMED' ? 'Terkonfirmasi' :
-                           apt.status === 'CANCELLED' ? 'Dibatalkan' :
-                           apt.status}
-                        </span>
-                      </div>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                {isLoadingAppointments ? (
+                  <div className="flex justify-center py-10">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  </div>
+                ) : appointments.length === 0 ? (
+                  <div className="py-8 text-center text-slate-500 italic text-sm">
+                    Tidak ada jadwal reservasi.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                          <th className="p-3 pl-0">Nama Pasien</th>
+                          <th className="p-3">Tanggal & Waktu</th>
+                          <th className="p-3">No. Identitas</th>
+                          <th className="p-3">Keluhan</th>
+                          <th className="p-3">Status</th>
+                          <th className="p-3 text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-sm font-medium text-zinc-900 divide-y divide-slate-100">
+                        {appointments.map((apt: any) => {
+                          const statusClasses: Record<string, string> = {
+                            'BOOKED': 'bg-blue-50 text-blue-700 border-blue-200',
+                            'CONFIRMED': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                            'CANCELLED': 'bg-rose-50 text-rose-700 border-rose-200',
+                            'COMPLETED': 'bg-slate-50 text-slate-600 border-slate-200',
+                          };
 
-                      <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                        <div>
-                          <span className="text-slate-600">Tanggal & Waktu</span>
-                          <p className="font-semibold text-zinc-900">{new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}</p>
-                          <p className="text-slate-600">{new Date(apt.scheduledAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
-                        </div>
-                        <div>
-                          <span className="text-slate-600">No. Identitas</span>
-                          <p className="font-semibold text-zinc-900">{apt.patient?.nik || '-'}</p>
-                        </div>
-                      </div>
+                          const statusLabel: Record<string, string> = {
+                            'BOOKED': 'Menunggu Konfirmasi',
+                            'CONFIRMED': 'Terkonfirmasi',
+                            'CANCELLED': 'Dibatalkan',
+                            'COMPLETED': 'Selesai',
+                          };
 
-                      {apt.notes && (
-                        <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                          <p className="text-xs text-slate-600 font-medium mb-1">Keluhan:</p>
-                          <p className="text-sm text-zinc-800">{apt.notes}</p>
-                        </div>
-                      )}
-
-                      {apt.status === 'PENDING' && (
-                        <div className="flex gap-2 pt-4 border-t border-slate-200">
-                          <button
-                            onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
-                            className="flex-1 px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors"
-                          >
-                            Konfirmasi
-                          </button>
-                          <button
-                            onClick={() => handleUpdateAppointmentStatus(apt.id, 'CANCELLED')}
-                            className="flex-1 px-4 py-2 bg-rose-600 text-white font-semibold rounded-lg hover:bg-rose-700 transition-colors"
-                          >
-                            Batalkan
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                          return (
+                            <tr key={apt.id} className="hover:bg-slate-50/70 transition-colors">
+                              <td className="p-3 pl-0 font-semibold">{apt.patient?.user?.name || '-'}</td>
+                              <td className="p-3 text-xs">
+                                <div>{new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
+                                  year: '2-digit',
+                                  month: 'short',
+                                  day: '2-digit'
+                                })}</div>
+                                <div className="text-slate-500">{new Date(apt.scheduledAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
+                              </td>
+                              <td className="p-3 font-mono text-xs">{apt.patient?.nik || '-'}</td>
+                              <td className="p-3 text-xs max-w-xs truncate text-slate-600">{apt.notes || '-'}</td>
+                              <td className="p-3">
+                                <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${statusClasses[apt.status] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                                  {statusLabel[apt.status] || apt.status}
+                                </span>
+                              </td>
+                              <td className="p-3 text-right">
+                                <div className="flex items-center justify-end gap-2 flex-wrap">
+                                  {apt.status === 'BOOKED' && (
+                                    <>
+                                      <button
+                                        onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
+                                        className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-200"
+                                        title="Konfirmasi"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                      </button>
+                                      <button
+                                        onClick={() => handleUpdateAppointmentStatus(apt.id, 'CANCELLED')}
+                                        className="p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200"
+                                        title="Batalkan"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
