@@ -1,6 +1,6 @@
 // src/pages/PatientPortal.tsx
 import { useState, useEffect } from 'react';
-import PolyclinicCard from '../components/PolyclinicCard';
+import PolyclinicCard from '../components/patient/PolyclinicCard';
 import BookingPanel from '../components/BookingPanel';
 import LiveQueueTracker from '../components/LiveQueueTracker';
 import { useNavigate } from 'react-router-dom';
@@ -70,6 +70,7 @@ export default function PatientPortal() {
   const [formData, setFormData] = useState({
     nik: '', bpjsNumber: '', phone: '', gender: '', birthDate: '', address: ''
   });
+  const [isNikWarningOpen, setIsNikWarningOpen] = useState(false);
 
 
   // ==========================================
@@ -239,6 +240,13 @@ export default function PatientPortal() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const openBooking = (deptId: string, deptName: string) => {
+    // Validasi Mutlak: Cegat jika NIK kosong atau hanya spasi
+    if (!profile?.nik || profile.nik.trim() === '') {
+      setIsNikWarningOpen(true);
+      return; // Hentikan eksekusi, panel booking tidak akan terbuka
+    }
+
+    // Jika NIK ada, lanjutkan proses normal
     setSelectedDept({ id: deptId, name: deptName });
     setBookingStep(1);
     setIsBookingOpen(true);
@@ -750,6 +758,46 @@ export default function PatientPortal() {
           setActiveView('polyclinics');
         }}
       />
+      {/* 5. MODAL PERINGATAN KELENGKAPAN NIK */}
+      {isNikWarningOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full border border-slate-200 overflow-hidden text-center animate-in zoom-in-95 duration-300">
+            <div className="p-8">
+              {/* Ikon Peringatan Kuning/Amber */}
+              <div className="w-16 h-16 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              
+              <h3 className="text-xl font-black text-zinc-900 tracking-tight mb-2">Akses Layanan Ditahan</h3>
+              <p className="text-slate-500 text-sm font-medium mb-8 leading-relaxed">
+                Anda diwajibkan untuk melengkapi <strong className="text-zinc-800">Nomor Induk Kependudukan (NIK)</strong> pada profil medis Anda sebelum dapat membuat antrean atau reservasi.
+              </p>
+              
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    setIsNikWarningOpen(false); // Tutup modal
+                    handleNavigation('profile'); // Arahkan langsung ke halaman profil
+                    // Opsional: Langsung buka mode edit agar pasien bisa langsung mengetik
+                    setTimeout(() => setIsEditing(true), 300); 
+                  }}
+                  className="w-full px-4 py-3.5 bg-teal-600 text-white font-black rounded-xl hover:bg-teal-700 transition-all shadow-lg shadow-teal-500/20 active:scale-95"
+                >
+                  Lengkapi Profil Sekarang
+                </button>
+                <button
+                  onClick={() => setIsNikWarningOpen(false)}
+                  className="w-full px-4 py-3.5 text-slate-500 font-extrabold hover:bg-slate-100 rounded-xl transition-all active:scale-95"
+                >
+                  Nanti Saja
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

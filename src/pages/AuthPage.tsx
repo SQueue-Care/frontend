@@ -1,8 +1,8 @@
 // src/pages/AuthPage.tsx
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthInput from '../components/AuthInput';
-import AuthButton from '../components/AuthButton';
+import AuthInput from '../components/auth/AuthInput';
+import AuthButton from '../components/auth/AuthButton';
 import { useAuthStore } from '../store/authStore';
 import apiClient from '../lib/apiClient';
 

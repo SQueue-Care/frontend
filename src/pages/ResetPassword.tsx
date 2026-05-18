@@ -1,8 +1,8 @@
 // src/pages/ResetPassword.tsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import AuthInput from '../components/AuthInput';
-import AuthButton from '../components/AuthButton';
+import AuthInput from '../components/auth/AuthInput';
+import AuthButton from '../components/auth/AuthButton';
 import apiClient from '../lib/apiClient';
 
 export default function ResetPassword() {
