@@ -8,6 +8,8 @@ import { useAuthStore } from '../store/authStore';
 import { useDepartmentStore } from '../store/departmentStore';
 import { usePatientStore } from '../store/patientStore';
 import { useQueueStore } from '../store/queueStore';
+import PatientSidebar from '../components/patient/PatientSidebar';
+import PatientNavbar from '../components/patient/PatientNavbar';
 
 // 1. Deklarasi Tipe
 type PortalView = 'polyclinics' | 'history' | 'profile';
@@ -266,125 +268,33 @@ export default function PatientPortal() {
     <div className="min-h-screen bg-slate-50 font-['Inter'] relative">
 
       {/* ========================================== */}
-      {/* 1. SIDEBAR & OVERLAY */}
+      {/* 1. MODULAR SIDEBAR & OVERLAY               */}
       {/* ========================================== */}
-      <div
-        className={`fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] transition-opacity duration-300 ${isSidebarOpen ? 'block opacity-100' : 'hidden opacity-0'}`}
-        onClick={toggleSidebar}
+      <PatientSidebar 
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeView={activeView}
+        handleNavigation={handleNavigation}
+        user={user}
+        handleLogout={handleLogout}
       />
-
-      <aside className={`fixed inset-y-0 left-0 w-72 bg-gradient-to-br from-teal-900 to-slate-900 shadow-2xl z-[70] transform transition-transform duration-300 ease-in-out flex flex-col border-r border-slate-800 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-teal-400">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h4" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="8" y1="10" x2="18" y2="10" />
-              <line x1="8" y1="14" x2="12" y2="14" />
-              <circle cx="17" cy="16" r="2.5" />
-              <path d="M21.5 22c-1-2-2.5-3-4.5-3s-3.5 1-4.5 3" />
-            </svg>
-            <span className="text-white text-lg font-extrabold font-['Manrope'] tracking-wide">RS Ethereal</span>
-          </div>
-          <button onClick={toggleSidebar} className="p-2 rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-          </button>
-        </div>
-
-        <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
-          <button
-            onClick={() => handleNavigation('polyclinics')}
-            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'polyclinics' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-            Pilih Poliklinik
-          </button>
-
-          <button
-            onClick={() => handleNavigation('history')}
-            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'history' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Riwayat Antrean
-          </button>
-
-          <button
-            onClick={() => handleNavigation('profile')}
-            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'profile' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            Profil Pasien
-          </button>
-        </nav>
-
-        <div className="p-4 border-t border-white/10">
-          <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-4 py-3 text-rose-400 hover:bg-rose-500/10 rounded-xl font-medium transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            Keluar Akun
-          </button>
-        </div>
-      </aside>
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'lg:pl-72' : 'lg:pl-[76px]'}`}></div>      
 
       <div className="fixed w-96 h-96 -top-48 -left-48 bg-teal-100 rounded-full blur-[120px] opacity-60" />
       <div className="fixed w-96 h-96 -bottom-48 -right-48 bg-blue-100 rounded-full blur-[120px] opacity-60" />
 
-      {/* ========================================== */}
-      {/* 2. NAVBAR ATAS (Tema Gelap Transparan) */}
-      {/* ========================================== */}
-      <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-8">
-          <div className="flex justify-between h-16 items-center gap-4">
-
-            {/* BAGIAN KIRI: Tombol Sidebar & Logo */}
-            <div className="flex items-center gap-3 shrink-0">
-              <button onClick={toggleSidebar} className="p-2 -ml-2 rounded-lg text-teal-400 hover:bg-white/10 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500/50">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-              </button>
-              <div className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-teal-400">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h4" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="8" y1="10" x2="18" y2="10" />
-                  <line x1="8" y1="14" x2="12" y2="14" />
-                  <circle cx="17" cy="16" r="2.5" />
-                  <path d="M21.5 22c-1-2-2.5-3-4.5-3s-3.5 1-4.5 3" />
-                </svg>
-                <div className="hidden sm:flex items-center gap-1">
-                  <span className="text-teal-400 text-lg font-extrabold font-['Manrope'] tracking-wide">RS</span>
-                  <span className="text-white text-lg font-extrabold font-['Manrope'] tracking-wide">Ethereal</span>
-                </div>
-              </div>
-            </div>
-
-            {/* BAGIAN KANAN: Profil User */}
-            <div
-              onClick={() => handleNavigation('profile')}
-              className="flex items-center gap-4 shrink-0 cursor-pointer group"
-              title="Buka Profil"
-            >
-              <div className="hidden md:flex flex-col text-right">
-                <span className="text-sm font-bold text-white leading-none mb-1 group-hover:text-teal-300 transition-colors">
-                  {user?.name || 'Pengguna'}
-                </span>
-                <span className="text-[11px] font-semibold text-teal-400 tracking-wide uppercase">
-                  {user?.role === 'PATIENT' ? 'Pasien' : user?.role}
-                </span>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-teal-500/20 border border-teal-500/40 overflow-hidden flex-shrink-0 group-hover:ring-2 group-hover:ring-teal-400 transition-all flex items-center justify-center">
-                <span className="text-teal-300 font-bold text-sm">
-                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                </span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </nav>
+        {/* ========================================== */}
+        {/* 2. MODULAR NAVBAR ATAS                     */}
+        {/* ========================================== */}
+        <PatientNavbar 
+          toggleSidebar={toggleSidebar} 
+          activeView={activeView} 
+        />
 
       {/* ========================================== */}
       {/* 3. KONTEN UTAMA */}
       {/* ========================================== */}
-      <main className="relative z-10 max-w-[1440px] mx-auto px-6 sm:px-8 py-10 md:py-12">
+      <main className="relative z-10 w-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-15 py-10 md:py-12 flex-1">
 
         {/* TAMPILAN 1: PILIH POLIKLINIK */}
         {activeView === 'polyclinics' && (
@@ -728,7 +638,6 @@ export default function PatientPortal() {
             </div>
           </div>
         )}
-
       </main>
 
       {/* 4. BOOKING PANEL (REFACRORED) */}
