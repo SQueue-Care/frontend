@@ -153,6 +153,7 @@ export default function AdminQueueManagement() {
                   <th className="p-5">Dokter</th>
                   <th className="p-5">Tanggal</th>
                   <th className="p-5">Waktu Tiba</th>
+                  <th className="p-5">Estimasi Tunggu</th>
                   <th className="p-5">Departemen</th>
                   <th className="p-5">Status</th>
                   <th className="p-5 text-right pr-8">Aksi</th>
@@ -200,6 +201,11 @@ export default function AdminQueueManagement() {
                       <td className="p-5">
                         <span className="px-2 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-black font-mono rounded-md tracking-widest">
                           {new Date(item.checkInAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </td>
+                      <td className="p-5">
+                        <span className="px-3 py-1 bg-indigo-50 text-indigo-600 border border-indigo-200 text-sm font-bold rounded-lg">
+                          {item.prediction?.estimatedMin ? `${item.prediction.estimatedMin} min` : '-'}
                         </span>
                       </td>
                       <td className="p-5">
