@@ -10,7 +10,8 @@ export default function PatientNavbar({ toggleSidebar, activeView }: PatientNavb
   const getViewTitle = () => {
     switch (activeView) {
       case 'polyclinics': return 'Layanan Poliklinik';
-      case 'history': return 'Riwayat & Reservasi';
+      case 'reservations': return 'Jadwal Reservasi Pasien'; 
+      case 'queues': return 'Riwayat Antrean Medis';       
       case 'profile': return 'Profil Medis';
       default: return 'Portal Pasien';
     }
@@ -23,7 +24,7 @@ export default function PatientNavbar({ toggleSidebar, activeView }: PatientNavb
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white/80 backdrop-blur-md border-b border-slate-200 text-sm py-3 lg:py-4 transition-all duration-300">
+    <header className="sticky top-0 z-40 flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white/80 backdrop-blur-md border-b border-slate-200 text-sm py-3 lg:py-4 animate-in fade-in slide-in-from-top-8 duration-700 ease-out">
       <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-15 flex items-center justify-between">
         
         <div className="flex items-center gap-x-4">
