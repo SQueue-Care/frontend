@@ -119,10 +119,33 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
               {activeQueueDetail.doctor?.user?.name || 'Dokter belum ditentukan'}
             </p>
             
-            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold bg-black/20 w-max px-3 py-1.5 rounded-lg border border-white/5">
-              <span className={`animate-pulse ${isWaiting ? 'text-amber-300' : isCalled ? 'text-cyan-200' : isInProgress ? 'text-emerald-300' : isFinal ? 'text-slate-300' : 'text-slate-200'}`}>
-                {statusLabel}
-              </span>
+            <div className="flex flex-col gap-2.5">
+              {/* Badge Status Asli */}
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold bg-black/20 w-max px-3 py-1.5 rounded-lg border border-white/5">
+                <span className={`animate-pulse ${isWaiting ? 'text-amber-300' : isCalled ? 'text-cyan-200' : isInProgress ? 'text-emerald-300' : isFinal ? 'text-slate-300' : 'text-slate-200'}`}>
+                  {statusLabel}
+                </span>
+              </div>
+
+              {/* INJEKSI: Blok Estimasi Waktu ML (Hanya tampil jika antrean masih menunggu dan data tersedia) */}
+              {isWaiting && typeof activeQueueDetail.estimatedWaitMinutes === 'number' && (
+                <div className="flex items-center gap-2.5 text-xs font-semibold bg-teal-950/40 w-max px-3 py-2 rounded-lg border border-teal-500/20 shadow-inner">
+                  <svg className="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-300">Estimasi Tunggu:</span>
+                    <span className="text-teal-300 font-black text-sm">{activeQueueDetail.estimatedWaitMinutes} Menit</span>
+                    
+                    {/* Badge Kecil ML untuk validasi AI */}
+                    {activeQueueDetail.prediction?.source === 'ml' && (
+                      <span className="ml-1 px-1.5 py-0.5 rounded-md bg-teal-500/20 text-teal-200 text-[9px] uppercase tracking-widest border border-teal-500/30" title="Dihitung oleh Artificial Intelligence">
+                        AI Predicted
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

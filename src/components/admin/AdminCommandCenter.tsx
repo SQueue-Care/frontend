@@ -1,5 +1,5 @@
 // src/components/AdminCommandCenter.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import StatCard from '../ui/StatCard';
 import TotalPatientsStat from '../analytics/TotalPatientsStat';
 import ActiveQueuesStat from '../analytics/ActiveQueuesStat';
@@ -9,11 +9,36 @@ import QueueManagementTable from '../analytics/QueueManagementTable';
 import QueuePerformanceChart from '../analytics/QueuePerformanceChart';
 import { useDepartmentStore } from '../../store/departmentStore';
 import { useDashboardFilterStore } from '../../store/dashboardFilterStore';
+import { useQueueStore } from '../../store/queueStore';
 
 export default function AdminCommandCenter() {
   const [analyticsDays, setAnalyticsDays] = useState(1);
-  const { departments } = useDepartmentStore();
+  // KOREKSI 3: Panggil fetchDepartments
+  const { departments, fetchDepartments } = useDepartmentStore(); 
   const { selectedDepartment, setSelectedDepartment } = useDashboardFilterStore();
+  // KOREKSI 4: Panggil fungsi fetch antrean dan statistik
+  const { fetchQueues, fetchOverviewStats } = useQueueStore(); 
+
+  // KOREKSI 5: INJEKSI LOGIKA REAL-TIME POLLING & SINKRONISASI AWAL
+  useEffect(() => {
+    // 1. Pastikan data master departemen ditarik agar grafik donat memiliki label
+    fetchDepartments();
+
+    // 2. Tarik data analitik untuk mengisi overviewStats dan queues
+    const fetchAllDashboardData = () => {
+      if (typeof fetchQueues === 'function') fetchQueues();
+      if (typeof fetchOverviewStats === 'function') fetchOverviewStats();
+    };
+
+    // Eksekusi seketika saat halaman Command Center dibuka
+    fetchAllDashboardData();
+
+    // Setup Polling: Sinkronisasi data setiap 15 detik
+    const intervalId = setInterval(fetchAllDashboardData, 15000);
+
+    // Pembersihan (Cleanup)
+    return () => clearInterval(intervalId);
+  }, [fetchDepartments, fetchQueues, fetchOverviewStats]);
 
   return (
     <div className="animate-in fade-in duration-500">

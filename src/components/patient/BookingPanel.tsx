@@ -22,6 +22,7 @@ interface BookingPanelProps {
 const generateNextDays = (daysCount: number) => {
   const dates = [];
   const today = new Date();
+  today.setHours(0, 0, 0, 0); 
   for (let i = 0; i < daysCount; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
@@ -55,9 +56,11 @@ export default function BookingPanel({
 
   useEffect(() => {
     if (selectedDoctorId && selectedDate) {
-      const dateObj = new Date(selectedDate);
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const localDateObj = new Date(year, month - 1, day);
+      
       const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-      fetchSchedulesByDoctor(selectedDoctorId, days[dateObj.getDay()]);
+      fetchSchedulesByDoctor(selectedDoctorId, days[localDateObj.getDay()]);
       setSelectedScheduleId(null);
     }
   }, [selectedDoctorId, selectedDate, fetchSchedulesByDoctor]);
@@ -91,7 +94,7 @@ export default function BookingPanel({
         departmentId: selectedDept.id,
         doctorId: selectedDoctorId,
         scheduleId: selectedScheduleId,
-        date: selectedDate,
+        date: `${selectedDate}T12:00:00.000Z`,
         notes: notes
       });
       setQueueResult(result);

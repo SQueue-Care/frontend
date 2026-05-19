@@ -25,6 +25,11 @@ export interface Queue {
   status: QueueStatus;
   queueDate: string;
   actualWaitMinutes?: number | null;
+  // INJEKSI MUTLAK: Daftarkan dua properti ini agar dikenali TypeScript
+  estimatedWaitMinutes?: number | null;
+  prediction?: {
+    source: string;
+  } | null;
   patient: PatientProfile;
   department: {
     id: string;

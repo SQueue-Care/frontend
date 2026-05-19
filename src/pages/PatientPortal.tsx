@@ -183,7 +183,7 @@ export default function PatientPortal() {
         bpjsNumber: formData.bpjsNumber || undefined,
         phone: formData.phone || undefined,
         gender: formData.gender || undefined,
-        birthDate: formData.birthDate ? new Date(formData.birthDate).toISOString() : undefined,
+        birthDate: formData.birthDate ? `${formData.birthDate}T12:00:00.000Z` : undefined,
         address: formData.address || undefined,
       };
 
