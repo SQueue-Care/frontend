@@ -94,7 +94,7 @@ export const usePatientStore = create<PatientState>((set, get) => ({
     set({ isLoading: true, error: null, profile: null });
     try {
       const response = await apiClient.get(`/patients/${patientId}`);
-      let profileData = response.data.data;
+      const profileData = response.data.data;
 
       // Jika backend tidak mengembalikan appointmentIds, coba ambil dari localStorage
       if (!profileData.appointmentIds) {
@@ -102,7 +102,7 @@ export const usePatientStore = create<PatientState>((set, get) => ({
         if (stored) {
           try {
             profileData.appointmentIds = JSON.parse(stored);
-          } catch (e) {
+          } catch {
             console.warn('Gagal parse localStorage appointments');
           }
         }
@@ -166,7 +166,7 @@ export const usePatientStore = create<PatientState>((set, get) => ({
       try {
         await apiClient.patch(`/patients/${patientId}`, { appointmentIds: updatedIds });
         console.log('✅ Appointment IDs also saved to backend');
-      } catch (backendError: any) {
+      } catch {
         console.warn('⚠️ Backend save failed, but localStorage is saved as backup');
       }
     } catch (error: any) {

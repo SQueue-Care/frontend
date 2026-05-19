@@ -2,8 +2,8 @@
 import { useMemo } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { useQueueStore } from '../store/queueStore';
-import { useDepartmentStore } from '../store/departmentStore';
+import { useQueueStore } from '../../store/queueStore';
+import { useDepartmentStore } from '../../store/departmentStore';
 import { ArrowPathIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 ChartJS.register(ArcElement, Tooltip, Legend);

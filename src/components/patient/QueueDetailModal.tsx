@@ -1,4 +1,4 @@
-import { QueueStatus } from '../lib/types';
+import { QueueStatus } from '../../lib/types';
 
 interface QueueDetailsModalProps {
   isOpen: boolean;

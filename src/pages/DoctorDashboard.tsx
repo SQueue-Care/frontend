@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useDoctorStore } from '../store/doctorStore';
-import DoctorProfileSettings from '../components/DoctorProfileSettings';
-import DoctorAppointmentManagement from '../components/DoctorAppointmentManagement';
+import DoctorProfileSettings from '../components/doctor/DoctorProfileSettings';
+import DoctorAppointmentManagement from '../components/doctor/DoctorAppointmentManagement';
 import DoctorQueueManagement from '../components/doctor/DoctorQueueManagement';
 
 type DoctorView = 'dashboard' | 'appointments' | 'profile';

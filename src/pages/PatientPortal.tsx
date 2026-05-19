@@ -1,8 +1,8 @@
 // src/pages/PatientPortal.tsx
 import { useState, useEffect } from 'react';
 import PolyclinicCard from '../components/patient/PolyclinicCard';
-import BookingPanel from '../components/BookingPanel';
-import LiveQueueTracker from '../components/LiveQueueTracker';
+import BookingPanel from '../components/patient/BookingPanel';
+import LiveQueueTracker from '../components/patient/LiveQueueTracker';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useDepartmentStore } from '../store/departmentStore';
@@ -195,7 +195,7 @@ export default function PatientPortal() {
       let errorMessage = "Terjadi kesalahan saat menyimpan profil.";
 
       // Fungsi internal untuk menerjemahkan error Zod ke Bahasa Indonesia
-      const translateError = (path: string, code: string, fallbackMessage: string) => {
+      const translateError = (path: string, code: string) => {
         if (path === 'nik') {
           if (code === 'too_small') return "NIK harus terdiri dari 16 digit.";
           if (code === 'too_big') return "NIK tidak boleh lebih dari 16 digit.";
@@ -216,7 +216,7 @@ export default function PatientPortal() {
         if (Array.isArray(details)) {
           // Petakan setiap error teknis menggunakan fungsi translateError
           errorMessage = details.map((d: any) =>
-            `- ${translateError(d.path, d.code, d.message)}`
+            `- ${translateError(d.path, d.code)}`
           ).join('\n');
         }
       } else if (responseData?.error?.message) {

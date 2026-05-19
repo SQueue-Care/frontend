@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import StatCard from './StatCard';
-import { useDashboardFilterStore } from '../store/dashboardFilterStore';
-import { useQueueStore } from '../store/queueStore';
+import StatCard from '../ui/StatCard';
+import { useDashboardFilterStore } from '../../store/dashboardFilterStore';
+import { useQueueStore } from '../../store/queueStore';
 import { ClockIcon } from '@heroicons/react/24/outline';
 
 export default function WaitTimeStat() {

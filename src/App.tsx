@@ -9,7 +9,7 @@ import PatientPortal from './pages/PatientPortal';
 import Booking from './pages/Booking';
 import ResetPassword from './pages/ResetPassword';
 import AdminDashboard from './pages/AdminDashboard';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import DoctorDashboard from './pages/DoctorDashboard';
 
 function App() {

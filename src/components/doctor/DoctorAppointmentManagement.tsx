@@ -1,7 +1,7 @@
 // src/components/DoctorAppointmentManagement.tsx
 import { useState, useEffect } from 'react';
-import apiClient from '../lib/apiClient';
-import { useAuthStore } from '../store/authStore';
+import apiClient from '../../lib/apiClient';
+import { useAuthStore } from '../../store/authStore';
 
 export default function DoctorAppointmentManagement() {
   const user = useAuthStore((state) => state.user);

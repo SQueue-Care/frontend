@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import StatCard from './StatCard';
-import { useQueueStore } from '../store/queueStore';
-import { useDashboardFilterStore } from '../store/dashboardFilterStore';
+import StatCard from '../ui/StatCard';
+import { useQueueStore } from '../../store/queueStore';
+import { useDashboardFilterStore } from '../../store/dashboardFilterStore';
 import { UsersIcon, ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export default function TotalPatientsStat() {

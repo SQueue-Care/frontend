@@ -1,13 +1,13 @@
 // src/pages/AdminDashboard.tsx
 import { useState } from 'react';
-import AdminCommandCenter from '../components/AdminCommandCenter';
 import { useNavigate } from 'react-router-dom';
-import AdminQueueManagement from '../components/AdminQueueManagement';
-import AnalyticsView from '../components/AnalyticsView';
+import AdminCommandCenter from '../components/admin/AdminCommandCenter';
+import AdminQueueManagement from '../components/admin/AdminQueueManagement';
+import AnalyticsView from '../components/analytics/AnalyticsView';
 import { useAuthStore } from '../store/authStore';
 import apiClient from '../lib/apiClient';
-import AdminAppointmentManagement from '../components/AdminAppointmentManagement';
-import AdminServiceManagement from '../components/AdminServiceManagement';
+import AdminAppointmentManagement from '../components/admin/AdminAppointmentManagement';
+import AdminServiceManagement from '../components/admin/AdminServiceManagement';
 import UserTable from '../components/admin/UserTable';
 import AdminUserModal from '../components/admin/AdminUserModal';
 

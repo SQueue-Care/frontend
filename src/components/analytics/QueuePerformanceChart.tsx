@@ -10,7 +10,7 @@ import {
   Legend,
   type ChartOptions,
 } from 'chart.js';
-import apiClient from '../lib/apiClient';
+import apiClient from '../../lib/apiClient';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 

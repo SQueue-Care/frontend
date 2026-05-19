@@ -1,6 +1,6 @@
 // src/components/BookingPanel.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { useBookingStore } from '../store/bookingStore';
+import { useBookingStore } from '../../store/bookingStore';
 
 interface BookingPanelProps {
   isOpen: boolean;

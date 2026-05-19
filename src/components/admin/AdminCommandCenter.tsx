@@ -1,12 +1,12 @@
 // src/components/AdminCommandCenter.tsx
 import { useState } from 'react';
 import StatCard from '../ui/StatCard';
-import TotalPatientsStat from './analytics/TotalPatientsStat';
-import ActiveQueuesStat from './analytics/ActiveQueuesStat';
-import WaitTimeStat from './analytics/WaitTimeStat';
-import DepartmentWorkloadChart from './analytics/DepartmentWorkloadChart';
-import QueueManagementTable from './analytics/QueueManagementTable';
-import QueuePerformanceChart from './anaytics/QueuePerformanceChart';
+import TotalPatientsStat from '../analytics/TotalPatientsStat';
+import ActiveQueuesStat from '../analytics/ActiveQueuesStat';
+import WaitTimeStat from '../analytics/WaitTimeStat';
+import DepartmentWorkloadChart from '../analytics/DepartmentWorkloadChart';
+import QueueManagementTable from '../analytics/QueueManagementTable';
+import QueuePerformanceChart from '../analytics/QueuePerformanceChart';
 import { useDepartmentStore } from '../../store/departmentStore';
 import { useDashboardFilterStore } from '../../store/dashboardFilterStore';
 

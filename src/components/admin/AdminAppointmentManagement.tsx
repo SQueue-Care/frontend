@@ -1,7 +1,7 @@
 // src/components/AdminAppointmentManagement.tsx
 import { useState, useEffect } from 'react';
-import apiClient from '../lib/apiClient';
-import { useDepartmentStore } from '../store/departmentStore';
+import apiClient from '../../lib/apiClient';
+import { useDepartmentStore } from '../../store/departmentStore';
 
 export default function AdminAppointmentManagement() {
   const { departments } = useDepartmentStore();

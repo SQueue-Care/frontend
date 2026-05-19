@@ -1,7 +1,7 @@
 // src/components/AdminServiceManagement.tsx
 import { useState, useEffect } from 'react';
-import apiClient from '../lib/apiClient';
-import { useDepartmentStore } from '../store/departmentStore';
+import apiClient from '../../lib/apiClient';
+import { useDepartmentStore } from '../../store/departmentStore';
 
 export default function AdminServiceManagement() {
   const { departments, fetchDepartments } = useDepartmentStore();
@@ -126,6 +126,11 @@ export default function AdminServiceManagement() {
   const handleSaveSchedule = async () => {
     if (!scheduleFormData.dayOfWeek || !scheduleFormData.startTime || !scheduleFormData.endTime) {
       alert('Hari, jam mulai, dan jam selesai harus diisi');
+      return;
+    }
+
+    if (!selectedScheduleDeptFilter || !selectedDoctorFilter) {
+      alert('Gagal menyimpan: Anda wajib memilih Departemen dan Dokter terlebih dahulu pada filter area kerja.');
       return;
     }
 

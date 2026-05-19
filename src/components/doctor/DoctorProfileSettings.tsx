@@ -1,7 +1,7 @@
 // src/components/DoctorProfileSettings.tsx
 import { useState, useEffect } from 'react';
-import { useAuthStore } from '../store/authStore';
-import { useDoctorStore } from '../store/doctorStore';
+import { useAuthStore } from '../../store/authStore';
+import { useDoctorStore } from '../../store/doctorStore';
 
 export default function DoctorProfileSettings() {
   const user = useAuthStore((state) => state.user);

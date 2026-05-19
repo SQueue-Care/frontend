@@ -1,8 +1,8 @@
 // src/components/LiveQueueTracker.tsx
 import { useState, useEffect } from 'react';
 import QueueDetailsModal from './QueueDetailModal';
-import { useQueueStore } from '../store/queueStore';
-import { QueueStatus } from '../lib/types';
+import { useQueueStore } from '../../store/queueStore';
+import { QueueStatus } from '../../lib/types';
 
 // Saran: Terapkan antarmuka props yang ketat agar komponen ini tidak dapat dirender tanpa ID antrean
 interface LiveQueueTrackerProps {
@@ -48,6 +48,7 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
       await cancelQueue(queueId);
       onCancelSuccess();
     } catch (error) {
+      console.error(error);
       alert('Gagal membatalkan antrean. Server mungkin sedang sibuk.');
     } finally {
       setIsCancelling(false);

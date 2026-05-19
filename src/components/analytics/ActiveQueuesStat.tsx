@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import StatCard from './ui/StatCard';
-import { useQueueStore } from '../store/queueStore';
-import { useDashboardFilterStore } from '../store/dashboardFilterStore';
+import StatCard from '../ui/StatCard';
+import { useQueueStore } from '../../store/queueStore';
+import { useDashboardFilterStore } from '../../store/dashboardFilterStore';
 import { ExclamationTriangleIcon, ArrowPathIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
-import { QueueStatus } from '../lib/types';
+import { QueueStatus } from '../../lib/types';
 
 export default function ActiveQueuesStat() {
   const { queues, isLoadingTable, errorTable } = useQueueStore();

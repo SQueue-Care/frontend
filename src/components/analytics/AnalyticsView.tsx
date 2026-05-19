@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import apiClient from '../lib/apiClient';
+import apiClient from '../../lib/apiClient';
 
 ChartJS.register(
   CategoryScale,

@@ -1,16 +1,16 @@
 // src/components/AdminQueueManagement.tsx
 import { useState, useEffect } from 'react';
-import { useQueueStore } from '../store/queueStore';
-import { useDepartmentStore } from '../store/departmentStore'; 
-import { QueueStatus } from '../lib/types';
-import apiClient from '../lib/apiClient';
+import { useQueueStore } from '../../store/queueStore';
+import { useDepartmentStore } from '../../store/departmentStore'; 
+import { QueueStatus } from '../../lib/types';
+import apiClient from '../../lib/apiClient';
 import {
   getAllowedQueueTransitions,
   isValidQueueTransition,
   QUEUE_TRANSITION_CLASSES,
   QUEUE_TRANSITION_LABELS,
   QUEUE_TRANSITION_TITLES,
-} from '../lib/queueStateMachine';
+} from '../../lib/queueStateMachine';
 
 export default function AdminQueueManagement() {
   const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore();
