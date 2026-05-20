@@ -3,15 +3,38 @@ import React, { useState, useEffect } from 'react';
 import QueueDetailsModal from './QueueDetailModal';
 import { useQueueStore } from '../../store/queueStore';
 import { QueueStatus } from '../../lib/types';
+import ConfirmModal from '../ui/ConfirmModal';
 
 interface LiveQueueTrackerProps {
-  queueId: string;
+  queueId: string | null;
   onCancelSuccess: () => void;
 }
+
+const getStatusStyle = (status: string) => {
+  switch (status) {
+    case 'WAITING': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+    case 'CALLED':
+    case 'IN_PROGRESS': return 'bg-amber-50 text-amber-700 border-amber-200';
+    case 'DONE':
+    case 'SKIPPED':
+    case 'CANCELLED': return 'bg-slate-50 text-slate-600 border-slate-200';
+    default: return 'bg-slate-50 text-slate-500 border-slate-200';
+  }
+};
+
+const getStatusText = (status: string) => {
+  switch (status) {
+    case 'WAITING': return 'Menunggu Antrean';
+    case 'CALLED': return 'Giliran Anda Dipanggil';
+    case 'IN_PROGRESS': return 'Sedang Diperiksa';
+    default: return status;
+  }
+};
 
 export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueueTrackerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isConfirmCancelOpen, setIsConfirmCancelOpen] = useState(false);
   const { activeQueueDetail, fetchActiveQueue, cancelQueue } = useQueueStore();
 
   useEffect(() => {
@@ -25,180 +48,160 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
         clearInterval(timer);
         return;
       }
-      
       fetchActiveQueue(queueId);
     }, 10000); 
 
     return () => clearInterval(timer);
   }, [queueId, fetchActiveQueue]);
 
-  const handleCancel = async () => {
-    if (!window.confirm('Tindakan ini tidak dapat dibatalkan. Anda yakin ingin membatalkan antrean?')) return;
+  // Fungsi 1: Memicu pembukaan modal konfirmasi kustom
+  const triggerCancel = () => {
+    setIsConfirmCancelOpen(true);
+  };
+
+  // Fungsi 2: Eksekusi API ketika pengguna menekan "Ya, Batalkan" di dalam modal
+  const executeCancel = async () => {
     setIsCancelling(true);
     try {
-      await cancelQueue(queueId);
-      onCancelSuccess();
+      if (queueId) {
+        await cancelQueue(queueId);
+        onCancelSuccess();
+      }
     } catch (error) {
-      console.error(error);
+      // Mengubah alert bawaan menjadi log atau state pesan galat jika Anda ingin lebih ketat.
+      // Untuk sementara, kita pertahankan notifikasi sederhana atau buat toast ke depannya.
       alert('Gagal membatalkan antrean. Server mungkin sedang sibuk.');
     } finally {
       setIsCancelling(false);
+      setIsConfirmCancelOpen(false); // Tutup modal konfirmasi setelah selesai
     }
   };
 
-  if (!activeQueueDetail) {
+  // ==========================================================
+  // KONDISI 1: Tampilan Kosong (Ajakan memilih poliklinik)
+  // ==========================================================
+  if (!queueId || !activeQueueDetail) {
     return (
-      <div className="mb-12 p-8 text-center text-teal-700 font-bold animate-pulse bg-white border border-slate-200 rounded-3xl shadow-sm animate-in fade-in duration-500 ease-out">
-        Menghubungkan ke sistem...
+      <div className="bg-teal-50 border border-teal-200 shadow-inner rounded-3xl p-6 mb-8 flex flex-col items-center justify-center min-h-[160px] text-center w-full relative overflow-hidden transition-all duration-500">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-teal-100/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-teal-100/50 rounded-full blur-2xl translate-y-1/3 -translate-x-1/3 pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="w-12 h-12 bg-white text-teal-600 rounded-full flex items-center justify-center mb-3 shadow-sm border border-teal-100">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>
+          </div>
+          <h3 className="text-lg md:text-xl font-extrabold text-teal-950 tracking-tight mb-1.5 font-['Manrope']">Belum Ada Antrean Aktif</h3>
+          <p className="text-xs font-semibold text-teal-800/80 max-w-sm mx-auto leading-relaxed">
+            Silakan pilih layanan poliklinik di bawah untuk mengambil nomor antrean Anda hari ini.
+          </p>
+        </div>
       </div>
     );
   }
 
-  // 1. REVISI LOGIKA STATUS: CALLED dan IN_PROGRESS digabung menjadi satu indikator visual
+  // ==========================================================
+  // KONDISI 2: Tampilan Antrean Aktif (Waiting / In Progress)
+  // ==========================================================
+  const isWaiting = activeQueueDetail.status === 'WAITING';
+  const isInProgress = activeQueueDetail.status === 'IN_PROGRESS' || activeQueueDetail.status === 'CALLED';
   const status = activeQueueDetail.status as QueueStatus;
-  const isWaiting = status === QueueStatus.WAITING;
-  const isInProgress = status === QueueStatus.CALLED || status === QueueStatus.IN_PROGRESS;
-  const isFinal = [QueueStatus.DONE, QueueStatus.SKIPPED, QueueStatus.CANCELLED].includes(status);
-  
-  // 2. REVISI TEKS LABEL: Menggabungkan instruksi pemanggilan dan pemeriksaan
-  const statusLabel = isWaiting
-    ? 'Menunggu panggilan sistem...'
-    : isInProgress
-      ? 'Silakan masuk, giliran Anda diperiksa'
-      : status === QueueStatus.DONE
-        ? 'Antrean selesai'
-        : status === QueueStatus.SKIPPED
-          ? 'Antrean dilewati'
-          : 'Antrean dibatalkan';
 
-  const statusBadgeText = isWaiting
-    ? 'Live'
-    : isInProgress
-      ? 'Giliran Anda'
-      : status === QueueStatus.DONE
-        ? 'Selesai'
-        : status === QueueStatus.SKIPPED
-          ? 'Dilewati'
-          : 'Dibatalkan';
-  
+  const theme = {
+    bg: isInProgress ? 'bg-amber-50 border-amber-200' : 'bg-teal-50 border-teal-200',
+    blob: isInProgress ? 'bg-amber-200/40' : 'bg-teal-100/50',
+    date: isInProgress ? 'text-amber-700/70' : 'text-teal-700/70',
+    title: isInProgress ? 'text-amber-950' : 'text-teal-950',
+    doctor: isInProgress ? 'text-amber-800' : 'text-teal-800',
+    labelCurrent: isInProgress ? 'text-amber-600/70' : 'text-teal-600/70',
+    numCurrent: isInProgress ? 'text-amber-900/40' : 'text-teal-900/40',
+    divider: isInProgress ? 'bg-amber-200/50' : 'bg-teal-200/50',
+    labelYours: isInProgress ? 'text-amber-600' : 'text-teal-600',
+    numYours: isInProgress ? 'text-amber-600' : 'text-teal-600',
+    borderTop: isInProgress ? 'border-amber-200/50' : 'border-teal-200/50'
+  };
+
   return (
     <>
-      <div className="mb-12 rounded-3xl p-6 md:p-8 bg-white border border-slate-200 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transform transition-all duration-500 ease-in-out hover:shadow-md hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">        
-        
-        <div className={`absolute -right-10 -top-10 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-1500 ease-in-out ${
-          isWaiting ? 'bg-emerald-300/40' : isInProgress ? 'bg-amber-300/40' : 'bg-slate-200/50'
-        }`} />
-        
-        <div className={`absolute -left-10 -bottom-10 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-1500 ease-in-out ${
-          isWaiting ? 'bg-teal-300/30' : isInProgress ? 'bg-yellow-300/30' : 'bg-slate-200/50'
-        }`} />
+      <div className={`${theme.bg} shadow-inner rounded-3xl p-5 md:p-6 mb-8 flex flex-col justify-between min-h-[180px] w-full relative overflow-hidden transition-colors duration-700`}>
+        <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-colors duration-700 ${theme.blob}`} />
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative z-10 w-full md:w-auto">
-          
-          <div className="flex items-stretch gap-3">
-            {/* Nomor Antrean Pasien Asli (Hanya menampilkan angka saja) */}
-            <div className={`backdrop-blur-md border rounded-2xl p-4 text-center min-w-[110px] shadow-sm transition-all duration-700 ease-in-out ${
-              isWaiting ? 'bg-emerald-50/80 border-emerald-200' : isInProgress ? 'bg-amber-50/80 border-amber-200' : 'bg-slate-50/80 border-slate-200'
-            }`}>
-              
-              <span className={`block text-[10px] font-bold uppercase tracking-widest mb-1 transition-colors duration-700 ${
-                isWaiting ? 'text-emerald-600' : isInProgress ? 'text-amber-600' : 'text-slate-500'
-              }`}>Nomor Anda</span>
-              
-              <span className={`block text-4xl font-extrabold font-['Manrope'] tracking-tight transition-colors duration-700 ${
-                isWaiting ? 'text-emerald-700' : isInProgress ? 'text-amber-700' : 'text-zinc-900'
-              }`}>
-                {activeQueueDetail.queueNumber}
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 w-full h-full flex-1">
+          {/* Sisi Kiri: Informasi Layanan */}
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-3">
+              <span className={`inline-flex px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border shadow-sm transition-colors duration-500 ${getStatusStyle(activeQueueDetail.status)}`}>
+                {getStatusText(activeQueueDetail.status)}
+              </span>
+              <span className={`text-[10px] font-black tracking-widest uppercase transition-colors duration-500 ${theme.date}`}>
+                {new Date(activeQueueDetail.queueDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
               </span>
             </div>
-
-            {/* Nomor Antrean Berjalan Saat Ini (Hanya menampilkan angka saja) */}
-            {isWaiting && (
-              <div className="bg-slate-50/80 backdrop-blur-md border border-slate-200 rounded-2xl p-4 text-center min-w-[110px] shadow-sm transition-all flex flex-col justify-center">
-                <span className="block text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Saat Ini</span>
-                <span className="block text-3xl font-extrabold font-['Manrope'] text-zinc-900 tracking-tight">
-                  {activeQueueDetail.currentServingNumber || '-'}
-                </span>
-              </div>
-            )}
+            <h2 className={`text-2xl md:text-3xl font-extrabold font-['Manrope'] mb-1.5 tracking-tight transition-colors duration-500 ${theme.title}`}>
+              {activeQueueDetail?.department?.name || 'Poliklinik'}
+            </h2>
+            <p className={`text-xs font-bold uppercase tracking-wide transition-colors duration-500 ${theme.doctor}`}>
+              {activeQueueDetail?.doctor?.user?.name || 'Dokter belum ditentukan'}
+            </p>
           </div>
 
-          <div>
-            <div className="flex items-center gap-2.5 mb-1.5">
-              {/* 3. REVISI GAYA BADGE: Penghapusan rujukan warna biru secara menyeluruh */}
-              <span className={`flex items-center gap-1.5 border text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider transition-colors duration-700 ease-in-out ${
-                isWaiting ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
-                isInProgress ? 'bg-amber-50 text-amber-700 border-amber-200' : 
-                'bg-slate-50 text-slate-600 border-slate-200'
-              }`}>
-                <span className={`w-1.5 h-1.5 rounded-full animate-ping ${
-                  isWaiting ? 'bg-emerald-500' : isInProgress ? 'bg-amber-500' : 'bg-slate-400'
-                }`} />
-                {statusBadgeText}
-              </span>
-              <h4 className="text-xl font-bold font-['Manrope'] text-zinc-900">{activeQueueDetail.department?.name || '-'}</h4>
-            </div>
-            <p className="text-slate-500 text-sm font-medium mb-3">
-              {activeQueueDetail.doctor?.user?.name || 'Dokter belum ditentukan'}
-            </p>
-            
-            <div className="flex flex-col gap-2.5">
-              <div className="flex flex-wrap items-center gap-3 text-xs font-bold bg-slate-50 w-max px-3 py-1.5 rounded-lg border border-slate-200">
-                <span className={`transition-colors duration-700 ease-in-out ${
-                  isWaiting ? 'text-emerald-600' : isInProgress ? 'text-amber-600' : 'text-slate-500'
-                }`}>
-                  {statusLabel}
-                </span>
+          {/* Sisi Kanan: Metrik Antrean */}
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <p className={`text-[9px] font-black uppercase tracking-widest mb-1 transition-colors duration-500 ${theme.labelCurrent}`}>Antrean Ke-</p>
+              <div className={`text-4xl md:text-5xl font-black font-mono tracking-tighter transition-colors duration-500 ${theme.numCurrent}`}>
+                {activeQueueDetail.currentServingNumber || '-'}
               </div>
-
-              {isWaiting && typeof activeQueueDetail.estimatedWaitMinutes === 'number' && (
-                <div className="flex items-center gap-2.5 text-xs font-semibold bg-teal-50 w-max px-3 py-2 rounded-lg border border-teal-100 shadow-sm">
-                  <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-600">Estimasi Tunggu:</span>
-                    <span className="text-teal-700 font-black text-sm">{activeQueueDetail.estimatedWaitMinutes} Menit</span>
-                    
-                    {activeQueueDetail.prediction?.source === 'ml' && (
-                      <span className="ml-1 px-1.5 py-0.5 rounded-md bg-white text-teal-600 text-[9px] uppercase tracking-widest border border-teal-200 shadow-sm" title="Dihitung oleh Artificial Intelligence">
-                        AI Predicted
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
+            </div>
+            <div className={`w-px h-14 transition-colors duration-500 ${theme.divider}`}></div>
+            <div className="text-center">
+              <p className={`text-[9px] font-black uppercase tracking-widest mb-1 transition-colors duration-500 ${theme.labelYours}`}>Nomor Anda</p>
+              <div className={`text-4xl md:text-5xl font-black font-mono tracking-tighter transition-colors duration-500 ${theme.numYours}`}>
+                {activeQueueDetail.queueNumber}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3 relative z-10 w-full md:w-auto mt-6 md:mt-0">
+        {/* Footer: Tombol Aksi (Direvisi untuk membagi rata 50-50 di Mobile dan merapat ke kanan di Desktop) */}
+        <div className={`relative z-10 flex flex-row justify-end items-center gap-2.5 mt-5 pt-4 border-t transition-colors duration-700 ${theme.borderTop}`}>
           {isWaiting && (
             <button 
-              onClick={handleCancel}
+              onClick={triggerCancel}
               disabled={isCancelling}
-              className="px-6 py-4 text-sm font-extrabold rounded-xl border border-rose-200 bg-white text-rose-600 hover:bg-rose-50 transition-all duration-300 disabled:opacity-50 shadow-sm"
+              className="flex-1 md:flex-none px-3 md:px-5 py-2.5 text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-lg border border-rose-200 bg-white text-rose-600 hover:bg-rose-50 transition-all duration-300 disabled:opacity-50 shadow-sm outline-none whitespace-nowrap text-center"
             >
               {isCancelling ? 'Memproses...' : 'Batalkan Antrean'}
             </button>
           )}
           <button 
             onClick={() => setIsModalOpen(true)}
-            className={`px-6 py-4 text-sm font-extrabold rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ${
-              isInProgress ? 'bg-amber-500 text-white hover:bg-amber-600' : 
-              isFinal ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 
-              'bg-teal-600 text-white hover:bg-teal-700'
+            className={`flex-1 md:flex-none px-3 md:px-6 py-2.5 text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm transition-all duration-300 outline-none whitespace-nowrap text-center ${
+              isInProgress ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/20' : 
+              'bg-teal-600 text-white hover:bg-teal-700 shadow-teal-600/20'
             }`}
           >
-            {isInProgress ? 'Detail Pemeriksaan' : isFinal ? 'Riwayat Status' : 'Buka Pelacak'}
+            {isInProgress ? 'Instruksi' : 'Detail Kunjungan'}
           </button>
         </div>
       </div>
 
-      <QueueDetailsModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <QueueDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         status={status}
+      />
+      
+      {/* INJEKSI MODAL KONFIRMASI KUSTOM DI SINI */}
+      <ConfirmModal
+        isOpen={isConfirmCancelOpen}
+        title="Batalkan Antrean?"
+        message="Tindakan ini mutlak dan tidak dapat dibatalkan. Nomor antrean Anda akan ditarik oleh sistem dan diberikan ke pasien lain."
+        confirmText="Ya, Batalkan"
+        cancelText="Kembali"
+        type="danger"
+        isLoading={isCancelling}
+        onConfirm={executeCancel}
+        onCancel={() => setIsConfirmCancelOpen(false)}
       />
     </>
   );
