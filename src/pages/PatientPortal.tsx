@@ -533,11 +533,11 @@ export default function PatientPortal() {
                   <p className="text-slate-600 dark:text-slate-400 text-sm font-medium transition-colors">Arsip rekam jejak pengambilan nomor antrean klinik Anda.</p>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden transition-colors">
+                <div className="bg-white dark:bg-[#1e1f20] rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden transition-colors">
                   <div className="overflow-x-auto no-scrollbar">
                     <table className="w-full text-left border-collapse min-w-[900px]">
                       <thead>
-                        <tr className="bg-slate-50/80 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700/50 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest transition-colors">
+                        <tr className="bg-slate-50/80 dark:bg-[#131314] border-b border-slate-100 dark:border-zinc-800 text-slate-400 dark:text-zinc-500 text-[10px] font-black uppercase tracking-widest transition-colors">
                           <th className="p-6 pl-8">Layanan Medis</th>
                           <th className="p-6">Tgl. Kunjungan</th>
                           <th className="p-6">Jam Kunjungan</th>
@@ -545,7 +545,7 @@ export default function PatientPortal() {
                           <th className="p-6 text-right pr-8">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-700/50">
+                      <tbody className="text-sm divide-y divide-slate-100 dark:divide-zinc-800">
                         {isLoadingTable ? (
                           <tr><td colSpan={5} className="p-16 text-center animate-pulse text-teal-700 dark:text-teal-500 font-bold uppercase tracking-widest text-xs bg-slate-50/50 dark:bg-slate-800/50 transition-colors">Menyinkronkan riwayat...</td></tr>
                         ) : patientHistory.length === 0 ? (

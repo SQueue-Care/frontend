@@ -54,14 +54,14 @@ export default function PatientSidebar({
             }
         `}
       >
-        <header className="h-15 px-4 pt-5 pb-2 flex items-center justify-start">          
+        <header className="py-3 lg:py-4 px-[18px] flex items-center justify-start">          
           <button
             type="button"
             onClick={toggleSidebar}
-            className="p-2 flex justify-center items-center rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#131314] text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-900 focus:outline-none transition-all shadow-sm shrink-0"
+            className="p-2.5 flex justify-center items-center rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#131314] text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-900 focus:outline-none transition-all shadow-sm shrink-0"
             title={isSidebarOpen ? "Kecilkan Navigasi" : "Besarkan Navigasi"}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
