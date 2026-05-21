@@ -1,10 +1,11 @@
 // src/components/DoctorQueueManagement.tsx
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useDoctorStore } from '../../store/doctorStore';
 import { useQueueStore } from '../../store/queueStore';
 import { QueueStatus } from '../../lib/types';
 import apiClient from '../../lib/apiClient';
+import CDSSModal from './CDSSModal';
 import {
   getAllowedQueueTransitions,
   isValidQueueTransition,
@@ -17,6 +18,7 @@ export default function DoctorQueueManagement() {
   const user = useAuthStore((state) => state.user);
   const { profile } = useDoctorStore();
   const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore();
+  const [cdssQueue, setCdssQueue] = useState<any | null>(null);
 
   const departmentId = profile?.department?.id || profile?.departmentId;
 
@@ -150,6 +152,16 @@ export default function DoctorQueueManagement() {
                        </td>
                        <td className="p-3 text-right">
                          <div className="flex items-center justify-end gap-2 flex-wrap">
+                           {[QueueStatus.WAITING, QueueStatus.CALLED, QueueStatus.IN_PROGRESS].includes(queue.status) && (
+                             <button
+                               onClick={() => setCdssQueue(queue)}
+                               className="px-3 py-1.5 text-[11px] font-bold rounded-lg bg-violet-50 text-violet-600 border border-violet-200 hover:bg-violet-100 transition-colors"
+                               title="Analisis CDSS"
+                             >
+                               CDSS
+                             </button>
+                           )}
+
                            {getAllowedQueueTransitions(queue.status)
                              .filter((nextStatus) => nextStatus !== QueueStatus.CANCELLED)
                              .map((nextStatus) => (
@@ -184,6 +196,12 @@ export default function DoctorQueueManagement() {
            </div>
          )}
       </div>
+
+      <CDSSModal
+        isOpen={!!cdssQueue}
+        onClose={() => setCdssQueue(null)}
+        queue={cdssQueue}
+      />
     </div>
   );
 }

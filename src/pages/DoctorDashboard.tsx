@@ -6,8 +6,9 @@ import { useDoctorStore } from '../store/doctorStore';
 import DoctorProfileSettings from '../components/doctor/DoctorProfileSettings';
 import DoctorAppointmentManagement from '../components/doctor/DoctorAppointmentManagement';
 import DoctorQueueManagement from '../components/doctor/DoctorQueueManagement';
+import CDSSHistoryPanel from '../components/doctor/CDSSHistoryPanel';
 
-type DoctorView = 'dashboard' | 'appointments' | 'profile';
+type DoctorView = 'dashboard' | 'appointments' | 'profile' | 'cdss';
 
 export default function DoctorDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -61,6 +62,11 @@ export default function DoctorDashboard() {
             Jadwal Reservasi
           </button>
 
+          <button onClick={() => { setActiveView('cdss'); setIsSidebarOpen(false); }} className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'cdss' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5h.01"></path></svg>
+            Riwayat CDSS
+          </button>
+
           <button onClick={() => { setActiveView('profile'); setIsSidebarOpen(false); }} className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors ${activeView === 'profile' ? 'bg-teal-500/20 text-teal-400' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             Profil Medis
@@ -102,10 +108,12 @@ export default function DoctorDashboard() {
 
         {/* AREA KERJA */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50/50">
-          
+
           {activeView === 'dashboard' && <DoctorQueueManagement />}
 
           {activeView === 'appointments' && <DoctorAppointmentManagement />}
+
+          {activeView === 'cdss' && <CDSSHistoryPanel />}
 
           {activeView === 'profile' && <DoctorProfileSettings />}
         </main>
