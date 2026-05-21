@@ -367,7 +367,7 @@ export default function BookingPanel({
             <div className="flex flex-col gap-3 w-full">
               {hasActiveQueue && (
                 <div className="p-3 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-rose-700 dark:text-rose-400 text-xs font-bold text-center animate-in fade-in slide-in-from-bottom-2 transition-colors">
-                  Peringatan: Anda tidak dapat melanjutkan karena saat ini Anda sudah dalam antrean.
+                  Peringatan: Anda tidak dapat melanjutkan karena saat ini Anda sedang dalam antrean.
                 </div>
               )}
               

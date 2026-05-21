@@ -52,14 +52,14 @@ export default function QueueDetailPanel({ isOpen, onClose, queue, patientProfil
       />
 
       <div
-        className={`fixed inset-y-0 right-0 z-[110] w-full sm:max-w-md bg-white shadow-2xl flex flex-col transition-transform duration-500 ease-in-out border-l border-slate-200 ${
+         className={`fixed inset-y-0 right-0 z-[110] w-full sm:max-w-md bg-white dark:bg-[#1e1f20] shadow-2xl flex flex-col transition-transform duration-500 ease-in-out border-l border-slate-200 dark:border-zinc-800  ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Header Panel */}
-        <div className="p-6 md:p-8 flex items-center justify-between border-b border-slate-100 bg-slate-50/50 shrink-0 sticky top-0 z-10">
+        <div className="p-6 md:p-8 flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-[#131314]/50 shrink-0 sticky top-0 z-10 transition-colors">
           <div>
-            <h3 className="text-2xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tight">Detail Kunjungan</h3>
+            <h3 className="text-2xl font-extrabold text-zinc-950 dark:text-zinc-100 font-['Manrope'] tracking-tight">Detail Kunjungan</h3>
             <p className="text-xs text-slate-500 mt-1 font-medium font-mono uppercase tracking-widest">ID: {queue.id?.substring(0, 8) || 'XXX'}</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-slate-200 bg-white border border-slate-200 shadow-sm">
@@ -73,7 +73,7 @@ export default function QueueDetailPanel({ isOpen, onClose, queue, patientProfil
         <div className="flex-1 overflow-y-auto no-scrollbar p-6 md:p-8 space-y-6">
           
           {/* Box Nomor Antrean & Status */}
-          <div className="flex items-center justify-between bg-slate-50 p-5 rounded-2xl border border-slate-100">
+          <div className="flex items-center justify-between bg-slate-50 dark:bg-[#131314] p-5 rounded-2xl border border-slate-100 dark:border-zinc-800 transition-colors">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Nomor Urut</p>
               <span className="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-zinc-900 font-black rounded-xl font-mono text-xl shadow-sm">
@@ -172,8 +172,8 @@ export default function QueueDetailPanel({ isOpen, onClose, queue, patientProfil
                 <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-3 border-b border-amber-200 pb-2">
                   Catatan Dokter & Pengingat Penyakit
                 </h4>
-                <div className="bg-amber-50/60 rounded-2xl p-4 border border-amber-200 shadow-sm">
-                  <p className="text-sm text-zinc-800 font-semibold leading-relaxed whitespace-pre-wrap">
+                <div className="bg-amber-50/60 dark:bg-amber-900/10 rounded-2xl p-4 border border-amber-200 dark:border-amber-900/50 shadow-sm transition-colors">
+                  <p className="text-sm text-zinc-800 dark:text-amber-100 font-semibold leading-relaxed whitespace-pre-wrap">
                     {/* Asumsi field dari backend/store menggunakan nama doctorNotes */}
                     {queue.doctorNotes || (
                       <span className="italic text-slate-400 font-normal">

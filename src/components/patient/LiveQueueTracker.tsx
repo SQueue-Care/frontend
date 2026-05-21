@@ -167,7 +167,7 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
               'bg-teal-600 text-white hover:bg-teal-700 shadow-teal-600/20 dark:bg-teal-700 dark:hover:bg-teal-600'
             }`}
           >
-            {isInProgress ? 'Instruksi' : 'Detail Kunjungan'}
+            {isInProgress ? 'Instruksi Pemanggilan' : 'Detail Kunjungan'}
           </button>
         </div>
       </div>

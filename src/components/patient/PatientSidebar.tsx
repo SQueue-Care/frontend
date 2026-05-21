@@ -54,7 +54,6 @@ export default function PatientSidebar({
             }
         `}
       >
-        {/* HEADER: Terkunci mutlak di kiri, tidak bergeser ke tengah saat ditutup */}
         <header className="h-15 px-4 pt-5 pb-2 flex items-center justify-start">          
           <button
             type="button"
@@ -75,13 +74,12 @@ export default function PatientSidebar({
               <button
                 onClick={() => handleNavigation('dashboard')}
                 title={!isSidebarOpen ? 'Dashboard' : ''}
-                // PERBAIKAN: px-4 gap-x-3.5 justify-start dikunci mati di sini
                 className={`w-full flex items-center py-3 px-4 gap-x-3.5 justify-start rounded-xl transition-all overflow-hidden whitespace-nowrap outline-none
                   ${activeView === 'dashboard' ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 shadow-sm border border-teal-100 dark:border-teal-500/20' : 'text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800/50 hover:text-slate-800 dark:hover:text-zinc-200 border border-transparent'}
                 `}
               >
                 <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                <span className={`text-sm font-bold ${!isSidebarOpen ? 'lg:hidden' : 'block animate-in fade-in duration-200'}`}>Dashboard</span>
+                <span className={`text-sm font-medium ${!isSidebarOpen ? 'lg:hidden' : 'block animate-in fade-in duration-200'}`}>Dashboard</span>
               </button>
             </li>
 
@@ -90,12 +88,11 @@ export default function PatientSidebar({
                 onClick={() => handleNavigation('polyclinics')}
                 title={!isSidebarOpen ? 'Poliklinik' : ''}
                 className={`w-full flex items-center py-3 px-4 gap-x-3.5 justify-start rounded-xl transition-all overflow-hidden whitespace-nowrap outline-none
-                  ${isSidebarOpen ? 'px-3 gap-x-3.5 justify-start' : 'px-3 gap-x-3.5 justify-start lg:justify-center lg:px-0'}
                   ${activeView === 'polyclinics' ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 shadow-sm border border-teal-100 dark:border-teal-500/20' : 'text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800/50 hover:text-slate-800 dark:hover:text-zinc-200 border border-transparent'}
                 `}
               >
                 <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                <span className={`text-sm font-bold ${!isSidebarOpen ? 'lg:hidden' : 'block animate-in fade-in duration-200'}`}>Poliklinik</span>
+                <span className={`text-sm font-medium ${!isSidebarOpen ? 'lg:hidden' : 'block animate-in fade-in duration-200'}`}>Poliklinik</span>
               </button>
             </li>
 
@@ -111,12 +108,11 @@ export default function PatientSidebar({
                 }}
                 title={!isSidebarOpen ? 'Riwayat & Kunjungan' : ''}
                 className={`w-full flex items-center py-3 px-4 gap-x-3.5 justify-start rounded-xl transition-all overflow-hidden whitespace-nowrap outline-none
-                  ${isSidebarOpen ? 'px-3 gap-x-3.5 justify-start' : 'px-3 gap-x-3.5 justify-start lg:justify-center lg:px-0'}
                   ${(activeView === 'reservations' || activeView === 'queues' || isHistoryOpen) ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 shadow-sm border border-teal-100 dark:border-teal-500/20' : 'text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800/50 hover:text-slate-800 dark:hover:text-zinc-200 border border-transparent'}
                 `}
               >
                 <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span className={`text-sm font-bold flex-1 text-left ${!isSidebarOpen ? 'lg:hidden' : 'block animate-in fade-in duration-200'}`}>Riwayat Kunjungan</span>
+                <span className={`text-sm font-medium flex-1 text-left ${!isSidebarOpen ? 'lg:hidden' : 'block animate-in fade-in duration-200'}`}>Riwayat Kunjungan</span>
                 {isSidebarOpen && (
                   <svg className={`shrink-0 w-4 h-4 transition-transform duration-300 ${isHistoryOpen ? 'rotate-180 text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-zinc-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path></svg>
                 )}
@@ -127,7 +123,7 @@ export default function PatientSidebar({
                   <li>
                     <button
                       onClick={() => handleNavigation('reservations')}
-                      className={`w-full text-left py-2.5 px-3 text-xs font-bold rounded-lg transition-all outline-none ${
+                      className={`w-full flex items-center py-3 px-4 gap-x-3.5 justify-start rounded-xl transition-all overflow-hidden whitespace-nowrap outline-none ${
                         activeView === 'reservations' ? 'text-teal-700 dark:text-teal-400 bg-white dark:bg-[#131314] shadow-sm border border-teal-100 dark:border-teal-500/20' : 'text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-[#131314] hover:text-teal-600 dark:hover:text-teal-400 border border-transparent'
                       }`}
                     >
@@ -137,11 +133,11 @@ export default function PatientSidebar({
                   <li>
                     <button
                       onClick={() => handleNavigation('queues')}
-                      className={`w-full text-left py-2.5 px-3 text-xs font-bold rounded-lg transition-all outline-none ${
+                      className={`w-full flex items-center py-3 px-4 gap-x-3.5 justify-start rounded-xl transition-all overflow-hidden whitespace-nowrap outline-none ${
                         activeView === 'queues' ? 'text-teal-700 dark:text-teal-400 bg-white dark:bg-[#131314] shadow-sm border border-teal-100 dark:border-teal-500/20' : 'text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-[#131314] hover:text-teal-600 dark:hover:text-teal-400 border border-transparent'
                       }`}
                     >
-                      Nomor Antrean
+                      Riwayat Antrean
                     </button>
                   </li>
                 </ul>
@@ -190,7 +186,6 @@ export default function PatientSidebar({
                       }}
                       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors outline-none shadow-inner ${theme === 'dark' ? 'bg-teal-500' : 'bg-slate-200 dark:bg-zinc-700'}`}
                     >
-                      {/* PERBAIKAN MUTLAK: Mengganti translate-x-4.5 yang tidak valid menjadi translate-x-4 */}
                       <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${theme === 'dark' ? 'translate-x-4' : 'translate-x-1'}`} />
                     </button>
                   </div>

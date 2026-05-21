@@ -370,7 +370,7 @@ export default function PatientPortal() {
           {/* ========================================== */}
           {/* 3. KONTEN UTAMA */}
           {/* ========================================== */}
-          <main className="relative z-10 w-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-15 py-10 md:py-12 flex-1">
+          <main className="relative z-10 w-full max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-15 py-10 md:py-12 flex-1 mt-16">
 
             {/* TAMPILAN 1: PILIH POLIKLINIK */}
             {activeView === 'dashboard' && (
