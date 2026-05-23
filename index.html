@@ -4,7 +4,27 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend-portal-pasien</title>
+    <title>SQueue-Care</title>
+
+    <script>
+      try {
+        const themeStorage = localStorage.getItem('patient-theme-storage');
+        if (themeStorage) {
+          const parsed = JSON.parse(themeStorage);
+          if (parsed?.state?.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        }
+      } catch (e) {}
+    </script>
+
+    <style>
+      html.dark, html.dark body, html.dark #root {
+        background-color: #131314 !important;
+        color: #f4f4f5 !important;
+      }
+    </style>
+    
   </head>
   <body class="no-scrollbar">
     <div id="root"></div>

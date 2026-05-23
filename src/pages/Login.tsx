@@ -71,12 +71,10 @@ export default function Login() {
 
           <form className="flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
             
-            {/* Menggunakan Komponen Reusable */}
             <AuthInput 
               label="NIK / Nomor Rekam Medis" 
               type="text" 
               placeholder="Masukkan 16 digit NIK" 
-              // error="Contoh state error: NIK tidak ditemukan" -> Nanti kita hubungkan dengan logika validasi
             />
 
             <div className="flex flex-col gap-2">
@@ -91,7 +89,6 @@ export default function Login() {
               />
             </div>
 
-            {/* Menggunakan Komponen Reusable */}
             <AuthButton type="submit" isLoading={false}>
               Masuk ke Portal
             </AuthButton>

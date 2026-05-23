@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 
 interface CustomDatePickerProps {
+  label: string;
   value: string;
   onChange: (val: string) => void;
 }
 
-export default function CustomDatePicker({ value, onChange }: CustomDatePickerProps) {
+export default function CustomDatePicker({ label, value, onChange }: CustomDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [viewDate, setViewDate] = useState(value ? new Date(value) : new Date());
+  const isFloating = isOpen || !!value;
 
   const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
   const firstDayOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
@@ -24,20 +26,33 @@ export default function CustomDatePicker({ value, onChange }: CustomDatePickerPr
 
   const displayValue = value
     ? new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-    : 'Pilih Tanggal Lahir';
+    : '';
 
   return (
-    <div className="relative w-full">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all flex justify-between items-center shadow-sm"
-      >
-        <span className={value ? '' : 'text-slate-400 dark:text-zinc-600'}>{displayValue}</span>
-        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-        </svg>
-      </button>
+    <div className="relative w-full pt-2">
+      {/* Penyelarasan Struktur Pembungkus */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full px-3 py-2.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all flex justify-between items-center shadow-sm"
+        >
+          <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{displayValue}</span>
+          <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </button>
+
+        <label
+          className={`absolute left-3 text-xs font-bold transition-all duration-200 ease-in-out pointer-events-none px-1.5 z-10 rounded-sm
+            ${isFloating 
+              ? 'top-0 -translate-y-1/2 text-teal-600 dark:text-teal-400 bg-white dark:bg-[#1e1f20]' 
+              : 'top-1/2 -translate-y-1/2 text-slate-500 dark:text-zinc-500 bg-transparent'
+            }`}
+        >
+          {label}
+        </label>
+      </div>
 
       {isOpen && (
         <>
@@ -48,9 +63,7 @@ export default function CustomDatePicker({ value, onChange }: CustomDatePickerPr
                 <button type="button" onClick={() => changeYear(-1)} className="p-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg text-slate-500 dark:text-zinc-400 transition-colors" title="Tahun Sebelumnya">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
                 </button>
-                <button type="button" onClick={() => changeMonth(-1)} className="p-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg text-slate-500 dark:text-zinc-400 transition-colors" title="Bulan Sebelumnya">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
+                <button type="button" onClick={() => changeMonth(-1)} className="p-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg text-slate-500 dark:text-zinc-400 transition-colors" title="Bulan Sebelumnya"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg></button>
               </div>
               <div className="text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest">
                 {viewDate.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
@@ -59,9 +72,7 @@ export default function CustomDatePicker({ value, onChange }: CustomDatePickerPr
                 <button type="button" onClick={() => changeMonth(1)} className="p-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg text-slate-500 dark:text-zinc-400 transition-colors" title="Bulan Selanjutnya">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
-                <button type="button" onClick={() => changeYear(1)} className="p-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg text-slate-500 dark:text-zinc-400 transition-colors" title="Tahun Selanjutnya">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
-                </button>
+                <button type="button" onClick={() => changeYear(1)} className="p-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg text-slate-500 dark:text-zinc-400 transition-colors" title="Tahun Selanjutnya"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg></button>
               </div>
             </div>
 

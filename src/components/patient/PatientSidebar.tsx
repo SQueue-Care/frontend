@@ -150,8 +150,10 @@ export default function PatientSidebar({
           <div className="relative w-full">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              // PERBAIKAN: px-3 gap-x-3 justify-start dikunci mati tanpa kondisi isSidebarOpen
-              className="w-full flex items-center py-1.5 px-3 gap-x-3 justify-start rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/80 outline-none transition-colors"
+              // PERBAIKAN FINAL: Gunakan kondisi isSidebarOpen untuk menyelaraskan ke tengah
+              className={`w-full flex items-center py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/80 outline-none transition-colors ${
+                isSidebarOpen ? 'px-3 gap-x-3 justify-start' : 'justify-center'
+              }`}
             >
               <div className="w-9 h-9 rounded-full bg-teal-100 dark:bg-[#131314] text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-zinc-800 flex items-center justify-center shrink-0 font-extrabold shadow-sm">
                 {user?.name?.charAt(0).toUpperCase() || 'U'}

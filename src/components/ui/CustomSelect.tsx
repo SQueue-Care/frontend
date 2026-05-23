@@ -2,30 +2,45 @@
 import React, { useState } from 'react';
 
 interface CustomSelectProps {
+  label: string;
   value: string;
   onChange: (val: string) => void;
   options: { value: string; label: string }[];
   placeholder: string;
 }
 
-export default function CustomSelect({ value, onChange, options, placeholder }: CustomSelectProps) {
+export default function CustomSelect({ label, value, onChange, options, placeholder }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedOpt = options.find((o) => o.value === value);
+  const isFloating = isOpen || !!selectedOpt;
 
   return (
-    <div className="relative w-full">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all flex justify-between items-center shadow-sm"
-      >
-        <span className={selectedOpt ? '' : 'text-slate-400 dark:text-zinc-600'}>
-          {selectedOpt ? selectedOpt.label : placeholder}
-        </span>
-        <svg className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
+    <div className="relative w-full pt-2">
+      {/* Penyelarasan Struktur Pembungkus */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full px-3 py-2.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-xl text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all flex justify-between items-center shadow-sm"
+        >
+          <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+            {selectedOpt ? selectedOpt.label : ""}
+          </span>
+          <svg className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+
+        <label
+          className={`absolute left-3 text-xs font-bold transition-all duration-200 ease-in-out pointer-events-none px-1.5 z-10 rounded-sm
+            ${isFloating 
+              ? 'top-0 -translate-y-1/2 text-teal-600 dark:text-teal-400 bg-white dark:bg-[#1e1f20]' 
+              : 'top-1/2 -translate-y-1/2 text-slate-500 dark:text-zinc-500 bg-transparent'
+            }`}
+        >
+          {label}
+        </label>
+      </div>
 
       {isOpen && (
         <>

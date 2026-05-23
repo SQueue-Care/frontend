@@ -18,6 +18,8 @@ import CustomSelect from '../components/ui/CustomSelect';
 import CustomDatePicker from '../components/ui/CustomDatePicker';
 import CustomAlert from '../components/ui/CustomAlert';
 import { useAlertStore } from '../store/alertStore';
+import CustomInput from '../components/ui/CustomInput';
+import CustomSearchBar from '../components/ui/CustomSearchBar';
 
 type PortalView = 'dashboard' | 'polyclinics' | 'reservations' | 'queues' | 'profile';
 
@@ -345,8 +347,7 @@ export default function PatientPortal() {
   const handlePrevStep = () => setBookingStep((prev) => prev - 1);
   return (
     <>
-      {/* Tambahkan dark:bg-slate-900 untuk melihat langsung perubahan warna latar saat di-toggle */}
-      <div className="min-h-screen bg-slate-50 dark:bg-[#131314] font-['Inter'] relative transition-colors duration-500 overflow-x-hidden">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#131314] font-['Inter'] relative overflow-x-hidden">
         <CustomAlert />
         {/* ========================================== */}
         {/* 1. MODULAR SIDEBAR & OVERLAY               */}
@@ -360,7 +361,6 @@ export default function PatientPortal() {
           handleLogout={handleLogout}
         />
         <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 lg:pl-[76px]">
-          {/* INJEKSI: Tambahkan dark:bg-teal-900/40 dan turunkan opacity di mode gelap */}
           <div className="fixed w-96 h-96 -top-48 -left-48 bg-teal-100 dark:bg-teal-900/40 rounded-full blur-[120px] opacity-60 dark:opacity-40 transition-colors" />
           <div className="fixed w-96 h-96 -bottom-48 -right-48 bg-blue-100 dark:bg-blue-900/40 rounded-full blur-[120px] opacity-60 dark:opacity-40 transition-colors" />
 
@@ -383,22 +383,16 @@ export default function PatientPortal() {
 
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                   <div className="max-w-xl">
-                    {/* INJEKSI: dark:text-white */}
                     <h1 className="text-3xl md:text-4xl font-extrabold text-zinc-950 dark:text-white font-['Manrope'] tracking-tighter mb-2.5 transition-colors">Pilih Layanan Poliklinik</h1>
-                    {/* INJEKSI: dark:text-slate-400 dan dark:text-teal-400 */}
                     <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed transition-colors">Cek status keramaian poli secara <span className="font-semibold text-teal-700 dark:text-teal-400">real-time</span> sebelum mengambil nomor antrean.</p>
                   </div>
 
-                  <div className="w-full md:w-80 relative shrink-0">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <svg className="w-4 h-4 text-slate-400 dark:text-slate-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <input
-                      type="text"
+                  <div className="w-full md:w-80 shrink-0">
+                    <CustomSearchBar 
+                      label="Cari Layanan Medis"
+                      placeholder="Contoh: Poli Gigi..."
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Cari poli..."
-                      className="w-full pl-10 pr-4 py-3 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-500 shadow-sm"
+                      onChange={setSearchQuery}
                     />
                   </div>
                 </div>
@@ -409,7 +403,6 @@ export default function PatientPortal() {
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {/* Tampilkan indikator loading jika data sedang diambil */}
                   {isDeptLoading ? (
                     <div className="col-span-full text-center py-10 font-bold text-slate-500 dark:text-slate-400 transition-colors">
                       Memuat data layanan poliklinik...
@@ -466,7 +459,6 @@ export default function PatientPortal() {
                   <p className="text-slate-600 dark:text-slate-400 text-sm font-medium transition-colors">Daftar pemesanan sesi konsultasi medis Anda yang telah terjadwal.</p>
                 </div>
 
-                {/* INJEKSI: dark:bg-slate-800 dark:border-slate-700 */}
                 <div className="bg-white dark:bg-[#1e1f20] rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden transition-colors">
                   <div className="overflow-x-auto no-scrollbar">
                     <table className="w-full text-left border-collapse min-w-[900px]">
@@ -606,7 +598,6 @@ export default function PatientPortal() {
                   <p className="text-xs text-slate-500 dark:text-zinc-400 transition-colors">Kelola identitas medis dan informasi kontak Anda.</p>
                 </div>
 
-                {/* Card Terbuka Penuh Menyesuaikan Konten Halaman */}
                 <div className="w-full bg-white dark:bg-[#1e1f20] rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden transition-colors duration-500">
                   {isProfileLoading ? (
                     <div className="flex flex-col items-center justify-center py-16">
@@ -621,7 +612,6 @@ export default function PatientPortal() {
                         
                         <div className="flex items-center gap-4 relative z-10">
                           <div className="relative shrink-0">
-                            {/* Dimensi Foto Profil Diperkecil Secara Proporsional */}
                             <div className="w-16 h-16 rounded-xl bg-teal-50 dark:bg-[#131314] text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-zinc-800 flex items-center justify-center text-2xl font-black shadow-sm transition-colors">
                               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                             </div>
@@ -647,84 +637,98 @@ export default function PatientPortal() {
                         )}
                       </div>
 
-                      {/* Formulir Profil dengan Skala Font Lebih Padat */}
                       <form onSubmit={handleSaveProfile} className="p-6">
 
                         {/* Seksi 1: Identitas Pribadi */}
                         <div className="mb-6">
                           <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest border-b border-slate-100 dark:border-zinc-800 pb-2 mb-4 transition-colors">Identitas Medis Pribadi</h3>
                           
-                          {/* Grid Diubah Menjadi 3 Kolom untuk Layanan Desktop */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {/* NIK */}
-                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
-                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor Induk Kependudukan (NIK)</label>
-                              {isEditing ? (
-                                <input type="text" maxLength={16} value={formData.nik} onChange={(e) => setFormData({ ...formData, nik: e.target.value })} 
-                                className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="16 Digit NIK" />
-                              ) : (
+                            {isEditing ? (
+                              <CustomInput 
+                                label="Nomor Induk Kependudukan (NIK)"
+                                placeholder="Contoh: 36710xxxxx"
+                                value={formData.nik}
+                                onChange={(val) => setFormData({ ...formData, nik: val })}
+                                maxLength={16}
+                                type="text"
+                              />
+                            ) : (
+                              <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                                <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor Induk Kependudukan (NIK)</label>
                                 <div className="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 transition-colors font-mono tracking-wider">{formData.nik || <span className="text-[11px] text-slate-400 dark:text-zinc-600 italic font-medium font-sans">Belum diatur</span>}</div>
-                              )}
-                            </div>
+                              </div>
+                            )}
                             
                             {/* BPJS */}
-                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
-                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor BPJS (Opsional)</label>
-                              {isEditing ? (
-                                <input type="text" value={formData.bpjsNumber} onChange={(e) => setFormData({ ...formData, bpjsNumber: e.target.value })} 
-                                className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="Nomor BPJS Kesehatan" />
-                              ) : (
+                            {isEditing ? (
+                              <CustomInput 
+                                label="Nomor BPJS"
+                                placeholder="Misal: 000xxxx"
+                                value={formData.bpjsNumber}
+                                onChange={(val) => setFormData({ ...formData, bpjsNumber: val })}
+                                type="text"
+                              />
+                            ) : (
+                              <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                                <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor BPJS</label>
                                 <div className="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 transition-colors font-mono tracking-wider">{formData.bpjsNumber || <span className="text-slate-400 dark:text-zinc-600 italic font-medium font-sans">Tidak ada BPJS</span>}</div>
-                              )}
-                            </div>
+                              </div>
+                            )}
 
                             {/* Jenis Kelamin */}
-                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
-                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Jenis Kelamin</label>
-                              {isEditing ? (
-                                /* IMPLMENTASI CUSTOM SELECT */
-                                <CustomSelect 
-                                  value={formData.gender} 
-                                  onChange={(val) => setFormData({ ...formData, gender: val })} 
-                                  options={[
-                                    { value: 'MALE', label: 'Laki-laki' },
-                                    { value: 'FEMALE', label: 'Perempuan' }
-                                  ]} 
-                                  placeholder="Pilih Jenis Kelamin" 
-                                />
-                              ) : (
+                            {isEditing ? (
+                              <CustomSelect 
+                                label="Jenis Kelamin"
+                                value={formData.gender} 
+                                onChange={(val) => setFormData({ ...formData, gender: val })} 
+                                options={[
+                                  { value: 'MALE', label: 'Laki-laki' },
+                                  { value: 'FEMALE', label: 'Perempuan' }
+                                ]} 
+                                placeholder="Pilih Jenis Kelamin" 
+                              />
+                            ) : (
+                              <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                                <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Jenis Kelamin</label>
                                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 transition-colors">
                                   {formData.gender === 'MALE' ? 'Laki-laki' : formData.gender === 'FEMALE' ? 'Perempuan' : <span className="text-slate-400 dark:text-zinc-600 italic font-medium">Belum diatur</span>}
                                 </div>
-                              )}
-                            </div>
+                              </div>
+                            )}
 
                             {/* Tanggal Lahir */}
-                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
-                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Tanggal Lahir</label>
-                              {isEditing ? (
-                                /* IMPLMENTASI CUSTOM DATE PICKER */
-                                <CustomDatePicker 
-                                  value={formData.birthDate} 
-                                  onChange={(val) => setFormData({ ...formData, birthDate: val })} 
-                                />
-                              ) : (
+                            {isEditing ? (
+                              <CustomDatePicker 
+                                label="Tanggal Lahir"
+                                value={formData.birthDate} 
+                                onChange={(val) => setFormData({ ...formData, birthDate: val })} 
+                              />
+                            ) : (
+                              <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                                <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Tanggal Lahir</label>
                                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 transition-colors">
                                   {formData.birthDate ? new Date(formData.birthDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : <span className="text-slate-400 dark:text-zinc-600 italic font-medium">Belum diatur</span>}
                                 </div>
-                              )}
-                            </div>
+                              </div>
+                            )}
 
                             {/* Kontak Telepon WhatsApp */}
-                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
-                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor WhatsApp / Telepon</label>
-                              {isEditing ? (
-                                <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} 
-                                className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="0812xxxxxxx" />
-                              ) : (
+                            {isEditing ? (
+                              <CustomInput 
+                                label="Nomor WhatsApp / Telepon"
+                                placeholder="Contoh: 0812xxxxxx"
+                                value={formData.phone}
+                                onChange={(val) => setFormData({ ...formData, phone: val })}
+                                type="tel"
+                              />
+                            ) : (
+                              <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                                <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor WhatsApp / Telepon</label>
                                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 transition-colors font-mono">{formData.phone || <span className="text-[11px] text-slate-400 dark:text-zinc-600 italic font-medium font-sans">Belum diatur</span>}</div>
-                              )}
-                            </div>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -732,10 +736,15 @@ export default function PatientPortal() {
                         <div className="mb-2">
                           <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest border-b border-slate-100 dark:border-zinc-800 pb-2 mb-4 transition-colors">Domisili</h3>
                           <div className="w-full bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
-                            <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Alamat Lengkap Saat Ini</label>
                             {isEditing ? (
-                              <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={2} 
-                              className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="Tuliskan nama jalan, RT/RW, dan kota..."></textarea>
+                              <CustomInput 
+                                label="Alamat Lengkap Saat Ini"
+                                value={formData.address}
+                                onChange={(val) => setFormData({ ...formData, address: val })}
+                                placeholder="Tuliskan nama jalan, RT/RW, dan kota..."
+                                multiline={true}  
+                                rows={2}
+                              />
                             ) : (
                               <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-relaxed transition-colors">{formData.address || <span className="text-[11px] text-slate-400 dark:text-zinc-600 italic font-medium">Alamat belum ditambahkan.</span>}</div>
                             )}
