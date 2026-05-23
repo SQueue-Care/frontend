@@ -14,6 +14,10 @@ import PatientNavbar from '../components/patient/PatientNavbar';
 import ReservationDetailPanel from '../components/patient/ReservationDetailPanel';
 import QueueDetailPanel from '../components/patient/QueueDetailPanel'; 
 import { useThemeStore } from '../store/themeStore';
+import CustomSelect from '../components/ui/CustomSelect';
+import CustomDatePicker from '../components/ui/CustomDatePicker';
+import CustomAlert from '../components/ui/CustomAlert';
+import { useAlertStore } from '../store/alertStore';
 
 type PortalView = 'dashboard' | 'polyclinics' | 'reservations' | 'queues' | 'profile';
 
@@ -96,12 +100,13 @@ export default function PatientPortal() {
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [selectedQueue, setSelectedQueue] = useState<any>(null); 
   const [isQueuePanelOpen, setIsQueuePanelOpen] = useState(false);
+  const showAlert = useAlertStore((state) => state.showAlert);
+  const navigate = useNavigate();
 
 
   // ==========================================
   // 3. STORE & ROUTER (Zustand & React Router)
   // ==========================================
-  const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
   const { departments, isLoading: isDeptLoading, fetchDepartments } = useDepartmentStore();
@@ -211,7 +216,7 @@ export default function PatientPortal() {
     const patientId = user?.patient?.id || (user?.role === 'PATIENT' ? user.id : null);
 
     if (!patientId) {
-      alert("Gagal mengidentifikasi ID Pasien pada sesi Anda.");
+      showAlert("Gagal mengidentifikasi ID Pasien pada sesi Anda.", 'error');
       return;
     }
 
@@ -227,7 +232,7 @@ export default function PatientPortal() {
 
       await updateProfile(patientId, payload);
       setIsEditing(false);
-      alert('Profil berhasil diperbarui!');
+      showAlert('Profil berhasil diperbarui!', 'success');
     } catch (err: any) {
       const responseData = err.response?.data;
       let errorMessage = "Terjadi kesalahan saat menyimpan profil.";
@@ -261,7 +266,7 @@ export default function PatientPortal() {
         errorMessage = responseData.error.message;
       }
 
-      alert(`Gagal Memperbarui Profil:\n\n${errorMessage}`);
+      showAlert(`Gagal Memperbarui Profil:\n\n${errorMessage}`, 'error');
     }
   };
 
@@ -279,7 +284,7 @@ export default function PatientPortal() {
 
       const newQueue = response.data?.data;
 
-      alert('Check-in berhasil! Anda telah dipindahkan ke Antrean Berjalan (Live Queue).');
+      showAlert('Check-in berhasil! Anda telah dipindahkan ke Antrean Berjalan (Live Queue).', 'success');
       
       // 1. Tutup panel detail
       setIsDetailPanelOpen(false);
@@ -299,7 +304,7 @@ export default function PatientPortal() {
 
     } catch (err: any) {
       const errorMessage = err.response?.data?.error?.message || 'Terjadi kesalahan sistem saat check-in.';
-      alert(`Gagal Melakukan Check-In:\n\n${errorMessage}`);
+      showAlert(`Gagal Melakukan Check-In:\n\n${errorMessage}`, 'error');
     }
   };
 
@@ -342,7 +347,7 @@ export default function PatientPortal() {
     <>
       {/* Tambahkan dark:bg-slate-900 untuk melihat langsung perubahan warna latar saat di-toggle */}
       <div className="min-h-screen bg-slate-50 dark:bg-[#131314] font-['Inter'] relative transition-colors duration-500 overflow-x-hidden">
-
+        <CustomAlert />
         {/* ========================================== */}
         {/* 1. MODULAR SIDEBAR & OVERLAY               */}
         {/* ========================================== */}
@@ -595,36 +600,39 @@ export default function PatientPortal() {
             )}
             {/* TAMPILAN 3: PROFIL PASIEN (Premium Layout) */}
             {activeView === 'profile' && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="mb-8">
-                  <h1 className="text-3xl font-extrabold text-zinc-950 font-['Manrope'] tracking-tighter mb-2">Profil Pasien</h1>
-                  <p className="text-slate-600">Kelola identitas medis dan informasi kontak Anda.</p>
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
+                <div className="mb-6">
+                  <h1 className="text-2xl font-extrabold text-zinc-950 dark:text-zinc-100 font-['Manrope'] tracking-tighter mb-1.5 transition-colors">Profil Pasien</h1>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 transition-colors">Kelola identitas medis dan informasi kontak Anda.</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#1e1f20] rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-sm max-w-4xl overflow-hidden">
+                {/* Card Terbuka Penuh Menyesuaikan Konten Halaman */}
+                <div className="w-full bg-white dark:bg-[#1e1f20] rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden transition-colors duration-500">
                   {isProfileLoading ? (
-                    <div className="flex flex-col items-center justify-center py-20">
-                      <div className="w-10 h-10 border-4 border-teal-100 border-t-teal-600 rounded-full animate-spin mb-4"></div>
-                      <p className="text-slate-500 font-bold animate-pulse">Menyinkronkan data rekam medis...</p>
+                    <div className="flex flex-col items-center justify-center py-16">
+                      <div className="w-8 h-8 border-4 border-teal-100 dark:border-zinc-800 border-t-teal-600 dark:border-t-teal-400 rounded-full animate-spin mb-3"></div>
+                      <p className="text-xs text-slate-400 dark:text-zinc-500 font-medium animate-pulse">Menyinkronkan data rekam medis...</p>
                     </div>
                   ) : (
                     <>
-                      {/* Header Profil (Kartu Atas) */}
-                      <div className="bg-gradient-to-r from-slate-50 to-white dark:from-[#1e1f20] dark:to-[#131314] p-8 border-b border-slate-100 dark:border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-colors">
-                        <div className="flex items-center gap-6">
-                          <div className="relative">
-                            <div className="w-24 h-24 rounded-full bg-teal-500 text-white flex items-center justify-center text-4xl font-black shadow-lg shadow-teal-500/20">
+                      {/* Header Profil Ringkas */}
+                      <div className="relative p-6 border-b border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 overflow-hidden transition-colors">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-teal-50 dark:bg-teal-900/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                        
+                        <div className="flex items-center gap-4 relative z-10">
+                          <div className="relative shrink-0">
+                            {/* Dimensi Foto Profil Diperkecil Secara Proporsional */}
+                            <div className="w-16 h-16 rounded-xl bg-teal-50 dark:bg-[#131314] text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-zinc-800 flex items-center justify-center text-2xl font-black shadow-sm transition-colors">
                               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                             </div>
-                            <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-slate-800 rounded-full flex items-center justify-center transition-colors" title="Akun Aktif">
-                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 dark:bg-emerald-600 border-2 border-white dark:border-[#1e1f20] rounded-full flex items-center justify-center transition-colors" title="Akun Aktif">
+                              <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                           </div>
                           <div>
-                            <h2 className="text-2xl font-extrabold text-zinc-950 dark:text-white tracking-tight transition-colors">{user?.name || 'Nama Pasien'}</h2>
-                            <p className="text-slate-500 dark:text-slate-400 font-medium mb-2.5 transition-colors">{user?.email || 'email@contoh.com'}</p>
-                            {/* INJEKSI: Label hijau diverifikasi */}
-                            <span className="inline-flex px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 text-[10px] font-black rounded-lg uppercase tracking-widest transition-colors">
+                            <h2 className="text-xl font-extrabold text-zinc-950 dark:text-zinc-100 tracking-tight transition-colors">{user?.name || 'Nama Pasien'}</h2>
+                            <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mb-1.5 transition-colors">{user?.email || 'email@contoh.com'}</p>
+                            <span className="inline-flex px-2 py-0.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 text-[9px] font-black rounded uppercase tracking-widest transition-colors">
                               Pasien Terverifikasi
                             </span>
                           </div>
@@ -632,96 +640,117 @@ export default function PatientPortal() {
                         {!isEditing && (
                           <button
                             onClick={() => setIsEditing(true)}
-                            className="w-full md:w-auto px-6 py-3 bg-white dark:bg-[#131314] text-zinc-900 dark:text-zinc-100 border-2 border-slate-200 dark:border-zinc-800 hover:border-teal-500 dark:hover:border-teal-900/50 hover:text-teal-700 dark:hover:text-teal-400 rounded-xl text-sm font-extrabold transition-all shadow-sm"
+                            className="relative z-10 w-full sm:w-auto px-4 py-2 bg-white dark:bg-[#131314] text-zinc-900 dark:text-zinc-100 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:border-teal-500 dark:hover:border-teal-800 rounded-xl text-xs font-extrabold transition-all shadow-sm outline-none"
                           >
                             Edit Profil
                           </button>
                         )}
                       </div>
-                      {/* Formulir Profil */}
-                      <form onSubmit={handleSaveProfile} className="p-8">
+
+                      {/* Formulir Profil dengan Skala Font Lebih Padat */}
+                      <form onSubmit={handleSaveProfile} className="p-6">
 
                         {/* Seksi 1: Identitas Pribadi */}
-                        <div className="mb-8">
-                          <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest border-b border-slate-100 dark:border-zinc-800 pb-3 mb-5 transition-colors">Identitas Pribadi</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 transition-colors">Nomor Induk Kependudukan (NIK)</label>
+                        <div className="mb-6">
+                          <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest border-b border-slate-100 dark:border-zinc-800 pb-2 mb-4 transition-colors">Identitas Medis Pribadi</h3>
+                          
+                          {/* Grid Diubah Menjadi 3 Kolom untuk Layanan Desktop */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {/* NIK */}
+                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor Induk Kependudukan (NIK)</label>
                               {isEditing ? (
                                 <input type="text" maxLength={16} value={formData.nik} onChange={(e) => setFormData({ ...formData, nik: e.target.value })} 
-                                className="w-full px-4 py-3 bg-white dark:bg-[#131314] border-2 border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="16 Digit NIK" />
+                                className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="16 Digit NIK" />
                               ) : (
-                                <div className="text-base font-bold text-zinc-900 dark:text-white transition-colors">{formData.nik || <span className="text-slate-400 dark:text-slate-500 italic font-medium">Belum diatur</span>}</div>
+                                <div className="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 transition-colors font-mono tracking-wider">{formData.nik || <span className="text-[11px] text-slate-400 dark:text-zinc-600 italic font-medium font-sans">Belum diatur</span>}</div>
                               )}
                             </div>
-                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 transition-colors">Nomor BPJS (Opsional)</label>
+                            
+                            {/* BPJS */}
+                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor BPJS (Opsional)</label>
                               {isEditing ? (
                                 <input type="text" value={formData.bpjsNumber} onChange={(e) => setFormData({ ...formData, bpjsNumber: e.target.value })} 
-                                className="w-full px-4 py-3 bg-white dark:bg-[#131314] border-2 border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"placeholder="Nomor BPJS Kesehatan" />
+                                className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="Nomor BPJS Kesehatan" />
                               ) : (
-                                <div className="text-base font-bold text-zinc-900 dark:text-white transition-colors">{formData.bpjsNumber || <span className="text-slate-400 dark:text-slate-500 italic font-medium">Tidak ada BPJS</span>}</div>
+                                <div className="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 transition-colors font-mono tracking-wider">{formData.bpjsNumber || <span className="text-slate-400 dark:text-zinc-600 italic font-medium font-sans">Tidak ada BPJS</span>}</div>
                               )}
                             </div>
-                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 transition-colors">Jenis Kelamin</label>
+
+                            {/* Jenis Kelamin */}
+                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Jenis Kelamin</label>
                               {isEditing ? (
-                                <select value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} 
-                                className="w-full px-4 py-3 bg-white dark:bg-[#131314] border-2 border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600">
-                                  <option value="">Pilih Jenis Kelamin</option>
-                                  <option value="MALE">Laki-laki</option>
-                                  <option value="FEMALE">Perempuan</option>
-                                </select>
+                                /* IMPLMENTASI CUSTOM SELECT */
+                                <CustomSelect 
+                                  value={formData.gender} 
+                                  onChange={(val) => setFormData({ ...formData, gender: val })} 
+                                  options={[
+                                    { value: 'MALE', label: 'Laki-laki' },
+                                    { value: 'FEMALE', label: 'Perempuan' }
+                                  ]} 
+                                  placeholder="Pilih Jenis Kelamin" 
+                                />
                               ) : (
-                                <div className="text-base font-bold text-zinc-900 dark:text-white transition-colors">{formData.gender === 'MALE' ? 'Laki-laki' : formData.gender === 'FEMALE' ? 'Perempuan' : <span className="text-slate-400 dark:text-slate-500 italic font-medium">Belum diatur</span>}</div>
+                                <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 transition-colors">
+                                  {formData.gender === 'MALE' ? 'Laki-laki' : formData.gender === 'FEMALE' ? 'Perempuan' : <span className="text-slate-400 dark:text-zinc-600 italic font-medium">Belum diatur</span>}
+                                </div>
                               )}
                             </div>
-                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 transition-colors">Tanggal Lahir</label>
+
+                            {/* Tanggal Lahir */}
+                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Tanggal Lahir</label>
                               {isEditing ? (
-                                <input type="date" value={formData.birthDate} onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })} 
-                                className="w-full px-4 py-3 bg-white dark:bg-[#131314] border-2 border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" />
+                                /* IMPLMENTASI CUSTOM DATE PICKER */
+                                <CustomDatePicker 
+                                  value={formData.birthDate} 
+                                  onChange={(val) => setFormData({ ...formData, birthDate: val })} 
+                                />
                               ) : (
-                                <div className="text-base font-bold text-zinc-900 dark:text-white transition-colors">{formData.birthDate ? new Date(formData.birthDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : <span className="text-slate-400 dark:text-slate-500 italic font-medium">Belum diatur</span>}</div>
+                                <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 transition-colors">
+                                  {formData.birthDate ? new Date(formData.birthDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : <span className="text-slate-400 dark:text-zinc-600 italic font-medium">Belum diatur</span>}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Kontak Telepon WhatsApp */}
+                            <div className="bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                              <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Nomor WhatsApp / Telepon</label>
+                              {isEditing ? (
+                                <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} 
+                                className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-2 focus:ring-teal-500/10 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="0812xxxxxxx" />
+                              ) : (
+                                <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 transition-colors font-mono">{formData.phone || <span className="text-[11px] text-slate-400 dark:text-zinc-600 italic font-medium font-sans">Belum diatur</span>}</div>
                               )}
                             </div>
                           </div>
                         </div>
 
                         {/* Seksi 2: Kontak & Domisili */}
-                        <div>
-                          <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest border-b border-slate-100 dark:border-zinc-800 pb-3 mb-5 transition-colors">Kontak & Domisili</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 transition-colors">Nomor WhatsApp / Telepon</label>
-                              {isEditing ? (
-                                <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} 
-                                className="w-full px-4 py-3 bg-white dark:bg-[#131314] border-2 border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="0812xxxxxxx" />
-                              ) : (
-                                <div className="text-base font-bold text-zinc-900 dark:text-white transition-colors">{formData.phone || <span className="text-slate-400 dark:text-slate-500 italic font-medium">Belum diatur</span>}</div>
-                              )}
-                            </div>
-                            <div className="md:col-span-2">
-                              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 transition-colors">Alamat Lengkap Saat Ini</label>
-                              {isEditing ? (
-                                <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={3} 
-                                className="w-full px-4 py-3 bg-white dark:bg-[#131314] border-2 border-slate-200 dark:border-zinc-800 focus:border-teal-500 dark:focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl text-sm font-bold text-zinc-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="Tuliskan nama jalan, RT/RW, dan kota..."></textarea>
-                              ) : (
-                                <div className="text-base font-bold text-zinc-900 dark:text-white leading-relaxed max-w-2xl transition-colors">{formData.address || <span className="text-slate-400 dark:text-slate-500 italic font-medium">Alamat belum ditambahkan.</span>}</div>
-                              )}
-                            </div>
+                        <div className="mb-2">
+                          <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest border-b border-slate-100 dark:border-zinc-800 pb-2 mb-4 transition-colors">Domisili</h3>
+                          <div className="w-full bg-slate-50/50 dark:bg-[#131314]/50 p-3 rounded-xl border border-slate-100 dark:border-zinc-800/50 transition-colors">
+                            <label className="block text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-1 transition-colors">Alamat Lengkap Saat Ini</label>
+                            {isEditing ? (
+                              <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={2} 
+                              className="w-full px-3 py-1.5 bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 outline-none transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-zinc-600" placeholder="Tuliskan nama jalan, RT/RW, dan kota..."></textarea>
+                            ) : (
+                              <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-relaxed transition-colors">{formData.address || <span className="text-[11px] text-slate-400 dark:text-zinc-600 italic font-medium">Alamat belum ditambahkan.</span>}</div>
+                            )}
                           </div>
                         </div>
 
                         {/* Aksi Form */}
                         {isEditing && (
-                          <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-zinc-800 mt-8 animate-in slide-in-from-bottom-2 transition-colors">
-                            <button type="button" onClick={() => setIsEditing(false)} className="px-6 py-3.5 text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 font-extrabold rounded-xl text-sm transition-colors">
+                          <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-zinc-800 mt-6 animate-in slide-in-from-bottom-2 transition-colors">
+                            <button type="button" onClick={() => setIsEditing(false)} className="px-4 py-2 text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-[#131314] hover:bg-slate-200 dark:hover:bg-zinc-800 border border-transparent dark:border-zinc-800 font-extrabold rounded-lg text-xs transition-colors outline-none">
                               Batalkan
                             </button>
-                            <button type="submit" disabled={isSaving} className="px-6 py-3.5 text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/20 font-extrabold rounded-xl text-sm transition-all active:scale-95 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                            <button type="submit" disabled={isSaving} className="px-4 py-2 text-white bg-teal-600 dark:bg-teal-700 hover:bg-teal-700 dark:hover:bg-teal-600 shadow-md shadow-teal-500/10 font-extrabold rounded-lg text-xs transition-all active:scale-95 flex items-center gap-1.5 disabled:opacity-70 disabled:cursor-not-allowed outline-none">
                               {isSaving ? (
-                                <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" strokeWidth="4" className="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path></svg> Menyimpan Data...</>
+                                <><svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" strokeWidth="4" className="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path></svg> Menyimpan...</>
                               ) : 'Simpan Profil'}
                             </button>
                           </div>

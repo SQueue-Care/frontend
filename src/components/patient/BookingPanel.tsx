@@ -1,6 +1,7 @@
 // src/components/patient/BookingPanel.tsx
 import { useState, useEffect, useMemo } from 'react';
 import { useBookingStore } from '../../store/bookingStore';
+import { useAlertStore } from '../../store/alertStore';
 
 interface BookingPanelProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ export default function BookingPanel({
     departmentDoctors, doctorSchedules, isLoadingDoctors, isLoadingSchedules, isSubmitting,
     fetchDoctorsByDepartment, fetchSchedulesByDoctor, submitBooking, resetBookingState 
   } = useBookingStore();
-
+  const showAlert = useAlertStore((state) => state.showAlert);
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(""); 
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
@@ -102,7 +103,7 @@ export default function BookingPanel({
          onBookingSuccess(result.id, result.isAppointment);
       }
     } catch (err: any) {
-      alert(`Pendaftaran Ditolak Sistem:\n\n${err.message || 'Silakan cek console browser (F12) untuk detail error.'}`);
+      showAlert(err.message || 'Terjadi kesalahan. Silakan cek console browser.', 'error');
     }
   };
 
