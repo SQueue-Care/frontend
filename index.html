@@ -8,23 +8,14 @@
 
     <script>
       try {
-        const themeStorage = localStorage.getItem('patient-theme-storage');
-        if (themeStorage) {
-          const parsed = JSON.parse(themeStorage);
-          if (parsed?.state?.theme === 'dark') {
-            document.documentElement.classList.add('dark');
-          }
+        const stored = localStorage.getItem('patient-theme-storage')
+        const savedTheme = stored ? JSON.parse(stored)?.state?.theme : null
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+          document.documentElement.classList.add('dark')
         }
       } catch (e) {}
     </script>
-
-    <style>
-      html.dark, html.dark body, html.dark #root {
-        background-color: #131314 !important;
-        color: #f4f4f5 !important;
-      }
-    </style>
-    
   </head>
   <body class="no-scrollbar">
     <div id="root"></div>

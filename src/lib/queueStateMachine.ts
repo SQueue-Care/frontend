@@ -1,13 +1,18 @@
-import { QueueStatus } from './types';
+import { QueueStatus } from './types'
 
 export const QUEUE_STATUS_TRANSITIONS: Record<QueueStatus, QueueStatus[]> = {
   [QueueStatus.WAITING]: [QueueStatus.CALLED, QueueStatus.SKIPPED, QueueStatus.CANCELLED],
-  [QueueStatus.CALLED]: [QueueStatus.IN_PROGRESS, QueueStatus.WAITING, QueueStatus.SKIPPED, QueueStatus.CANCELLED],
+  [QueueStatus.CALLED]: [
+    QueueStatus.IN_PROGRESS,
+    QueueStatus.WAITING,
+    QueueStatus.SKIPPED,
+    QueueStatus.CANCELLED,
+  ],
   [QueueStatus.IN_PROGRESS]: [QueueStatus.DONE, QueueStatus.SKIPPED],
   [QueueStatus.SKIPPED]: [QueueStatus.WAITING],
   [QueueStatus.DONE]: [],
   [QueueStatus.CANCELLED]: [],
-};
+}
 
 export const QUEUE_TRANSITION_LABELS: Record<QueueStatus, string> = {
   [QueueStatus.WAITING]: 'Kembali',
@@ -16,7 +21,7 @@ export const QUEUE_TRANSITION_LABELS: Record<QueueStatus, string> = {
   [QueueStatus.DONE]: 'Selesai',
   [QueueStatus.SKIPPED]: 'Lewati',
   [QueueStatus.CANCELLED]: 'Batalkan',
-};
+}
 
 export const QUEUE_TRANSITION_TITLES: Record<QueueStatus, string> = {
   [QueueStatus.WAITING]: 'Kembalikan antrean ke status Menunggu',
@@ -25,7 +30,7 @@ export const QUEUE_TRANSITION_TITLES: Record<QueueStatus, string> = {
   [QueueStatus.DONE]: 'Tandai antrean sebagai Selesai',
   [QueueStatus.SKIPPED]: 'Lewati antrean ini',
   [QueueStatus.CANCELLED]: 'Batalkan antrean',
-};
+}
 
 export const QUEUE_TRANSITION_CLASSES: Record<QueueStatus, string> = {
   [QueueStatus.WAITING]:
@@ -40,12 +45,12 @@ export const QUEUE_TRANSITION_CLASSES: Record<QueueStatus, string> = {
     'px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-500 hover:text-white text-xs font-bold rounded-lg transition-colors border border-slate-200 hover:border-slate-500',
   [QueueStatus.CANCELLED]:
     'p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200',
-};
+}
 
 export function getAllowedQueueTransitions(status: QueueStatus): QueueStatus[] {
-  return QUEUE_STATUS_TRANSITIONS[status] ?? [];
+  return QUEUE_STATUS_TRANSITIONS[status] ?? []
 }
 
 export function isValidQueueTransition(from: QueueStatus, to: QueueStatus): boolean {
-  return QUEUE_STATUS_TRANSITIONS[from]?.includes(to) ?? false;
+  return QUEUE_STATUS_TRANSITIONS[from]?.includes(to) ?? false
 }

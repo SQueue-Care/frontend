@@ -1,27 +1,28 @@
-import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
   CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
+  Chart as ChartJS,
   Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
   type ChartOptions,
-} from 'chart.js';
-import apiClient from '../../lib/apiClient';
+} from 'chart.js'
+import { useEffect, useState } from 'react'
+import { Line } from 'react-chartjs-2'
+import apiClient from '../../lib/apiClient'
+import { getErrorMessage } from '../../lib/errors'
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend)
 
 interface RangeStatsData {
-  date: string;
+  date: string
   departments: Array<{
-    departmentId: string;
-    code: string;
-    name: string;
-    total: number;
-  }>;
+    departmentId: string
+    code: string
+    name: string
+    total: number
+  }>
 }
 
 const COLOR_PALETTE = [
@@ -35,68 +36,68 @@ const COLOR_PALETTE = [
   '#06b6d4', // Cyan 500
   '#ec4899', // Pink 500
   '#6366f1', // Indigo 500
-];
+]
 
 export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
-  const [data, setData] = useState<RangeStatsData[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<RangeStatsData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+    let cancelled = false
+    void (async () => {
       try {
         const response = await apiClient.get('/queues/stats/range', {
           params: { days },
-        });
-        setData(response.data.data || []);
-      } catch (err: any) {
-        console.error('Gagal fetch analytics data:', err);
-        setError('Gagal memuat data analytics');
-        setData([]);
+        })
+        if (!cancelled) setData(response.data.data || [])
+      } catch (err: unknown) {
+        console.error('Gagal fetch analytics data:', err)
+        if (!cancelled) {
+          setError(getErrorMessage(err, 'Gagal memuat data analytics'))
+          setData([])
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false)
       }
-    };
-
-    fetchData();
-  }, [days]);
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [days])
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+      <div className="flex h-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600"></div>
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-full">
+      <div className="flex h-full items-center justify-center">
         <p className="text-sm text-rose-500 italic">{error}</p>
       </div>
-    );
+    )
   }
 
   // Aggregate departments across all dates
   const allDepartments = Array.from(
-    new Map(
-      data.flatMap((d) => d.departments).map((dept) => [dept.departmentId, dept])
-    ).values()
-  ).sort((a, b) => a.name.localeCompare(b.name));
+    new Map(data.flatMap((d) => d.departments).map((dept) => [dept.departmentId, dept])).values()
+  ).sort((a, b) => a.name.localeCompare(b.name))
 
   // Prepare chart data
   const labels = data.map((d) => {
-    const date = new Date(d.date);
-    return date.toLocaleDateString('id-ID', { month: 'short', day: 'numeric' });
-  });
+    const date = new Date(d.date)
+    return date.toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })
+  })
 
   const datasets = allDepartments.map((dept, idx) => ({
     label: dept.name,
     data: data.map((d) => {
-      const deptData = d.departments.find((x) => x.departmentId === dept.departmentId);
-      return deptData?.total ?? 0;
+      const deptData = d.departments.find((x) => x.departmentId === dept.departmentId)
+      return deptData?.total ?? 0
     }),
     borderColor: COLOR_PALETTE[idx % COLOR_PALETTE.length],
     backgroundColor: 'transparent',
@@ -107,7 +108,7 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
     pointBackgroundColor: COLOR_PALETTE[idx % COLOR_PALETTE.length],
     pointBorderColor: '#fff',
     pointBorderWidth: 2,
-  }));
+  }))
 
   const chartOptions: ChartOptions<'line'> = {
     responsive: true,
@@ -127,7 +128,7 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
         intersect: false,
         callbacks: {
           label: (context) => {
-            return `${context.dataset.label}: ${context.parsed.y} antrian`;
+            return `${context.dataset.label}: ${context.parsed.y} antrian`
           },
         },
       },
@@ -160,7 +161,7 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
         },
       },
     },
-  };
+  }
 
-  return <Line data={{ labels, datasets }} options={chartOptions} />;
+  return <Line data={{ labels, datasets }} options={chartOptions} />
 }

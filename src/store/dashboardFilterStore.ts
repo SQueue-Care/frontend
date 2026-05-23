@@ -1,10 +1,10 @@
-import { create } from 'zustand';
+import { create } from 'zustand'
 
 interface DashboardFilterState {
-  searchQuery: string;
-  selectedDepartment: string;
-  setSearchQuery: (query: string) => void;
-  setSelectedDepartment: (deptId: string) => void;
+  searchQuery: string
+  selectedDepartment: string
+  setSearchQuery: (query: string) => void
+  setSelectedDepartment: (deptId: string) => void
 }
 
 export const useDashboardFilterStore = create<DashboardFilterState>((set) => ({
@@ -12,4 +12,4 @@ export const useDashboardFilterStore = create<DashboardFilterState>((set) => ({
   selectedDepartment: '',
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setSelectedDepartment: (selectedDepartment) => set({ selectedDepartment }),
-}));
+}))

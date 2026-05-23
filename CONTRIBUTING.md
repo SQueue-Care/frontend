@@ -3,6 +3,7 @@
 Welcome to the **Smart Healthcare Queue System** project! This document outlines how developers should contribute to this hospital queue management system.
 
 ## Table of Contents
+
 - [Project Overview](#project-overview)
 - [Getting Started](#getting-started)
 - [Contributing Workflow](#contributing-workflow)
@@ -30,6 +31,7 @@ This is an **Intelligent Hospital Queue Management System** developed for the 20
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - Python (v3.8 or higher) - for ML model development
 - Git
@@ -37,6 +39,7 @@ This is an **Intelligent Hospital Queue Management System** developed for the 20
 - Postman or similar tool for API testing (optional)
 
 ### First-Time Setup
+
 1. **Request access** to [SQueue-Care organization](https://github.com/SQueue-Care) if you don't have it
 2. **Clone the repository** (use the specific repo for your area: fs, ds, or ai):
    ```bash
@@ -58,6 +61,7 @@ This is an **Intelligent Hospital Queue Management System** developed for the 20
 ### Step 1: Find or Create an Issue
 
 #### Option A: Working on Existing Issues
+
 1. Check the Issues board in your repository (fs, ds, or ai)
 2. Look for issues with labels:
    - `fs` - Full Stack development tasks
@@ -65,6 +69,7 @@ This is an **Intelligent Hospital Queue Management System** developed for the 20
    - `ai` - AI/ML model tasks
 
 #### Option B: Reporting a Bug or Proposing a Feature
+
 1. **Check existing issues** first to avoid duplicates
 2. **Click "New Issue"** and choose a template:
    - **Bug Report**: Include steps to reproduce, expected/actual behavior
@@ -83,12 +88,14 @@ git merge origin/develop
 ```
 
 **Important:** Always develop from the **`develop`** branch, not `main`
+
 - `develop` - Active development branch (integration point)
 - `main` - Production-ready releases only
 
 ### Step 3: Development Setup
 
 Follow the **Development Setup** section below to:
+
 - Install dependencies
 - Configure environment variables
 - Set up databases (local or cloud)
@@ -97,18 +104,21 @@ Follow the **Development Setup** section below to:
 ### Step 4: Make Your Changes
 
 #### For Backend Changes:
+
 1. Write code in the appropriate module
 2. Add/update unit tests
 3. Test your changes locally
 4. Ensure API docs are updated if endpoints change
 
 #### For Frontend Changes:
+
 1. Follow React/component structure conventions
 2. Add tests for new components
 3. Ensure responsive design
 4. Test in different browsers
 
 #### For ML Model Changes:
+
 1. Document model changes and accuracy metrics
 2. Include training/evaluation scripts
 3. Update prediction API if needed
@@ -138,6 +148,7 @@ git commit -m "feat: add queue optimization algorithm"
 ```
 
 **Commit Message Format:**
+
 ```
 <type>(<scope>): <subject>
 
@@ -147,6 +158,7 @@ git commit -m "feat: add queue optimization algorithm"
 ```
 
 **Types:**
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation only
@@ -156,6 +168,7 @@ git commit -m "feat: add queue optimization algorithm"
 - `chore` - Dependency updates, build config
 
 **Examples:**
+
 ```
 feat(queue): add wait time prediction algorithm
 fix(auth): resolve JWT token expiration issue
@@ -195,8 +208,9 @@ git push origin feature/queue-optimization
 ### Step 9: Merge and Close
 
 Once approved:
+
 1. Maintainer will **merge your PR**
-3. **Celebrate your contribution!** 🎉
+2. **Celebrate your contribution!** 🎉
 
 ---
 
@@ -205,18 +219,21 @@ Once approved:
 ### 1. Install Dependencies
 
 **Frontend:**
+
 ```bash
 cd frontend
 npm install
 ```
 
 **Backend:**
+
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
 **ML Model (optional):**
+
 ```bash
 cd ml
 pip install -r requirements.txt
@@ -227,12 +244,14 @@ pip install -r requirements.txt
 Create `.env` files in each directory:
 
 **Frontend (.env):**
+
 ```
 REACT_APP_API_URL=http://localhost:5000/api
 REACT_APP_ML_API_URL=http://localhost:8000/api
 ```
 
 **Backend (.env):**
+
 ```
 DATABASE_URL=postgresql://user:password@localhost:5432/hospital_queue
 JWT_SECRET=your_jwt_secret_key
@@ -241,6 +260,7 @@ BPJS_API_URL=https://bpjs-mock-api.example.com
 ```
 
 **ML Model (.env):**
+
 ```
 MODEL_PORT=8000
 DATABASE_URL=postgresql://user:password@localhost:5432/hospital_queue
@@ -249,6 +269,7 @@ DATABASE_URL=postgresql://user:password@localhost:5432/hospital_queue
 ### 3. Database Setup
 
 **Local PostgreSQL:**
+
 ```bash
 # Create database
 createdb hospital_queue
@@ -259,12 +280,14 @@ python manage.py migrate
 ```
 
 **Cloud Setup (Supabase/Neon):**
+
 - Follow documentation at [Supabase](https://supabase.com) or [Neon](https://neon.tech)
 - Set `DATABASE_URL` in `.env`
 
 ### 4. Run Development Servers
 
 **Terminal 1 - Frontend:**
+
 ```bash
 cd frontend
 npm start
@@ -272,6 +295,7 @@ npm start
 ```
 
 **Terminal 2 - Backend:**
+
 ```bash
 cd backend
 python manage.py runserver
@@ -279,6 +303,7 @@ python manage.py runserver
 ```
 
 **Terminal 3 - ML Model:**
+
 ```bash
 cd ml
 python app.py
@@ -296,6 +321,7 @@ python app.py
 ## Code Standards
 
 ### General Standards
+
 - **Readability**: Code should be self-explanatory; use meaningful variable names
 - **DRY Principle**: Don't Repeat Yourself - reuse code where possible
 - **Comments**: Add comments for complex logic, not obvious code
@@ -305,6 +331,7 @@ python app.py
   - Constants: `UPPERCASE_WITH_UNDERSCORES`
 
 ### Frontend (React)
+
 ```javascript
 // Good: Clear component name, functional component
 const PatientQueueCard = ({ queueNumber, estimatedWaitTime }) => {
@@ -313,8 +340,8 @@ const PatientQueueCard = ({ queueNumber, estimatedWaitTime }) => {
       <h3>Queue #{queueNumber}</h3>
       <p>Wait time: {estimatedWaitTime} mins</p>
     </div>
-  );
-};
+  )
+}
 
 // Use hooks: useState, useEffect, useContext
 // Keep components small and focused
@@ -322,16 +349,17 @@ const PatientQueueCard = ({ queueNumber, estimatedWaitTime }) => {
 ```
 
 ### Backend (Python/FastAPI)
+
 ```python
 # Good: Clear function name, type hints, docstring
 def calculate_estimated_wait_time(queue_length: int, avg_service_time: float) -> float:
     """
     Calculate estimated wait time for a patient.
-    
+
     Args:
         queue_length: Number of patients in queue
         avg_service_time: Average service time in minutes
-        
+
     Returns:
         Estimated wait time in minutes
     """
@@ -343,6 +371,7 @@ def calculate_estimated_wait_time(queue_length: int, avg_service_time: float) ->
 ```
 
 ### ML Model (Python)
+
 ```python
 # Document model architecture and training process
 # Include model versioning and performance metrics
@@ -354,6 +383,7 @@ def calculate_estimated_wait_time(queue_length: int, avg_service_time: float) ->
 ## Testing
 
 ### Frontend Testing
+
 ```bash
 cd frontend
 
@@ -368,6 +398,7 @@ npm run test:e2e
 ```
 
 ### Backend Testing
+
 ```bash
 cd backend
 
@@ -382,6 +413,7 @@ python -m pytest tests/test_queue.py
 ```
 
 ### Test Structure
+
 - **Unit Tests**: Test individual functions/methods
 - **Integration Tests**: Test multiple components working together
 - **E2E Tests** (optional): Test full user workflows
@@ -391,6 +423,7 @@ python -m pytest tests/test_queue.py
 ## Commit Guidelines
 
 ### Before Committing
+
 ```bash
 # Check what you're committing
 git status
@@ -406,6 +439,7 @@ git diff --cached
 ### Writing Commit Messages
 
 **Good:**
+
 ```
 feat(queue): implement wait time prediction using ML model
 
@@ -415,6 +449,7 @@ feat(queue): implement wait time prediction using ML model
 ```
 
 **Bad:**
+
 ```
 fixed stuff
 update
@@ -422,6 +457,7 @@ changes
 ```
 
 ### Commit Best Practices
+
 - **One logical change per commit** (not too big, not too small)
 - **Descriptive messages** that explain the "why"
 - **Reference issues**: "Fixes #123"
@@ -432,6 +468,7 @@ changes
 ## Pull Request Process
 
 ### Before Creating a PR
+
 - [ ] Code follows project standards
 - [ ] All tests pass locally
 - [ ] No linting errors
@@ -439,6 +476,7 @@ changes
 - [ ] Commit messages are clear and descriptive
 
 ### PR Title
+
 ```
 [TYPE] Short description
 
@@ -449,27 +487,34 @@ Examples:
 ```
 
 ### PR Description
+
 ```markdown
 ## Description
+
 Brief explanation of what this PR does
 
 ## Related Issue
+
 Fixes #123
 
 ## Changes Made
+
 - Change 1
 - Change 2
 - Change 3
 
 ## Testing
+
 - [ ] Added/updated tests
 - [ ] All tests pass
 - [ ] Manual testing done
 
 ## Screenshots (if UI changes)
+
 [Attach screenshots]
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Documentation updated
 - [ ] No breaking changes
@@ -477,6 +522,7 @@ Fixes #123
 ```
 
 ### During Review
+
 - **Be responsive** to feedback
 - **Discuss respectfully** if you disagree
 - **Make requested changes** promptly
@@ -490,6 +536,7 @@ Fixes #123
 ### Creating an Issue
 
 **Title Format:**
+
 ```
 [TYPE] Brief description
 
@@ -500,38 +547,47 @@ Examples:
 ```
 
 **Issue Template:**
+
 ```markdown
 ## Description
+
 Clear description of the issue
 
 ## Steps to Reproduce (if bug)
+
 1. Step 1
 2. Step 2
 3. Step 3
 
 ## Expected Behavior
+
 What should happen
 
 ## Actual Behavior
+
 What actually happens
 
 ## Environment
-- OS: 
+
+- OS:
 - Browser/Python version:
 - Branch:
 
 ## Additional Context
+
 Any other relevant information
 ```
 
 ### Using Labels
 
 Use these labels to categorize your work by team/area:
+
 - `fs` - Full Stack development (frontend + backend)
 - `ds` - Data Science / ML model development
 - `ai` - AI/ML related tasks
 
 ### Issue Status
+
 - **Open**: Active work or waiting for assignment
 - **In Progress**: Someone is working on it
 - **In Review**: PR submitted, under review
@@ -542,17 +598,20 @@ Use these labels to categorize your work by team/area:
 ## Communication & Support
 
 ### Getting Help
+
 1. **Check documentation** in README and docs folder
 2. **Search existing issues** and discussions
 3. **Ask in issue comments** or create a discussion
 4. **Reach out to maintainers** via GitHub
 
 ### Response Time
+
 - Issues: 2-3 days
 - PR reviews: 3-5 days
 - Discussions: Best effort
 
 ### Code of Conduct
+
 - Be respectful and inclusive
 - Provide constructive feedback
 - No harassment or discrimination
@@ -563,6 +622,7 @@ Use these labels to categorize your work by team/area:
 ## Advanced Topics
 
 ### Syncing Your Local Branch
+
 ```bash
 # Update your local develop
 git fetch origin
@@ -575,6 +635,7 @@ git rebase origin/develop
 ```
 
 ### Creating a Pull Request to develop
+
 ```bash
 # Make sure develop is up to date
 git fetch origin
@@ -588,6 +649,7 @@ git push origin feature/description
 ```
 
 ### Rebasing Before PR
+
 ```bash
 # Interactive rebase to clean up commits
 git rebase -i origin/develop
@@ -597,6 +659,7 @@ git push origin feature/description --force-with-lease
 ```
 
 ### Squashing Commits
+
 ```bash
 # If maintainer asks to squash
 git rebase -i HEAD~3  # For last 3 commits
@@ -642,6 +705,7 @@ SQueue-Care Organization (https://github.com/SQueue-Care)
 ``` -->
 
 **Key Points:**
+
 - Each repository has `main` and `develop` branches
 - Always work from the `develop` branch
 - Use labels `fs`, `ds`, or `ai` to categorize issues
@@ -662,6 +726,7 @@ SQueue-Care Organization (https://github.com/SQueue-Care)
 ## Tips for Success
 
 **Do:**
+
 - Read the PRD and understand the project goals
 - Check existing issues before starting
 - Write clear, focused commits
@@ -671,6 +736,7 @@ SQueue-Care Organization (https://github.com/SQueue-Care)
 - Review other PRs and learn from them
 
 **Don't:**
+
 - Work without an assigned issue
 - Create large PRs with many unrelated changes
 - Commit to main directly

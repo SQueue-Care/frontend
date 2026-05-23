@@ -1,12 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Manrope:wght@700;800&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@plugin "tailwindcss-animate";
+html {
+  background-color: #ffffff;
+  color: #09090b;
+  color-scheme: light;
+}
+
+html.dark {
+  background-color: #131314;
+  color: #f4f4f5;
+  color-scheme: dark;
+}
+
+@plugin 'tailwindcss-animate';
 @theme {
-    --font-inter: "Inter",sans-serif;
-    --font-manrope: "Manrope", sans-serif;
+  --font-inter: 'Inter', sans-serif;
+  --font-manrope: 'Manrope', sans-serif;
 }
 
 /* Menghilangkan scrollbar untuk elemen dengan class no-scrollbar */
@@ -14,6 +26,6 @@
   display: none;
 }
 .no-scrollbar {
-  -ms-overflow-style: none;  /* Standar IE dan Edge */
-  scrollbar-width: none;  /* Standar Firefox */
+  -ms-overflow-style: none; /* Standar IE dan Edge */
+  scrollbar-width: none; /* Standar Firefox */
 }

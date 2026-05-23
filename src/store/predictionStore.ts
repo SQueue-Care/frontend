@@ -1,20 +1,15 @@
-import { create } from 'zustand';
-import apiClient from '../lib/apiClient';
+import { create } from 'zustand'
+import apiClient from '../lib/apiClient'
+import { getErrorMessage } from '../lib/errors'
+import type { WaitTimeEstimate } from '../lib/types'
 
-// Sesuai dengan definisi di backend: backend/src/modules/predictions/predictions.service.ts
-export interface WaitTimeEstimate {
-  estimatedMinutes: number;
-  source: 'ml' | 'heuristic';
-  modelVersion?: string;
-  waitingAhead: number;
-  avgServiceMinutes: number;
-}
+export type { WaitTimeEstimate }
 
 interface PredictionState {
-  waitTimeEstimate: WaitTimeEstimate | null;
-  isLoading: boolean;
-  error: string | null;
-  fetchWaitTime: (departmentId: string, doctorId?: string) => Promise<void>;
+  waitTimeEstimate: WaitTimeEstimate | null
+  isLoading: boolean
+  error: string | null
+  fetchWaitTime: (departmentId: string, doctorId?: string) => Promise<void>
 }
 
 export const usePredictionStore = create<PredictionState>((set) => ({
@@ -22,22 +17,24 @@ export const usePredictionStore = create<PredictionState>((set) => ({
   isLoading: false,
   error: null,
   fetchWaitTime: async (departmentId, doctorId) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null })
     try {
       // Membuat query string dinamis
-      const params = new URLSearchParams();
-      params.append('departmentId', departmentId);
+      const params = new URLSearchParams()
+      params.append('departmentId', departmentId)
       if (doctorId) {
-        params.append('doctorId', doctorId);
+        params.append('doctorId', doctorId)
       }
-      
-      const response = await apiClient.get<{ data: WaitTimeEstimate }>(`/predictions/wait-time?${params.toString()}`);
-      
-      set({ waitTimeEstimate: response.data.data, isLoading: false });
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || 'Gagal mengambil estimasi waktu tunggu.';
-      set({ error: errorMessage, isLoading: false });
-      console.error(err);
+
+      const response = await apiClient.get<{ data: WaitTimeEstimate }>(
+        `/predictions/wait-time?${params.toString()}`
+      )
+
+      set({ waitTimeEstimate: response.data.data, isLoading: false })
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err, 'Gagal mengambil estimasi waktu tunggu.')
+      set({ error: errorMessage, isLoading: false })
+      console.error(err)
     }
   },
-}));
+}))
