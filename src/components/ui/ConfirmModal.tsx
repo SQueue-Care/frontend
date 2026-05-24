@@ -29,9 +29,9 @@ export default function ConfirmModal({
 
   const themes = {
     danger: {
-      iconBg: 'bg-rose-100',
-      iconText: 'text-rose-600',
-      buttonBg: 'bg-rose-600 hover:bg-rose-700 shadow-rose-500/20',
+      iconBg: 'bg-rose-100 dark:bg-rose-500/20',
+      iconText: 'text-rose-600 dark:text-rose-400',
+      buttonBg: 'bg-rose-600 hover:bg-rose-700 shadow-rose-500/20 dark:bg-rose-600/90 dark:hover:bg-rose-600',
       iconPath: (
         <path
           strokeLinecap="round"
@@ -41,9 +41,9 @@ export default function ConfirmModal({
       ),
     },
     warning: {
-      iconBg: 'bg-amber-100',
-      iconText: 'text-amber-600',
-      buttonBg: 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20',
+      iconBg: 'bg-amber-100 dark:bg-amber-500/20',
+      iconText: 'text-amber-600 dark:text-amber-400',
+      buttonBg: 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20 dark:bg-amber-600/90 dark:hover:bg-amber-600',
       iconPath: (
         <path
           strokeLinecap="round"
@@ -53,9 +53,9 @@ export default function ConfirmModal({
       ),
     },
     info: {
-      iconBg: 'bg-teal-100',
-      iconText: 'text-teal-600',
-      buttonBg: 'bg-teal-600 hover:bg-teal-700 shadow-teal-500/20',
+      iconBg: 'bg-teal-100 dark:bg-teal-500/20',
+      iconText: 'text-teal-600 dark:text-teal-400',
+      buttonBg: 'bg-teal-600 hover:bg-teal-700 shadow-teal-500/20 dark:bg-teal-600/90 dark:hover:bg-teal-600',
       iconPath: (
         <path
           strokeLinecap="round"
@@ -73,11 +73,11 @@ export default function ConfirmModal({
     <div className="fixed inset-0 z-9999 flex items-center justify-center px-4">
       {/* Latar Belakang Glassmorphism (Sekarang akan menutupi segalanya) */}
       <div
-        className="animate-in fade-in absolute inset-0 bg-white/40 backdrop-blur-sm transition-opacity duration-300"
+        className="animate-in fade-in absolute inset-0 bg-white/40 backdrop-blur-sm transition-opacity duration-300 dark:bg-[#131314]/80"
         onClick={!isLoading ? onCancel : undefined}
       />
 
-      <div className="animate-in zoom-in-95 relative w-full max-w-sm overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] duration-300">
+      <div className="animate-in zoom-in-95 relative w-full max-w-sm overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] duration-300 dark:border-zinc-800 dark:bg-[#1e1f20]">
         <div className="p-6 text-center md:p-8">
           <div
             className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full shadow-inner ${currentTheme.iconBg} ${currentTheme.iconText}`}
@@ -93,10 +93,10 @@ export default function ConfirmModal({
             </svg>
           </div>
 
-          <h3 className="mb-2 font-['Manrope'] text-xl font-black tracking-tight text-zinc-900">
+          <h3 className="mb-2 font-['Manrope'] text-xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">
             {title}
           </h3>
-          <p className="mb-8 text-sm leading-relaxed font-medium text-slate-500">{message}</p>
+          <p className="mb-8 text-sm leading-relaxed font-medium text-slate-500 dark:text-zinc-400">{message}</p>
 
           <div className="flex flex-col gap-3">
             <button
@@ -128,7 +128,7 @@ export default function ConfirmModal({
             <button
               onClick={onCancel}
               disabled={isLoading}
-              className="w-full rounded-xl px-4 py-3.5 text-[10px] font-extrabold tracking-widest text-slate-500 uppercase transition-all outline-none hover:bg-slate-100 active:scale-95"
+              className="w-full rounded-xl px-4 py-3.5 text-[10px] font-extrabold tracking-widest text-slate-500 uppercase transition-all outline-none hover:bg-slate-100 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800"
             >
               {cancelText}
             </button>

@@ -66,28 +66,28 @@ export default function AdminDailyReport() {
   return (
     <div className="animate-in fade-in space-y-6 duration-500">
       <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950">Laporan Kunjungan Harian</h1>
-        <p className="text-slate-600">{dateLabel}</p>
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 dark:text-zinc-100">Laporan Kunjungan Harian</h1>
+        <p className="text-slate-600 dark:text-zinc-400">{dateLabel}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <div className="rounded-2xl border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold text-slate-500 uppercase">Total Antrean</p>
-          <p className="mt-1 text-2xl font-extrabold text-zinc-900">{summary?.totalQueues ?? queues.length}</p>
+        <div className="rounded-2xl border bg-white dark:bg-[#1e1f20] p-5 shadow-sm">
+          <p className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase">Total Antrean</p>
+          <p className="mt-1 text-2xl font-extrabold text-zinc-900 dark:text-zinc-100">{summary?.totalQueues ?? queues.length}</p>
         </div>
-        <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5">
-          <p className="text-xs font-bold text-emerald-700 uppercase">Selesai</p>
-          <p className="mt-1 text-2xl font-extrabold text-emerald-800">
+        <div className="rounded-2xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 p-5">
+          <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase">Selesai</p>
+          <p className="mt-1 text-2xl font-extrabold text-emerald-800 dark:text-emerald-400">
             {summary?.totalDone ?? completedToday.length}
           </p>
         </div>
-        <div className="rounded-2xl border border-rose-100 bg-rose-50 p-5">
-          <p className="text-xs font-bold text-rose-700 uppercase">Dibatalkan</p>
-          <p className="mt-1 text-2xl font-extrabold text-rose-800">{summary?.totalCancelled ?? '—'}</p>
+        <div className="rounded-2xl border border-rose-100 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/10 p-5">
+          <p className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase">Dibatalkan</p>
+          <p className="mt-1 text-2xl font-extrabold text-rose-800 dark:text-rose-400">{summary?.totalCancelled ?? '—'}</p>
         </div>
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
-          <p className="text-xs font-bold text-indigo-700 uppercase">Rata-rata Tunggu</p>
-          <p className="mt-1 text-2xl font-extrabold text-indigo-800">
+        <div className="rounded-2xl border border-indigo-100 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10 p-5">
+          <p className="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase">Rata-rata Tunggu</p>
+          <p className="mt-1 text-2xl font-extrabold text-indigo-800 dark:text-indigo-400">
             {summary?.avgWaitMinutes != null ? `${summary.avgWaitMinutes} mnt` : '—'}
           </p>
         </div>
@@ -97,7 +97,7 @@ export default function AdminDailyReport() {
         <select
           value={deptFilter}
           onChange={(e) => setDeptFilter(e.target.value)}
-          className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
+          className="rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
         >
           <option value="">Semua Poliklinik</option>
           {departments.map((d) => (
@@ -107,51 +107,51 @@ export default function AdminDailyReport() {
           ))}
         </select>
         {summary && (
-          <span className="text-sm font-semibold text-teal-700">
+          <span className="text-sm font-semibold text-teal-700 dark:text-teal-400">
             Tingkat selesai: {summary.completionRate}%
           </span>
         )}
       </div>
 
       {byDepartment.length > 0 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 font-bold text-zinc-900">Selesai per Poliklinik</h3>
+        <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+          <h3 className="mb-4 font-bold text-zinc-900 dark:text-zinc-100">Selesai per Poliklinik</h3>
           <div className="space-y-2">
             {byDepartment.map((row) => (
-              <div key={row.name} className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-2">
+              <div key={row.name} className="flex items-center justify-between rounded-lg bg-slate-50 dark:bg-[#131314] px-4 py-2">
                 <span className="font-medium">{row.name}</span>
-                <span className="font-bold text-teal-700">{row.done}</span>
+                <span className="font-bold text-teal-700 dark:text-teal-400">{row.done}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-100 px-6 py-4">
-          <h3 className="font-bold text-zinc-900">Detail Kunjungan Selesai ({completedToday.length})</h3>
+      <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] shadow-sm">
+        <div className="border-b border-slate-100 dark:border-zinc-800 px-6 py-4">
+          <h3 className="font-bold text-zinc-900 dark:text-zinc-100">Detail Kunjungan Selesai ({completedToday.length})</h3>
         </div>
         {isLoadingTable ? (
           <div className="flex justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600" />
           </div>
         ) : completedToday.length === 0 ? (
-          <p className="py-12 text-center text-sm text-slate-500 italic">Belum ada kunjungan selesai hari ini.</p>
+          <p className="py-12 text-center text-sm text-slate-500 dark:text-zinc-400 italic">Belum ada kunjungan selesai hari ini.</p>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100 dark:divide-zinc-800">
             {completedToday.map((q: Queue) => (
               <div key={q.id} className="px-6 py-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <p className="font-bold text-zinc-900">
+                    <p className="font-bold text-zinc-900 dark:text-zinc-100">
                       {q.patient?.user?.name ?? 'Pasien'} · #{q.queueNumber}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-zinc-400">
                       {q.department?.name} · {q.doctor?.user?.name ?? 'Dokter'}
                       {q.actualWaitMinutes != null && ` · tunggu ${q.actualWaitMinutes} mnt`}
                     </p>
                   </div>
-                  <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-black text-emerald-700 uppercase">
+                  <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase">
                     Selesai
                   </span>
                 </div>

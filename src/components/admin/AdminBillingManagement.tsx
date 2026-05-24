@@ -17,11 +17,11 @@ function statusBadgeClass(status: BillStatus): string {
   switch (status) {
     case 'PAID':
     case 'WAIVED':
-      return 'border-emerald-200 bg-emerald-50 text-emerald-700'
+      return 'border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
     case 'BPJS_PENDING':
-      return 'border-blue-200 bg-blue-50 text-blue-700'
+      return 'border-blue-200 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400'
     default:
-      return 'border-amber-200 bg-amber-50 text-amber-700'
+      return 'border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400'
   }
 }
 
@@ -83,27 +83,27 @@ export default function AdminBillingManagement() {
   return (
     <div className="animate-in fade-in space-y-6 duration-500">
       <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950">Tagihan & Pembayaran</h1>
-        <p className="text-slate-600">Kelola tagihan pasien, konfirmasi pembayaran kasir, dan verifikasi BPJS.</p>
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 dark:text-zinc-100">Tagihan & Pembayaran</h1>
+        <p className="text-slate-600 dark:text-zinc-400">Kelola tagihan pasien, konfirmasi pembayaran kasir, dan verifikasi BPJS.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
-          <p className="text-xs font-bold tracking-wider text-amber-700 uppercase">Belum Bayar</p>
-          <p className="mt-1 text-2xl font-extrabold text-amber-800">{stats.pending}</p>
+        <div className="rounded-2xl border border-amber-100 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-5">
+          <p className="text-xs font-bold tracking-wider text-amber-700 dark:text-amber-400 uppercase">Belum Bayar</p>
+          <p className="mt-1 text-2xl font-extrabold text-amber-800 dark:text-amber-400">{stats.pending}</p>
         </div>
-        <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5">
-          <p className="text-xs font-bold tracking-wider text-blue-700 uppercase">BPJS Pending</p>
+        <div className="rounded-2xl border border-blue-100 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 p-5">
+          <p className="text-xs font-bold tracking-wider text-blue-700 dark:text-blue-400 uppercase">BPJS Pending</p>
           <p className="mt-1 text-2xl font-extrabold text-blue-800">{stats.bpjs}</p>
         </div>
-        <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5">
-          <p className="text-xs font-bold tracking-wider text-emerald-700 uppercase">Lunas</p>
-          <p className="mt-1 text-2xl font-extrabold text-emerald-800">{stats.paid}</p>
+        <div className="rounded-2xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 p-5">
+          <p className="text-xs font-bold tracking-wider text-emerald-700 dark:text-emerald-400 uppercase">Lunas</p>
+          <p className="mt-1 text-2xl font-extrabold text-emerald-800 dark:text-emerald-400">{stats.paid}</p>
         </div>
-        <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold tracking-wider text-slate-500 uppercase">Halaman ini</p>
-          <p className="mt-1 text-lg font-extrabold text-zinc-900">{formatRupiah(stats.totalUnpaid)}</p>
-          <p className="text-xs text-slate-500">total belum lunas (halaman aktif)</p>
+        <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-5 shadow-sm">
+          <p className="text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">Halaman ini</p>
+          <p className="mt-1 text-lg font-extrabold text-zinc-900 dark:text-zinc-100">{formatRupiah(stats.totalUnpaid)}</p>
+          <p className="text-xs text-slate-500 dark:text-zinc-400">total belum lunas (halaman aktif)</p>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export default function AdminBillingManagement() {
               setPage(1)
             }}
             className={`rounded-lg px-4 py-2 text-xs font-bold transition-colors ${
-              filter === f ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              filter === f ? 'bg-teal-600 text-white' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700'
             }`}
           >
             {f === 'all' ? 'Semua' : f === 'unpaid' ? 'Belum Bayar' : f === 'bpjs' ? 'BPJS' : 'Lunas'}
@@ -124,15 +124,15 @@ export default function AdminBillingManagement() {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] shadow-sm">
         {isLoading ? (
-          <p className="p-8 text-center text-sm text-slate-500">Memuat tagihan...</p>
+          <p className="p-8 text-center text-sm text-slate-500 dark:text-zinc-400">Memuat tagihan...</p>
         ) : bills.length === 0 ? (
-          <p className="p-8 text-center text-sm text-slate-500">Tidak ada tagihan.</p>
+          <p className="p-8 text-center text-sm text-slate-500 dark:text-zinc-400">Tidak ada tagihan.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="border-b border-slate-100 bg-slate-50 text-[10px] font-black tracking-widest text-slate-500 uppercase">
+              <thead className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-[10px] font-black tracking-widest text-slate-500 dark:text-zinc-400 uppercase">
                 <tr>
                   <th className="p-4">Pasien</th>
                   <th className="p-4">Poli / Antrean</th>
@@ -144,14 +144,14 @@ export default function AdminBillingManagement() {
               <tbody>
                 {bills.map((bill) => (
                   <tr key={bill.id} className="border-b border-slate-50 last:border-0">
-                    <td className="p-4 font-semibold text-zinc-900">
+                    <td className="p-4 font-semibold text-zinc-900 dark:text-zinc-100">
                       {bill.patient?.user?.name ?? bill.patientId}
                     </td>
-                    <td className="p-4 text-slate-600">
+                    <td className="p-4 text-slate-600 dark:text-zinc-400">
                       {bill.queue?.department?.name ?? '-'}
                       {bill.queue?.queueNumber != null ? ` · No. ${bill.queue.queueNumber}` : ''}
                     </td>
-                    <td className="p-4 font-bold text-zinc-900">
+                    <td className="p-4 font-bold text-zinc-900 dark:text-zinc-100">
                       {formatRupiah(bill.patientShare ?? bill.totalAmount)}
                     </td>
                     <td className="p-4">
@@ -175,7 +175,7 @@ export default function AdminBillingManagement() {
                               setSelectedBill(bill)
                               setSepNumber(bill.sepNumber ?? '')
                             }}
-                            className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-[10px] font-bold text-blue-700"
+                            className="rounded-lg border border-blue-200 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 px-3 py-1.5 text-[10px] font-bold text-blue-700 dark:text-blue-400"
                           >
                             Verifikasi BPJS
                           </button>
@@ -195,17 +195,17 @@ export default function AdminBillingManagement() {
           <button
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold disabled:opacity-40"
+            className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold disabled:opacity-40"
           >
             Sebelumnya
           </button>
-          <span className="text-xs font-bold text-slate-500">
+          <span className="text-xs font-bold text-slate-500 dark:text-zinc-400">
             Halaman {pagination.page} / {pagination.totalPages}
           </span>
           <button
             disabled={page >= pagination.totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold disabled:opacity-40"
+            className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold disabled:opacity-40"
           >
             Berikutnya
           </button>
@@ -213,21 +213,21 @@ export default function AdminBillingManagement() {
       )}
 
       {selectedBill && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-extrabold text-zinc-900">Verifikasi BPJS</h3>
-            <p className="mt-1 text-sm text-slate-600">{selectedBill.patient?.user?.name}</p>
-            <label className="mt-4 block text-xs font-bold text-slate-500 uppercase">Nomor SEP</label>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-[#131314]/80 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#1e1f20] p-6 shadow-xl">
+            <h3 className="text-lg font-extrabold text-zinc-900 dark:text-zinc-100">Verifikasi BPJS</h3>
+            <p className="mt-1 text-sm text-slate-600 dark:text-zinc-400">{selectedBill.patient?.user?.name}</p>
+            <label className="mt-4 block text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase">Nomor SEP</label>
             <input
               value={sepNumber}
               onChange={(e) => setSepNumber(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-3 py-2 text-sm"
               placeholder="Contoh: 0123R00101234567890"
             />
             <div className="mt-5 flex justify-end gap-2">
               <button
                 onClick={() => setSelectedBill(null)}
-                className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold"
+                className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold"
               >
                 Batal
               </button>

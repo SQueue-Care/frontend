@@ -79,15 +79,15 @@ export default function AdminQueueManagement() {
   return (
     <div className="animate-in fade-in duration-500">
       <div className="mb-8">
-        <h2 className="mb-1 font-['Manrope'] text-2xl font-extrabold text-zinc-950">
+        <h2 className="mb-1 font-['Manrope'] text-2xl font-extrabold text-zinc-950 dark:text-zinc-100">
           Daftar Antrean Aktif
         </h2>
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
           Kelola dan perbarui status antrean aktif pasien secara real-time.
         </p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
         {/* AREA FILTER & SEARCH (Identik dengan Reservasi) */}
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="relative w-full md:w-72">
@@ -96,9 +96,9 @@ export default function AdminQueueManagement() {
               placeholder="Cari nama, NIK, atau no antrean..."
               value={queueSearchQuery}
               onChange={(e) => setQueueSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-zinc-800 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
             />
-            <div className="absolute top-3.5 right-3 text-slate-400">
+            <div className="absolute top-3.5 right-3 text-slate-400 dark:text-zinc-500">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -112,13 +112,13 @@ export default function AdminQueueManagement() {
 
           <div className="flex flex-wrap items-center gap-4">
             <div className="relative min-w-[200px]">
-              <label className="absolute -top-2.5 left-3 z-10 bg-white px-1.5 text-[11px] font-bold tracking-widest text-slate-400 uppercase">
+              <label className="absolute -top-2.5 left-3 z-10 bg-white dark:bg-[#1e1f20] px-1.5 text-[11px] font-bold tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                 Filter Departemen
               </label>
               <select
                 value={selectedDepartmentFilter}
                 onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
-                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
               >
                 <option value="">Semua Departemen</option>
                 {departments.map((dept: Department) => (
@@ -127,7 +127,7 @@ export default function AdminQueueManagement() {
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400">
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400 dark:text-zinc-500">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -140,13 +140,13 @@ export default function AdminQueueManagement() {
             </div>
 
             <div className="relative min-w-[200px]">
-              <label className="absolute -top-2.5 left-3 z-10 bg-white px-1.5 text-[11px] font-bold tracking-widest text-slate-400 uppercase">
+              <label className="absolute -top-2.5 left-3 z-10 bg-white dark:bg-[#1e1f20] px-1.5 text-[11px] font-bold tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                 Status Antrean
               </label>
               <select
                 value={selectedStatusFilter}
                 onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
               >
                 <option value="">Semua Status</option>
                 <option value="WAITING">Menunggu</option>
@@ -156,7 +156,7 @@ export default function AdminQueueManagement() {
                 <option value="SKIPPED">Dilewati</option>
                 <option value="CANCELLED">Dibatalkan</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400">
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400 dark:text-zinc-500">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -176,11 +176,11 @@ export default function AdminQueueManagement() {
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600"></div>
           </div>
         ) : errorTable ? (
-          <div className="py-12 text-center text-sm font-bold text-rose-600 italic">
+          <div className="py-12 text-center text-sm font-bold text-rose-600 dark:text-rose-400 italic">
             {errorTable}
           </div>
         ) : sortedQueues.length === 0 ? (
-          <div className="py-12 text-center text-sm text-slate-500 italic">
+          <div className="py-12 text-center text-sm text-slate-500 dark:text-zinc-400 italic">
             {queueSearchQuery
               ? `Tidak ada antrean yang cocok dengan pencarian "${queueSearchQuery}"`
               : 'Belum ada data antrean yang sesuai dengan kriteria filter.'}
@@ -188,7 +188,7 @@ export default function AdminQueueManagement() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-100 bg-slate-50 text-[10px] font-black tracking-widest text-slate-500 uppercase">
+              <thead className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-[10px] font-black tracking-widest text-slate-500 dark:text-zinc-400 uppercase">
                 <tr>
                   <th className="p-5 pl-8">No. Antrean</th>
                   <th className="p-5">Nama Pasien</th>
@@ -201,15 +201,15 @@ export default function AdminQueueManagement() {
                   <th className="p-5 pr-8 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-sm font-medium text-zinc-900">
+              <tbody className="divide-y divide-slate-100 dark:divide-zinc-800 text-sm font-medium text-zinc-900 dark:text-zinc-100">
                 {sortedQueues.map((item) => {
                   const statusClasses: Record<string, string> = {
-                    WAITING: 'bg-slate-50 text-slate-600 border-slate-200',
-                    CALLED: 'bg-blue-50 text-blue-600 border-blue-200',
-                    IN_PROGRESS: 'bg-amber-50 text-amber-600 border-amber-200',
-                    DONE: 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                    SKIPPED: 'bg-gray-50 text-gray-600 border-gray-200',
-                    CANCELLED: 'bg-rose-50 text-rose-600 border-rose-200',
+                    WAITING: 'bg-slate-50 dark:bg-[#131314] text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800',
+                    CALLED: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+                    IN_PROGRESS: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
+                    DONE: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
+                    SKIPPED: 'bg-gray-50 dark:bg-zinc-800/50 text-gray-600 dark:text-zinc-400 border-gray-200 dark:border-zinc-700',
+                    CANCELLED: 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
                   }
                   const statusLabel: Record<string, string> = {
                     WAITING: 'Menunggu',
@@ -221,14 +221,14 @@ export default function AdminQueueManagement() {
                   }
 
                   return (
-                    <tr key={item.id} className="group transition-colors hover:bg-slate-50/50">
+                    <tr key={item.id} className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-[#131314]/50">
                       <td className="p-5 pl-8">
-                        <span className="inline-block rounded-lg border border-slate-200 bg-slate-100 px-3 py-1 font-mono font-extrabold tracking-widest text-slate-700">
+                        <span className="inline-block rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono font-extrabold tracking-widest text-slate-700">
                           {item.department?.code}-{item.queueNumber}
                         </span>
                       </td>
                       <td className="p-5">
-                        <div className="font-extrabold text-zinc-950 uppercase transition-colors group-hover:text-teal-600">
+                        <div className="font-extrabold text-zinc-950 dark:text-zinc-100 uppercase transition-colors group-hover:text-teal-600">
                           {item.patient?.user?.name || '-'}
                         </div>
                       </td>
@@ -247,7 +247,7 @@ export default function AdminQueueManagement() {
                         </div>
                       </td>
                       <td className="p-5">
-                        <span className="rounded-md border border-slate-200 bg-slate-100 px-2 py-1 font-mono text-[11px] font-black tracking-widest text-slate-600">
+                        <span className="rounded-md border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-2 py-1 font-mono text-[11px] font-black tracking-widest text-slate-600 dark:text-zinc-400">
                           {item.checkInAt
                             ? new Date(item.checkInAt).toLocaleTimeString('id-ID', {
                                 hour: '2-digit',
@@ -257,7 +257,7 @@ export default function AdminQueueManagement() {
                         </span>
                       </td>
                       <td className="p-5">
-                        <span className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-600">
+                        <span className="rounded-lg border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 text-sm font-bold text-indigo-600 dark:text-indigo-400">
                           {item.prediction?.estimatedMin
                             ? `${item.prediction.estimatedMin} min`
                             : '-'}
@@ -270,12 +270,12 @@ export default function AdminQueueManagement() {
                       </td>
                       <td className="p-5">
                         <span
-                          className={`rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase ${statusClasses[item.status] || 'border-slate-200 bg-slate-50 text-slate-600'}`}
+                          className={`rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase ${statusClasses[item.status] || 'border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-slate-600 dark:text-zinc-400'}`}
                         >
                           {statusLabel[item.status] || item.status}
                         </span>
                         {item.visitFlow?.currentStage && item.status === 'DONE' && (
-                          <p className="mt-1 text-[10px] font-bold text-teal-700">
+                          <p className="mt-1 text-[10px] font-bold text-teal-700 dark:text-teal-400">
                             Tahap: {VISIT_STAGE_LABELS[item.visitFlow.currentStage] ?? item.visitFlow.currentStage}
                           </p>
                         )}

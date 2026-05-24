@@ -58,38 +58,38 @@ function AdminUserModalInner({
   }
 
   return (
-    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4 duration-200">
-      <div className="animate-in zoom-in-95 my-4 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl duration-200">
-        <h2 className="mb-6 text-xl font-bold text-zinc-900">Kelola Akun User</h2>
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 dark:bg-[#131314]/80 p-4 duration-200">
+      <div className="animate-in zoom-in-95 my-4 w-full max-w-2xl rounded-2xl bg-white dark:bg-[#1e1f20] p-6 shadow-2xl duration-200">
+        <h2 className="mb-6 text-xl font-bold text-zinc-900 dark:text-zinc-100">Kelola Akun User</h2>
 
         {/* Informasi Akun */}
-        <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div className="mb-6 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
           <h3 className="mb-4 text-sm font-bold tracking-wide text-slate-700 uppercase">
             Informasi Akun
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Nama</p>
+              <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Nama</p>
               <p className="text-sm font-medium text-slate-900">
                 {user.user?.name || user.name || '-'}
               </p>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Email</p>
+              <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Email</p>
               <p className="text-sm font-medium text-slate-900">
                 {user.user?.email || user.email || '-'}
               </p>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Role</p>
+              <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Role</p>
               <p className="text-sm font-medium text-slate-900">
                 {user.user?.role || user.role || '-'}
               </p>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Status Saat Ini</p>
+              <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Status Saat Ini</p>
               <span
-                className={`inline-block rounded-md border px-2.5 py-1 text-xs font-bold ${user.user?.isActive !== false ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700'}`}
+                className={`inline-block rounded-md border px-2.5 py-1 text-xs font-bold ${user.user?.isActive !== false ? 'border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400'}`}
               >
                 {user.user?.isActive !== false ? 'Aktif' : 'Blokir'}
               </span>
@@ -99,27 +99,27 @@ function AdminUserModalInner({
 
         {/* Informasi Profil Pasien */}
         {(user.user?.role === 'PATIENT' || user.role === 'PATIENT') && (
-          <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <div className="mb-6 rounded-lg border border-blue-200 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 p-4">
             <h3 className="mb-4 text-sm font-bold tracking-wide text-slate-700 uppercase">
               Informasi Profil Pasien
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">NIK</p>
+                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">NIK</p>
                 <p className="font-mono text-sm font-medium text-slate-900">{user.nik || '-'}</p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Nomor BPJS</p>
+                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Nomor BPJS</p>
                 <p className="font-mono text-sm font-medium text-slate-900">
                   {user.bpjsNumber || '-'}
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Telepon</p>
+                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Telepon</p>
                 <p className="text-sm font-medium text-slate-900">{user.phone || '-'}</p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Jenis Kelamin</p>
+                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Jenis Kelamin</p>
                 <p className="text-sm font-medium text-slate-900">
                   {user.gender === 'MALE'
                     ? 'Laki-laki'
@@ -129,7 +129,7 @@ function AdminUserModalInner({
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Tanggal Lahir</p>
+                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Tanggal Lahir</p>
                 <p className="text-sm font-medium text-slate-900">
                   {user.birthDate
                     ? new Date(user.birthDate).toLocaleDateString('id-ID', {
@@ -141,7 +141,7 @@ function AdminUserModalInner({
                 </p>
               </div>
               <div className="col-span-2">
-                <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Alamat</p>
+                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Alamat</p>
                 <p className="text-sm font-medium text-slate-900">{user.address || '-'}</p>
               </div>
             </div>
@@ -150,17 +150,17 @@ function AdminUserModalInner({
 
         {/* Informasi Profil Dokter */}
         {(user.user?.role === 'DOCTOR' || user.role === 'DOCTOR') && (
-          <div className="mb-6 rounded-lg border border-purple-200 bg-purple-50 p-4">
+          <div className="mb-6 rounded-lg border border-purple-200 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 p-4">
             <h3 className="mb-4 text-sm font-bold tracking-wide text-slate-700 uppercase">
               Informasi Profil Dokter
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">Spesialisasi</p>
+                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Spesialisasi</p>
                 <p className="text-sm font-medium text-slate-900">{user.specialization || '-'}</p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 uppercase">
+                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">
                   Rata-rata Layanan
                 </p>
                 <p className="text-sm font-medium text-slate-900">
@@ -172,7 +172,7 @@ function AdminUserModalInner({
         )}
 
         {/* Status Akun Edit */}
-        <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div className="mb-6 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
           <label className="mb-3 block text-sm font-semibold text-slate-700">
             Ubah Status Akun
           </label>
@@ -183,7 +183,7 @@ function AdminUserModalInner({
                 name="status"
                 checked={isActive === true}
                 onChange={() => setIsActive(true)}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500"
               />
               <span className="text-sm font-medium text-slate-700">Aktif</span>
             </label>
@@ -193,7 +193,7 @@ function AdminUserModalInner({
                 name="status"
                 checked={isActive === false}
                 onChange={() => setIsActive(false)}
-                className="h-4 w-4 text-rose-600 focus:ring-rose-500"
+                className="h-4 w-4 text-rose-600 dark:text-rose-400 focus:ring-rose-500"
               />
               <span className="text-sm font-medium text-slate-700">Blokir</span>
             </label>
@@ -203,7 +203,7 @@ function AdminUserModalInner({
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="rounded-lg border border-slate-200 px-4 py-2 font-semibold text-slate-600 transition-colors hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 font-semibold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800"
           >
             Batal
           </button>

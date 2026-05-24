@@ -35,7 +35,7 @@ export default function ActiveQueuesStat() {
     return (
       <StatCard
         title="Antrean Aktif"
-        value={<ArrowPathIcon className="h-6 w-6 animate-spin text-slate-500" />}
+        value={<ArrowPathIcon className="h-6 w-6 animate-spin text-slate-500 dark:text-zinc-400" />}
         icon={<ClipboardDocumentListIcon className="h-6 w-6" />}
         description="Sinkronisasi data..."
       />

@@ -91,8 +91,8 @@ export default function DepartmentWorkloadChart() {
   if (isLoadingStats || isLoadingDepartments) {
     return (
       <div className="flex h-[280px] w-full flex-col items-center justify-center">
-        <ArrowPathIcon className="mb-2 h-8 w-8 animate-spin text-slate-400" />
-        <p className="text-sm text-slate-400">Memuat data...</p>
+        <ArrowPathIcon className="mb-2 h-8 w-8 animate-spin text-slate-400 dark:text-zinc-500" />
+        <p className="text-sm text-slate-400 dark:text-zinc-500">Memuat data...</p>
       </div>
     )
   }
@@ -101,7 +101,7 @@ export default function DepartmentWorkloadChart() {
     return (
       <div className="flex h-[280px] w-full flex-col items-center justify-center">
         <ExclamationTriangleIcon className="mb-2 h-8 w-8 text-red-500" />
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-zinc-400">
           {errorStats || departmentError || 'Tidak ada data'}
         </p>
       </div>
@@ -125,10 +125,10 @@ export default function DepartmentWorkloadChart() {
       <Doughnut data={data} options={options} />
       {/* Teks di tengah Donat */}
       <div className="pointer-events-none absolute inset-0 mt-[-30px] flex flex-col items-center justify-center">
-        <span className="font-['Manrope'] text-3xl font-extrabold text-zinc-900">
+        <span className="font-['Manrope'] text-3xl font-extrabold text-zinc-900 dark:text-zinc-100">
           {chartData.totalPatients}
         </span>
-        <span className="text-xs font-semibold text-slate-500">Total Pasien</span>
+        <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Total Pasien</span>
       </div>
     </div>
   )

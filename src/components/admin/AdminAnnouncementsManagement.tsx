@@ -9,11 +9,11 @@ const CATEGORY_LABELS: Record<string, string> = {
 }
 
 const CATEGORY_STYLES: Record<string, string> = {
-  info: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
+  info: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
   warning:
-    'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
+    'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
   service:
-    'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20',
+    'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-200 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20',
 }
 
 const TARGET_LABELS: Record<string, string> = {
@@ -130,7 +130,7 @@ export default function AdminAnnouncementsManagement() {
               className={`rounded-xl px-4 py-2 text-xs font-black tracking-wide uppercase transition-colors ${
                 filter === f
                   ? 'bg-teal-600 text-white shadow-sm'
-                  : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-400'
+                  : 'border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-400'
               }`}
             >
               {f === 'active' ? 'Aktif' : 'Semua'}
@@ -149,33 +149,33 @@ export default function AdminAnnouncementsManagement() {
       {showForm && (
         <form
           onSubmit={(e) => void handleSubmit(e)}
-          className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]"
+          className="rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]"
         >
-          <h3 className="mb-4 font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-white">
+          <h3 className="mb-4 font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-zinc-100 dark:text-white">
             {editing ? 'Edit Pengumuman' : 'Pengumuman Baru'}
           </h3>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-xs font-bold text-slate-500">Judul</span>
+              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Judul</span>
               <input
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
+                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
                 placeholder="Contoh: Libur Nasional — Jam Operasional"
               />
             </label>
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-xs font-bold text-slate-500">Isi Pengumuman</span>
+              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Isi Pengumuman</span>
               <textarea
                 value={form.body}
                 onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
                 rows={4}
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
+                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
                 placeholder="Tuliskan detail pengumuman..."
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-500">Kategori</span>
+              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Kategori</span>
               <select
                 value={form.category}
                 onChange={(e) =>
@@ -184,7 +184,7 @@ export default function AdminAnnouncementsManagement() {
                     category: e.target.value as Announcement['category'],
                   }))
                 }
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
+                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
               >
                 <option value="info">Informasi</option>
                 <option value="warning">Penting</option>
@@ -192,7 +192,7 @@ export default function AdminAnnouncementsManagement() {
               </select>
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-500">Target</span>
+              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Target</span>
               <select
                 value={form.targetRole}
                 onChange={(e) =>
@@ -201,7 +201,7 @@ export default function AdminAnnouncementsManagement() {
                     targetRole: e.target.value as 'ALL' | 'PATIENT' | 'DOCTOR' | 'ADMIN',
                   }))
                 }
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
+                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
               >
                 <option value="ALL">Semua Pengguna</option>
                 <option value="PATIENT">Pasien</option>
@@ -210,21 +210,21 @@ export default function AdminAnnouncementsManagement() {
               </select>
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-500">Aktif Dari</span>
+              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Aktif Dari</span>
               <input
                 type="datetime-local"
                 value={form.activeFrom}
                 onChange={(e) => setForm((f) => ({ ...f, activeFrom: e.target.value }))}
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
+                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-500">Aktif Hingga (opsional)</span>
+              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Aktif Hingga (opsional)</span>
               <input
                 type="datetime-local"
                 value={form.activeTo}
                 onChange={(e) => setForm((f) => ({ ...f, activeTo: e.target.value }))}
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
+                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
               />
             </label>
             <label className="flex items-center gap-2 sm:col-span-2">
@@ -260,7 +260,7 @@ export default function AdminAnnouncementsManagement() {
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black tracking-wide text-slate-600 uppercase dark:border-zinc-700 dark:text-zinc-400"
+              className="rounded-xl border border-slate-200 dark:border-zinc-800 px-5 py-2.5 text-xs font-black tracking-wide text-slate-600 dark:text-zinc-400 uppercase dark:border-zinc-700 dark:text-zinc-400"
             >
               Batal
             </button>
@@ -270,14 +270,14 @@ export default function AdminAnnouncementsManagement() {
 
       <ul className="space-y-4">
         {displayed.length === 0 ? (
-          <li className="rounded-3xl border border-slate-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-[#1e1f20]">
+          <li className="rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-12 text-center dark:border-zinc-800 dark:bg-[#1e1f20]">
             <p className="text-slate-500 dark:text-zinc-400">Belum ada pengumuman.</p>
           </li>
         ) : (
           displayed.map((item) => (
             <li
               key={item.id}
-              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]"
+              className="rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]"
             >
               <div className="mb-3 flex flex-wrap items-center gap-3">
                 <span
@@ -285,15 +285,15 @@ export default function AdminAnnouncementsManagement() {
                 >
                   {CATEGORY_LABELS[item.category] ?? item.category}
                 </span>
-                <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-black tracking-widest text-slate-500 uppercase dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                <span className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-2.5 py-1 text-[10px] font-black tracking-widest text-slate-500 dark:text-zinc-400 uppercase dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
                   {TARGET_LABELS[item.targetRole]}
                 </span>
                 {!item.isActive && (
-                  <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-[10px] font-black text-slate-500 uppercase">
+                  <span className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-2.5 py-1 text-[10px] font-black text-slate-500 dark:text-zinc-400 uppercase">
                     Nonaktif
                   </span>
                 )}
-                <time className="ml-auto text-xs font-bold text-slate-500 dark:text-slate-400">
+                <time className="ml-auto text-xs font-bold text-slate-500 dark:text-zinc-400 dark:text-slate-400">
                   {new Date(item.activeFrom).toLocaleDateString('id-ID', {
                     day: 'numeric',
                     month: 'long',
@@ -301,22 +301,22 @@ export default function AdminAnnouncementsManagement() {
                   })}
                 </time>
               </div>
-              <h2 className="mb-2 font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-white">
+              <h2 className="mb-2 font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-zinc-100 dark:text-white">
                 {item.title}
               </h2>
-              <p className="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{item.body}</p>
+              <p className="mb-4 text-sm leading-relaxed text-slate-600 dark:text-zinc-400 dark:text-slate-400">{item.body}</p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => openEdit(item)}
-                  className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-black tracking-wide text-slate-600 uppercase hover:bg-slate-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  className="rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2 text-xs font-black tracking-wide text-slate-600 dark:text-zinc-400 uppercase hover:bg-slate-50 dark:hover:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
                 >
                   Edit
                 </button>
                 <button
                   type="button"
                   onClick={() => void handleDelete(item.id)}
-                  className="rounded-xl border border-rose-200 px-4 py-2 text-xs font-black tracking-wide text-rose-600 uppercase hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-400"
+                  className="rounded-xl border border-rose-200 dark:border-rose-500/20 px-4 py-2 text-xs font-black tracking-wide text-rose-600 dark:text-rose-400 uppercase hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-400"
                 >
                   Hapus
                 </button>

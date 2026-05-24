@@ -206,14 +206,14 @@ export default function AnalyticsView() {
   return (
     <div className="animate-in fade-in duration-500">
       <div className="mb-8">
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950">
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 dark:text-zinc-100">
           Analitik Performa
         </h1>
-        <p className="text-slate-600">Analisis mendalam terhadap performa antrian dan reservasi.</p>
+        <p className="text-slate-600 dark:text-zinc-400">Analisis mendalam terhadap performa antrian dan reservasi.</p>
       </div>
 
       {/* Filter Bar */}
-      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-8 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
         <div className="flex flex-wrap items-end gap-4">
           <div>
             <label className="mb-2 block text-sm font-semibold text-slate-700">Dari Tanggal</label>
@@ -221,7 +221,7 @@ export default function AnalyticsView() {
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm focus:ring-2 focus:ring-teal-500"
+              className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:ring-2 focus:ring-teal-500"
             />
           </div>
           <div>
@@ -232,7 +232,7 @@ export default function AnalyticsView() {
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm focus:ring-2 focus:ring-teal-500"
+              className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:ring-2 focus:ring-teal-500"
             />
           </div>
           <button
@@ -247,7 +247,7 @@ export default function AnalyticsView() {
               onClick={() => {
                 setPresetDates(1)
               }}
-              className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-200"
+              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs font-bold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
             >
               Hari Ini
             </button>
@@ -255,7 +255,7 @@ export default function AnalyticsView() {
               onClick={() => {
                 setPresetDates(7)
               }}
-              className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-200"
+              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs font-bold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
             >
               7 Hari
             </button>
@@ -263,7 +263,7 @@ export default function AnalyticsView() {
               onClick={() => {
                 setPresetDates(30)
               }}
-              className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-200"
+              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs font-bold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
             >
               30 Hari
             </button>
@@ -273,38 +273,38 @@ export default function AnalyticsView() {
 
       {/* KPI Cards */}
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <p className="mb-2 text-sm font-semibold text-slate-500">Total Antrian</p>
+        <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+          <p className="mb-2 text-sm font-semibold text-slate-500 dark:text-zinc-400">Total Antrian</p>
           <p className="text-3xl font-extrabold text-teal-600">{analytics.summary.totalQueues}</p>
         </div>
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <p className="mb-2 text-sm font-semibold text-slate-500">Tingkat Selesai</p>
-          <p className="text-3xl font-extrabold text-emerald-600">
+        <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+          <p className="mb-2 text-sm font-semibold text-slate-500 dark:text-zinc-400">Tingkat Selesai</p>
+          <p className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">
             {analytics.summary.completionRate}%
           </p>
         </div>
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <p className="mb-2 text-sm font-semibold text-slate-500">Rata-rata Tunggu</p>
-          <p className="text-3xl font-extrabold text-indigo-600">
+        <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+          <p className="mb-2 text-sm font-semibold text-slate-500 dark:text-zinc-400">Rata-rata Tunggu</p>
+          <p className="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400">
             {analytics.summary.avgWaitMinutes}m
           </p>
         </div>
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <p className="mb-2 text-sm font-semibold text-slate-500">Total Reservasi</p>
-          <p className="text-3xl font-extrabold text-amber-600">{appointments?.total || 0}</p>
+        <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+          <p className="mb-2 text-sm font-semibold text-slate-500 dark:text-zinc-400">Total Reservasi</p>
+          <p className="text-3xl font-extrabold text-amber-600 dark:text-amber-400">{appointments?.total || 0}</p>
         </div>
       </div>
 
       {/* Charts */}
       <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h3 className="mb-6 font-bold text-zinc-950">Tren Harian</h3>
+        <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+          <h3 className="mb-6 font-bold text-zinc-950 dark:text-zinc-100">Tren Harian</h3>
           <div className="h-80">
             <Line data={lineChartData} options={lineChartOptions} />
           </div>
         </div>
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h3 className="mb-6 font-bold text-zinc-950">Perbandingan Departemen</h3>
+        <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+          <h3 className="mb-6 font-bold text-zinc-950 dark:text-zinc-100">Perbandingan Departemen</h3>
           <div className="h-80">
             <Bar data={barChartData} options={barChartOptions} />
           </div>
@@ -312,37 +312,37 @@ export default function AnalyticsView() {
       </div>
 
       {/* Table */}
-      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 className="mb-6 text-lg font-bold text-zinc-950">Detail per Departemen</h3>
+      <div className="mb-8 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-bold text-zinc-950 dark:text-zinc-100">Detail per Departemen</h3>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
-            <thead className="border-b border-slate-200 bg-slate-50">
+            <thead className="border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314]">
               <tr>
-                <th className="p-4 pl-6 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <th className="p-4 pl-6 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Departemen
                 </th>
-                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Total
                 </th>
-                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Selesai
                 </th>
-                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Dibatalkan
                 </th>
-                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Selesai %
                 </th>
-                <th className="p-4 pr-6 text-right text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <th className="p-4 pr-6 text-right text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Avg Tunggu
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white text-sm font-medium text-zinc-900">
+            <tbody className="bg-white dark:bg-[#1e1f20] text-sm font-medium text-zinc-900 dark:text-zinc-100">
               {analytics.byDepartment.map((dept) => (
                 <tr
                   key={dept.departmentId}
-                  className="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50/50"
+                  className="border-b border-slate-100 dark:border-zinc-800 transition-colors last:border-0 hover:bg-slate-50/50 dark:hover:bg-[#131314]/50"
                 >
                   <td className="p-4 pl-6 font-bold">{dept.name}</td>
                   <td className="p-4">{dept.total}</td>
@@ -360,17 +360,17 @@ export default function AnalyticsView() {
       </div>
 
       {/* Reservasi Summary */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 className="mb-6 text-lg font-bold text-zinc-950">Ringkasan Reservasi</h3>
+      <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-bold text-zinc-950 dark:text-zinc-100">Ringkasan Reservasi</h3>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
           {appointments &&
             Object.entries(appointments.byStatus).map(([status, count]) => (
               <div
                 key={status}
-                className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-center"
+                className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4 text-center"
               >
-                <p className="text-2xl font-bold text-zinc-900">{count}</p>
-                <p className="mt-1 text-xs font-semibold text-slate-500 uppercase">{status}</p>
+                <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{count}</p>
+                <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">{status}</p>
               </div>
             ))}
         </div>

@@ -23,7 +23,7 @@ export default function TotalPatientsStat() {
     return (
       <StatCard
         title="Total Antrean Hari Ini"
-        value={<ArrowPathIcon className="h-6 w-6 animate-spin text-slate-500" />}
+        value={<ArrowPathIcon className="h-6 w-6 animate-spin text-slate-500 dark:text-zinc-400" />}
         icon={<UsersIcon className="h-6 w-6" />}
         description="Memuat data..."
       />

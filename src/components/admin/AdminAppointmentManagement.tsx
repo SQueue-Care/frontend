@@ -90,15 +90,15 @@ export default function AdminAppointmentManagement() {
   return (
     <div className="animate-in fade-in duration-500">
       <div className="mb-8">
-        <h2 className="mb-1 font-['Manrope'] text-2xl font-extrabold text-zinc-950">
+        <h2 className="mb-1 font-['Manrope'] text-2xl font-extrabold text-zinc-950 dark:text-zinc-100">
           Daftar Reservasi Pasien
         </h2>
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
           Kelola dan perbarui status reservasi pasien di seluruh sistem RS Ethereal.
         </p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
         {/* AREA FILTER & SEARCH */}
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="relative w-full md:w-72">
@@ -107,9 +107,9 @@ export default function AdminAppointmentManagement() {
               placeholder="Cari nama pasien atau NIK..."
               value={appointmentSearchQuery}
               onChange={(e) => setAppointmentSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-zinc-800 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
             />
-            <div className="absolute top-3.5 right-3 text-slate-400">
+            <div className="absolute top-3.5 right-3 text-slate-400 dark:text-zinc-500">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -123,13 +123,13 @@ export default function AdminAppointmentManagement() {
 
           <div className="flex flex-wrap items-center gap-4">
             <div className="relative min-w-[200px]">
-              <label className="absolute -top-2.5 left-3 z-10 bg-white px-1.5 text-[11px] font-bold tracking-widest text-slate-400 uppercase">
+              <label className="absolute -top-2.5 left-3 z-10 bg-white dark:bg-[#1e1f20] px-1.5 text-[11px] font-bold tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                 Filter Departemen
               </label>
               <select
                 value={selectedDepartmentFilter}
                 onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
-                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
               >
                 <option value="">Semua Departemen</option>
                 {departments.map((dept: Department) => (
@@ -138,7 +138,7 @@ export default function AdminAppointmentManagement() {
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400">
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400 dark:text-zinc-500">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -151,13 +151,13 @@ export default function AdminAppointmentManagement() {
             </div>
 
             <div className="relative min-w-[200px]">
-              <label className="absolute -top-2.5 left-3 z-10 bg-white px-1.5 text-[11px] font-bold tracking-widest text-slate-400 uppercase">
+              <label className="absolute -top-2.5 left-3 z-10 bg-white dark:bg-[#1e1f20] px-1.5 text-[11px] font-bold tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                 Status Reservasi
               </label>
               <select
                 value={selectedStatusFilter}
                 onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
               >
                 <option value="">Semua Status</option>
                 <option value="BOOKED">Menunggu Konfirmasi</option>
@@ -165,7 +165,7 @@ export default function AdminAppointmentManagement() {
                 <option value="COMPLETED">Selesai</option>
                 <option value="CANCELLED">Dibatalkan</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400">
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400 dark:text-zinc-500">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -185,7 +185,7 @@ export default function AdminAppointmentManagement() {
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600"></div>
           </div>
         ) : filteredAppointments.length === 0 ? (
-          <div className="py-12 text-center text-sm text-slate-500 italic">
+          <div className="py-12 text-center text-sm text-slate-500 dark:text-zinc-400 italic">
             {appointmentSearchQuery
               ? `Tidak ada reservasi yang cocok dengan pencarian "${appointmentSearchQuery}"`
               : 'Belum ada data reservasi yang sesuai dengan kriteria filter.'}
@@ -193,7 +193,7 @@ export default function AdminAppointmentManagement() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-100 bg-slate-50 text-[10px] font-black tracking-widest text-slate-500 uppercase">
+              <thead className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-[10px] font-black tracking-widest text-slate-500 dark:text-zinc-400 uppercase">
                 <tr>
                   <th className="p-5 pl-8">Nama Pasien</th>
                   <th className="p-5">Dokter</th>
@@ -205,13 +205,13 @@ export default function AdminAppointmentManagement() {
                   <th className="p-5 pr-8 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-sm font-medium text-zinc-900">
+              <tbody className="divide-y divide-slate-100 dark:divide-zinc-800 text-sm font-medium text-zinc-900 dark:text-zinc-100">
                 {filteredAppointments.map((apt) => {
                   const statusClasses: Record<string, string> = {
-                    BOOKED: 'bg-amber-50 text-amber-600 border-amber-200',
-                    CONFIRMED: 'bg-blue-50 text-blue-600 border-blue-200',
-                    CANCELLED: 'bg-rose-50 text-rose-600 border-rose-200',
-                    COMPLETED: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+                    BOOKED: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
+                    CONFIRMED: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+                    CANCELLED: 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
+                    COMPLETED: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
                   }
                   const statusLabel: Record<string, string> = {
                     BOOKED: 'Menunggu Konfirmasi',
@@ -227,10 +227,10 @@ export default function AdminAppointmentManagement() {
                         setSelectedAptDetail(apt)
                         setIsAptDetailModalOpen(true)
                       }}
-                      className="group cursor-pointer transition-colors hover:bg-slate-50/50"
+                      className="group cursor-pointer transition-colors hover:bg-slate-50/50 dark:hover:bg-[#131314]/50"
                     >
                       <td className="p-5 pl-8">
-                        <div className="font-extrabold text-zinc-950 uppercase transition-colors group-hover:text-teal-600">
+                        <div className="font-extrabold text-zinc-950 dark:text-zinc-100 uppercase transition-colors group-hover:text-teal-600">
                           {apt.patient?.user?.name || '-'}
                         </div>
                       </td>
@@ -249,7 +249,7 @@ export default function AdminAppointmentManagement() {
                         </div>
                       </td>
                       <td className="p-5">
-                        <span className="rounded-md border border-slate-200 bg-slate-100 px-2 py-1 font-mono text-[11px] font-black tracking-widest text-slate-600">
+                        <span className="rounded-md border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-2 py-1 font-mono text-[11px] font-black tracking-widest text-slate-600 dark:text-zinc-400">
                           {new Date(apt.scheduledAt).toLocaleTimeString('id-ID', {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -257,7 +257,7 @@ export default function AdminAppointmentManagement() {
                         </span>
                       </td>
                       <td className="p-5">
-                        <div className="font-mono text-xs font-bold text-slate-400">
+                        <div className="font-mono text-xs font-bold text-slate-400 dark:text-zinc-500">
                           {apt.patient?.nik || '-'}
                         </div>
                       </td>
@@ -268,7 +268,7 @@ export default function AdminAppointmentManagement() {
                       </td>
                       <td className="p-5">
                         <span
-                          className={`rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase ${statusClasses[apt.status] || 'border-slate-200 bg-slate-50 text-slate-600'}`}
+                          className={`rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase ${statusClasses[apt.status] || 'border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-slate-600 dark:text-zinc-400'}`}
                         >
                           {statusLabel[apt.status] || apt.status}
                         </span>
@@ -279,7 +279,7 @@ export default function AdminAppointmentManagement() {
                             <>
                               <button
                                 onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
-                                className="rounded-lg border border-transparent p-1.5 text-emerald-600 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+                                className="rounded-lg border border-transparent p-1.5 text-emerald-600 dark:text-emerald-400 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
                                 title="Konfirmasi"
                               >
                                 <svg
@@ -298,7 +298,7 @@ export default function AdminAppointmentManagement() {
                               </button>
                               <button
                                 onClick={() => handleUpdateAppointmentStatus(apt.id, 'CANCELLED')}
-                                className="rounded-lg border border-transparent p-1.5 text-rose-600 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                                className="rounded-lg border border-transparent p-1.5 text-rose-600 dark:text-rose-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
                                 title="Batalkan"
                               >
                                 <svg
@@ -330,11 +330,11 @@ export default function AdminAppointmentManagement() {
 
       {/* CARD DETAIL RESERVASI MODAL */}
       {isAptDetailModalOpen && selectedAptDetail && (
-        <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm duration-300">
-          <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 p-6">
+        <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-[#131314]/80 p-4 backdrop-blur-sm duration-300">
+          <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-[#131314]/50 p-6">
               <div>
-                <h3 className="text-lg font-black tracking-tighter text-zinc-900 uppercase">
+                <h3 className="text-lg font-black tracking-tighter text-zinc-900 dark:text-zinc-100 uppercase">
                   Detail Reservasi
                 </h3>
                 <p className="mt-0.5 font-mono text-xs font-bold text-teal-600">
@@ -346,7 +346,7 @@ export default function AdminAppointmentManagement() {
                   setIsAptDetailModalOpen(false)
                   setSelectedAptDetail(null)
                 }}
-                className="rounded-xl p-2 text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-600"
+                className="rounded-xl p-2 text-slate-400 dark:text-zinc-500 transition-all hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-600"
               >
                 <svg
                   className="h-5 w-5"
@@ -363,20 +363,20 @@ export default function AdminAppointmentManagement() {
             <div className="max-h-[70vh] space-y-4 overflow-y-auto p-6">
               {/* Informasi Pasien */}
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                <p className="text-[10px] font-black tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                   Informasi Pasien
                 </p>
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-                  <div className="text-base font-extrabold text-zinc-950 uppercase">
+                <div className="rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
+                  <div className="text-base font-extrabold text-zinc-950 dark:text-zinc-100 uppercase">
                     {selectedAptDetail.patient?.user?.name || '-'}
                   </div>
-                  <div className="mt-1 text-xs font-medium text-slate-500">
+                  <div className="mt-1 text-xs font-medium text-slate-500 dark:text-zinc-400">
                     NIK:{' '}
                     <span className="font-mono font-bold text-slate-700">
                       {selectedAptDetail.patient?.nik || '-'}
                     </span>
                   </div>
-                  <div className="text-xs font-medium text-slate-500">
+                  <div className="text-xs font-medium text-slate-500 dark:text-zinc-400">
                     BPJS:{' '}
                     <span className="font-mono font-bold text-slate-700">
                       {selectedAptDetail.patient?.bpjsNumber || 'Tidak Ada (Mandiri)'}
@@ -387,23 +387,23 @@ export default function AdminAppointmentManagement() {
 
               {/* Detail Sesi Medis */}
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                <p className="text-[10px] font-black tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                   Alokasi Medis
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
-                    <span className="mb-1 block text-[9px] font-black tracking-wider text-slate-400 uppercase">
+                  <div className="rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-3">
+                    <span className="mb-1 block text-[9px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                       Dokter Spesialis
                     </span>
-                    <span className="text-xs font-bold text-zinc-900">
+                    <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
                       {selectedAptDetail.doctor?.user?.name || '-'}
                     </span>
                   </div>
-                  <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
-                    <span className="mb-1 block text-[9px] font-black tracking-wider text-slate-400 uppercase">
+                  <div className="rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-3">
+                    <span className="mb-1 block text-[9px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                       Poliklinik
                     </span>
-                    <span className="text-xs font-bold text-zinc-900">
+                    <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
                       {selectedAptDetail.department?.name || '-'}
                     </span>
                   </div>
@@ -412,15 +412,15 @@ export default function AdminAppointmentManagement() {
 
               {/* Waktu Kunjungan */}
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                <p className="text-[10px] font-black tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                   Waktu Kunjungan
                 </p>
-                <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-100 bg-slate-50 p-4">
+                <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
                   <div>
-                    <span className="mb-0.5 block text-[9px] font-black tracking-wider text-slate-400 uppercase">
+                    <span className="mb-0.5 block text-[9px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                       Tanggal
                     </span>
-                    <span className="text-xs font-bold text-zinc-950">
+                    <span className="text-xs font-bold text-zinc-950 dark:text-zinc-100">
                       {new Date(selectedAptDetail.scheduledAt).toLocaleDateString('id-ID', {
                         weekday: 'long',
                         year: 'numeric',
@@ -430,7 +430,7 @@ export default function AdminAppointmentManagement() {
                     </span>
                   </div>
                   <div>
-                    <span className="mb-0.5 block text-[9px] font-black tracking-wider text-slate-400 uppercase">
+                    <span className="mb-0.5 block text-[9px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                       Jam Sesi
                     </span>
                     <span className="font-mono text-xs font-bold tracking-wider text-teal-600">
@@ -446,16 +446,16 @@ export default function AdminAppointmentManagement() {
 
               {/* Otorisasi Konfirmasi & Pembatalan */}
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                <p className="text-[10px] font-black tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                   Otorisasi Konfirmasi
                 </p>
                 {['CONFIRMED', 'COMPLETED'].includes(selectedAptDetail.status) ? (
-                  <div className="rounded-xl border border-teal-100 bg-teal-50/50 p-4">
-                    <span className="mb-1 block text-[9px] font-black tracking-wider text-teal-600/70 uppercase">
+                  <div className="rounded-xl border border-teal-100 dark:border-teal-500/20 bg-teal-50/50 dark:bg-teal-500/5 p-4">
+                    <span className="mb-1 block text-[9px] font-black tracking-wider text-teal-600/70 dark:text-teal-400/70 uppercase">
                       Dikonfirmasi Oleh
                     </span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-zinc-950 uppercase">
+                      <span className="text-xs font-extrabold text-zinc-950 dark:text-zinc-100 uppercase">
                         {selectedAptDetail.confirmedBy?.name ||
                           selectedAptDetail.doctor?.user?.name ||
                           'Administrator'}
@@ -472,9 +472,9 @@ export default function AdminAppointmentManagement() {
                     </div>
                   </div>
                 ) : selectedAptDetail.status === 'CANCELLED' ? (
-                  <div className="space-y-2 rounded-xl border border-rose-100 bg-rose-50/50 p-4">
+                  <div className="space-y-2 rounded-xl border border-rose-100 dark:border-rose-500/20 bg-rose-50/50 p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold tracking-tight text-rose-600 uppercase">
+                      <span className="text-xs font-bold tracking-tight text-rose-600 dark:text-rose-400 uppercase">
                         Reservasi Dibatalkan
                       </span>
                       <span className="rounded bg-rose-600 px-2 py-0.5 font-mono text-[9px] font-black tracking-widest text-white uppercase">
@@ -482,21 +482,21 @@ export default function AdminAppointmentManagement() {
                       </span>
                     </div>
                     {selectedAptDetail.cancellationReason ? (
-                      <div className="rounded-lg border-t border-rose-200/40 bg-white/50 p-2 pt-2 text-xs font-medium text-rose-700">
+                      <div className="rounded-lg border-t border-rose-200/40 dark:border-rose-500/20 bg-white/50 dark:bg-[#131314]/50 p-2 pt-2 text-xs font-medium text-rose-700 dark:text-rose-400">
                         <span className="mb-1 block text-[9px] font-black tracking-wider text-rose-500/80 uppercase">
                           Alasan Pembatalan:
                         </span>
                         "{selectedAptDetail.cancellationReason}"
                       </div>
                     ) : (
-                      <div className="border-t border-rose-200/40 pt-2 text-xs text-rose-400 italic">
+                      <div className="border-t border-rose-200/40 dark:border-rose-500/20 pt-2 text-xs text-rose-400 italic">
                         Tidak ada catatan alasan tertulis dari operator.
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-4">
-                    <span className="text-xs font-bold text-amber-600">
+                  <div className="rounded-xl border border-amber-100 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/5 p-4">
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
                       Menunggu tindakan konfirmasi berkas oleh Admin atau Dokter terkait.
                     </span>
                   </div>
@@ -504,7 +504,7 @@ export default function AdminAppointmentManagement() {
               </div>
             </div>
 
-            <div className="flex justify-end border-t border-slate-100 bg-slate-50 p-6">
+            <div className="flex justify-end border-t border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-6">
               <button
                 onClick={() => {
                   setIsAptDetailModalOpen(false)

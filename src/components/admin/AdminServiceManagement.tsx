@@ -203,20 +203,20 @@ export default function AdminServiceManagement() {
   return (
     <div className="animate-in fade-in duration-500">
       <div className="mb-8">
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950">
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 dark:text-zinc-100">
           Manajemen Layanan
         </h1>
-        <p className="text-slate-600">Kelola departemen dan jadwal layanan poliklinik.</p>
+        <p className="text-slate-600 dark:text-zinc-400">Kelola departemen dan jadwal layanan poliklinik.</p>
       </div>
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-4 border-b border-slate-200">
+      <div className="mb-6 flex gap-4 border-b border-slate-200 dark:border-zinc-800">
         <button
           onClick={() => setServicesTab('departments')}
           className={`px-4 py-3 text-sm font-semibold transition-colors ${
             servicesTab === 'departments'
-              ? 'border-b-2 border-indigo-600 text-indigo-600'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400'
+              : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900'
           }`}
         >
           Manajemen Departemen
@@ -225,8 +225,8 @@ export default function AdminServiceManagement() {
           onClick={() => setServicesTab('schedules')}
           className={`px-4 py-3 text-sm font-semibold transition-colors ${
             servicesTab === 'schedules'
-              ? 'border-b-2 border-indigo-600 text-indigo-600'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400'
+              : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900'
           }`}
         >
           Manajemen Jadwal
@@ -235,9 +235,9 @@ export default function AdminServiceManagement() {
 
       {/* TAMPILAN DEPARTEMEN */}
       {servicesTab === 'departments' && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-zinc-900">Daftar Departemen</h2>
+            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Daftar Departemen</h2>
             <button
               onClick={() => handleOpenDeptModal('add')}
               className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
@@ -247,42 +247,42 @@ export default function AdminServiceManagement() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-200 bg-slate-50">
+              <thead className="border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314]">
                 <tr>
-                  <th className="p-4 pl-6 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                  <th className="p-4 pl-6 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                     Nama Departemen
                   </th>
-                  <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                  <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                     Kode
                   </th>
-                  <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                  <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                     Deskripsi
                   </th>
-                  <th className="p-4 pr-6 text-right text-xs font-bold tracking-wider text-slate-500 uppercase">
+                  <th className="p-4 pr-6 text-right text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                     Aksi
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white text-sm font-medium text-zinc-900">
+              <tbody className="bg-white dark:bg-[#1e1f20] text-sm font-medium text-zinc-900 dark:text-zinc-100">
                 {departments.map((dept: Department) => (
                   <tr
                     key={dept.id}
-                    className="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50/50"
+                    className="border-b border-slate-100 dark:border-zinc-800 transition-colors last:border-0 hover:bg-slate-50/50 dark:hover:bg-[#131314]/50"
                   >
                     <td className="p-4 pl-6 font-bold">{dept.name}</td>
                     <td className="p-4">
-                      <span className="inline-block rounded-lg bg-slate-100 px-3 py-1 font-mono text-xs font-extrabold text-slate-700">
+                      <span className="inline-block rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono text-xs font-extrabold text-slate-700">
                         {dept.code}
                       </span>
                     </td>
-                    <td className="max-w-xs truncate p-4 text-sm text-slate-500">
+                    <td className="max-w-xs truncate p-4 text-sm text-slate-500 dark:text-zinc-400">
                       {dept.description || '-'}
                     </td>
                     <td className="p-4 pr-6 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleOpenDeptModal('edit', dept)}
-                          className="rounded-lg border border-transparent p-1.5 text-blue-600 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                          className="rounded-lg border border-transparent p-1.5 text-blue-600 dark:text-blue-400 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                           title="Edit"
                         >
                           <svg
@@ -301,7 +301,7 @@ export default function AdminServiceManagement() {
                         </button>
                         <button
                           onClick={() => handleDeleteDept(dept.id)}
-                          className="rounded-lg border border-transparent p-1.5 text-rose-600 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                          className="rounded-lg border border-transparent p-1.5 text-rose-600 dark:text-rose-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
                           title="Hapus"
                         >
                           <svg
@@ -331,7 +331,7 @@ export default function AdminServiceManagement() {
       {/* TAMPILAN JADWAL */}
       {servicesTab === 'schedules' && (
         <div className="space-y-6">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
             <div className="flex items-end gap-4">
               <div className="flex-1">
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
@@ -343,7 +343,7 @@ export default function AdminServiceManagement() {
                     setSelectedScheduleDeptFilter(e.target.value)
                     setSelectedDoctorFilter('')
                   }}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium transition-colors hover:border-slate-300 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] px-4 py-2 text-sm font-medium transition-colors hover:border-slate-300 dark:hover:border-zinc-600 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Pilih Departemen...</option>
                   {departments.map((dept: Department) => (
@@ -359,7 +359,7 @@ export default function AdminServiceManagement() {
                 <select
                   value={selectedDoctorFilter}
                   onChange={(e) => setSelectedDoctorFilter(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium transition-colors hover:border-slate-300 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] px-4 py-2 text-sm font-medium transition-colors hover:border-slate-300 dark:hover:border-zinc-600 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                   disabled={!selectedScheduleDeptFilter}
                 >
                   <option value="">Pilih Dokter...</option>
@@ -380,11 +380,11 @@ export default function AdminServiceManagement() {
           </div>
 
           {selectedDoctorFilter && (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-zinc-900">Jadwal Mingguan</h3>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Jadwal Mingguan</h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-zinc-400">
                     {
                       schedules.find((s: ScheduleItem) => s.doctorId === selectedDoctorFilter)
                         ?.doctor?.user?.name
@@ -410,32 +410,32 @@ export default function AdminServiceManagement() {
                 </div>
               ) : schedules.filter((s: ScheduleItem) => s.doctorId === selectedDoctorFilter)
                   .length === 0 ? (
-                <div className="py-8 text-center text-sm text-slate-500 italic">
+                <div className="py-8 text-center text-sm text-slate-500 dark:text-zinc-400 italic">
                   Tidak ada jadwal untuk dokter ini
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-left">
-                    <thead className="border-b border-slate-200 bg-slate-50">
+                    <thead className="border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314]">
                       <tr>
-                        <th className="p-4 pl-6 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                        <th className="p-4 pl-6 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                           Hari
                         </th>
-                        <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                        <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                           Jam Mulai
                         </th>
-                        <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                        <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                           Jam Selesai
                         </th>
-                        <th className="p-4 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                        <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                           Kapasitas
                         </th>
-                        <th className="p-4 pr-6 text-right text-xs font-bold tracking-wider text-slate-500 uppercase">
+                        <th className="p-4 pr-6 text-right text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                           Aksi
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white text-sm font-medium text-zinc-900">
+                    <tbody className="bg-white dark:bg-[#1e1f20] text-sm font-medium text-zinc-900 dark:text-zinc-100">
                       {schedules
                         .filter((s: ScheduleItem) => s.doctorId === selectedDoctorFilter)
                         .sort((a: ScheduleItem, b: ScheduleItem) => {
@@ -464,17 +464,17 @@ export default function AdminServiceManagement() {
                           return (
                             <tr
                               key={schedule.id}
-                              className="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50/50"
+                              className="border-b border-slate-100 dark:border-zinc-800 transition-colors last:border-0 hover:bg-slate-50/50 dark:hover:bg-[#131314]/50"
                             >
                               <td className="p-4 pl-6 font-bold">{dayNames[schedule.dayOfWeek]}</td>
-                              <td className="p-4 font-mono text-sm text-slate-500">
+                              <td className="p-4 font-mono text-sm text-slate-500 dark:text-zinc-400">
                                 {schedule.startTime}
                               </td>
-                              <td className="p-4 font-mono text-sm text-slate-500">
+                              <td className="p-4 font-mono text-sm text-slate-500 dark:text-zinc-400">
                                 {schedule.endTime}
                               </td>
                               <td className="p-4">
-                                <span className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+                                <span className="inline-flex items-center rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-3 py-1 text-xs font-bold text-slate-700">
                                   {schedule.capacity}
                                 </span>
                               </td>
@@ -482,14 +482,14 @@ export default function AdminServiceManagement() {
                                 <div className="flex items-center justify-end gap-2">
                                   <button
                                     onClick={() => handleOpenScheduleModal('edit', schedule)}
-                                    className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 transition-colors hover:border-blue-600 hover:bg-blue-600 hover:text-white"
+                                    className="rounded-lg border border-blue-100 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 px-3 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-400 transition-colors hover:border-blue-600 hover:bg-blue-600 hover:text-white"
                                     title="Edit"
                                   >
                                     Edit
                                   </button>
                                   <button
                                     onClick={() => handleDeleteSchedule(schedule.id)}
-                                    className="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 transition-colors hover:border-slate-500 hover:bg-slate-500 hover:text-white"
+                                    className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-zinc-400 transition-colors hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-zinc-8000 hover:text-white"
                                     title="Hapus"
                                   >
                                     Hapus
@@ -510,9 +510,9 @@ export default function AdminServiceManagement() {
 
       {/* MODAL DEPARTEMEN */}
       {isDeptModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-            <h2 className="mb-4 text-xl font-bold text-zinc-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-[#131314]/80 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#1e1f20] p-6 shadow-2xl">
+            <h2 className="mb-4 text-xl font-bold text-zinc-900 dark:text-zinc-100">
               {deptFormMode === 'add' ? 'Tambah Departemen' : 'Edit Departemen'}
             </h2>
             <div className="space-y-4">
@@ -525,7 +525,7 @@ export default function AdminServiceManagement() {
                   value={deptFormData.name}
                   onChange={(e) => setDeptFormData({ ...deptFormData, name: e.target.value })}
                   placeholder="Contoh: Poliklinik Umum"
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               <div>
@@ -537,7 +537,7 @@ export default function AdminServiceManagement() {
                   value={deptFormData.code}
                   onChange={(e) => setDeptFormData({ ...deptFormData, code: e.target.value })}
                   placeholder="Contoh: UMU"
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               <div>
@@ -551,14 +551,14 @@ export default function AdminServiceManagement() {
                   }
                   placeholder="Deskripsi departemen"
                   rows={3}
-                  className="w-full resize-none rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full resize-none rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={handleCloseDeptModal}
-                className="rounded-lg border border-slate-200 px-4 py-2 font-semibold text-slate-600 transition-colors hover:bg-slate-50"
+                className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 font-semibold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800"
               >
                 Batal
               </button>
@@ -575,9 +575,9 @@ export default function AdminServiceManagement() {
 
       {/* MODAL JADWAL */}
       {isScheduleModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-            <h2 className="mb-4 text-xl font-bold text-zinc-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-[#131314]/80 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#1e1f20] p-6 shadow-2xl">
+            <h2 className="mb-4 text-xl font-bold text-zinc-900 dark:text-zinc-100">
               {scheduleFormMode === 'add' ? 'Tambah Jadwal' : 'Edit Jadwal'}
             </h2>
             <div className="space-y-4">
@@ -588,7 +588,7 @@ export default function AdminServiceManagement() {
                   onChange={(e) =>
                     setScheduleFormData({ ...scheduleFormData, dayOfWeek: e.target.value })
                   }
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Pilih Hari...</option>
                   <option value="MONDAY">Senin</option>
@@ -608,7 +608,7 @@ export default function AdminServiceManagement() {
                   onChange={(e) =>
                     setScheduleFormData({ ...scheduleFormData, startTime: e.target.value })
                   }
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               <div>
@@ -621,7 +621,7 @@ export default function AdminServiceManagement() {
                   onChange={(e) =>
                     setScheduleFormData({ ...scheduleFormData, endTime: e.target.value })
                   }
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               <div>
@@ -633,14 +633,14 @@ export default function AdminServiceManagement() {
                   onChange={(e) =>
                     setScheduleFormData({ ...scheduleFormData, capacity: Number(e.target.value) })
                   }
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={handleCloseScheduleModal}
-                className="rounded-lg border border-slate-200 px-4 py-2 font-semibold text-slate-600 transition-colors hover:bg-slate-50"
+                className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 font-semibold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800"
               >
                 Batal
               </button>
