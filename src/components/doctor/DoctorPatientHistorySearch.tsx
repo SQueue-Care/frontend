@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import DoctorNotesDisplay from '../shared/DoctorNotesDisplay'
 import { usePatientStore } from '../../store/patientStore'
+import CustomSearchBar from '../ui/CustomSearchBar'
 
 export default function DoctorPatientHistorySearch() {
   const { patients, pagination, isLoading, medicalProfile, fetchPatients, fetchMedicalProfile } =
@@ -27,46 +28,47 @@ export default function DoctorPatientHistorySearch() {
   return (
     <div className="animate-in fade-in space-y-6 duration-500">
       <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950">Riwayat Pasien</h1>
-        <p className="text-slate-600">Cari pasien dan lihat kunjungan selesai beserta catatan dokter.</p>
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100 ">Riwayat Pasien</h1>
+        <p className="text-slate-600 transition-colors dark:text-zinc-300 ">Cari pasien dan lihat kunjungan selesai beserta catatan dokter.</p>
       </div>
 
-      <input
-        type="search"
-        value={search}
-        onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-        placeholder="Nama, email, NIK, atau nomor BPJS..."
-        className="w-full max-w-xl rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-      />
+      <div className="w-full max-w-xl">
+        <CustomSearchBar
+          label="Cari Pasien"
+          value={search}
+          onChange={(val) => { setSearch(val); setPage(1) }}
+          placeholder="Nama, email, NIK, atau nomor BPJS..."
+        />
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-1">
+        <div className="rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] shadow-sm lg:col-span-1">
           {isLoading && !patients.length ? (
             <div className="flex justify-center py-12">
               <div className="h-7 w-7 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
             </div>
           ) : patients.length === 0 ? (
-            <p className="py-12 text-center text-sm text-slate-500">Tidak ada pasien.</p>
+            <p className="py-12 text-center text-sm text-slate-500 transition-colors dark:text-zinc-400 ">Tidak ada pasien.</p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-100 transition-colors dark:divide-zinc-800 ">
               {patients.map((p) => (
                 <li key={p.id}>
                   <button
                     type="button"
                     onClick={() => handleSelect(p.id)}
                     className={`w-full px-4 py-3 text-left hover:bg-indigo-50/50 ${
-                      selectedId === p.id ? 'bg-indigo-50' : ''
+                      selectedId === p.id ? 'bg-indigo-50 transition-colors dark:bg-indigo-900/20 ' : ''
                     }`}
                   >
-                    <p className="font-bold text-zinc-900">{p.user.name}</p>
-                    <p className="text-xs text-slate-500">{p.nik || p.user.email}</p>
+                    <p className="font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">{p.user.name}</p>
+                    <p className="text-xs text-slate-500 transition-colors dark:text-zinc-400 ">{p.nik || p.user.email}</p>
                   </button>
                 </li>
               ))}
             </ul>
           )}
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex justify-center gap-2 border-t border-slate-100 py-3">
+            <div className="flex justify-center gap-2 border-t border-slate-100 transition-colors dark:border-zinc-800 py-3">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
@@ -74,7 +76,7 @@ export default function DoctorPatientHistorySearch() {
               >
                 ←
               </button>
-              <span className="text-xs text-slate-500">{page}/{pagination.totalPages}</span>
+              <span className="text-xs text-slate-500 transition-colors dark:text-zinc-400 ">{page}/{pagination.totalPages}</span>
               <button
                 disabled={page >= pagination.totalPages}
                 onClick={() => setPage((p) => p + 1)}
@@ -88,7 +90,7 @@ export default function DoctorPatientHistorySearch() {
 
         <div className="lg:col-span-2">
           {!selectedId ? (
-            <div className="flex min-h-[280px] items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-500">
+            <div className="flex min-h-[280px] items-center justify-center rounded-2xl border border-dashed border-slate-200 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] text-sm text-slate-500 transition-colors dark:text-zinc-400 ">
               Pilih pasien untuk melihat riwayat
             </div>
           ) : isLoading && !patient ? (
@@ -97,31 +99,31 @@ export default function DoctorPatientHistorySearch() {
             </div>
           ) : patient ? (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="text-lg font-bold text-zinc-900">{patient.user.name}</h2>
-                <p className="text-sm text-slate-500">
+              <div className="rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm">
+                <h2 className="text-lg font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">{patient.user.name}</h2>
+                <p className="text-sm text-slate-500 transition-colors dark:text-zinc-400 ">
                   {patient.bpjsNumber ? `BPJS: ${patient.bpjsNumber}` : 'Pasien umum'}
                   {patient.allergies && ` · Alergi: ${patient.allergies}`}
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h3 className="mb-3 font-bold text-zinc-900">Kunjungan Selesai ({history.length})</h3>
+              <div className="rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm">
+                <h3 className="mb-3 font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Kunjungan Selesai ({history.length})</h3>
                 {history.length === 0 ? (
-                  <p className="text-sm italic text-slate-500">Belum ada riwayat kunjungan selesai.</p>
+                  <p className="text-sm italic text-slate-500 transition-colors dark:text-zinc-400 ">Belum ada riwayat kunjungan selesai.</p>
                 ) : (
                   <ul className="space-y-4">
                     {history.map((visit) => (
-                      <li key={visit.id} className="rounded-xl border border-slate-100 bg-slate-50/80 p-4">
+                      <li key={visit.id} className="rounded-xl border border-slate-100 transition-colors dark:border-zinc-800 bg-slate-50/80 transition-colors dark:bg-[#131314]/80 p-4">
                         <div className="mb-2 flex justify-between gap-2">
                           <div>
-                            <p className="text-sm font-bold text-indigo-700">{visit.department?.name}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-sm font-bold text-indigo-700 transition-colors dark:text-indigo-400 ">{visit.department?.name}</p>
+                            <p className="text-xs text-slate-500 transition-colors dark:text-zinc-400 ">
                               {new Date(visit.queueDate).toLocaleDateString('id-ID')} · #{visit.queueNumber}
                             </p>
                           </div>
                           {visit.doctor?.user?.name && (
-                            <span className="text-xs font-semibold text-slate-600">{visit.doctor.user.name}</span>
+                            <span className="text-xs font-semibold text-slate-600 transition-colors dark:text-zinc-300 ">{visit.doctor.user.name}</span>
                           )}
                         </div>
                         <DoctorNotesDisplay doctorNotes={visit.doctorNotes} />

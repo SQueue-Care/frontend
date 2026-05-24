@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { QueueStatus } from '../../lib/types'
 import { useDashboardFilterStore } from '../../store/dashboardFilterStore'
 import { useQueueStore } from '../../store/queueStore'
+import CustomSearchBar from '../ui/CustomSearchBar'
 
 // Helper untuk styling status
 const statusStyles: Record<
@@ -131,28 +132,12 @@ export default function QueueManagementTable() {
         </div>
 
         <div className="flex w-full items-center lg:w-auto">
-          <div className="group relative w-full lg:w-80">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <svg
-                className="h-4.5 w-4.5 text-slate-400 dark:text-zinc-500 transition-colors duration-300 group-hover:text-teal-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                ></path>
-              </svg>
-            </div>
-            <input
-              type="text"
+          <div className="w-full lg:w-80">
+            <CustomSearchBar
+              label="Cari Pasien"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(val) => setSearchQuery(val)}
               placeholder="Cari ID Pasien, Nama..."
-              className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] py-2.5 pr-4 pl-10 text-sm font-medium text-zinc-900 dark:text-zinc-100 shadow-sm transition-all placeholder:text-slate-400 hover:border-teal-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 focus:outline-none"
             />
           </div>
         </div>

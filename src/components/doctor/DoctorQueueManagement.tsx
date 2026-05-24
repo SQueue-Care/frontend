@@ -30,12 +30,12 @@ const STATUS_LABEL: Record<QueueStatus, string> = {
 }
 
 const STATUS_CLASSES: Record<QueueStatus, string> = {
-  [QueueStatus.WAITING]: 'bg-slate-50 text-slate-700 border-slate-200',
+  [QueueStatus.WAITING]: 'bg-slate-50 transition-colors dark:bg-[#131314] text-slate-700 transition-colors dark:text-zinc-300 border-slate-200 transition-colors dark:border-zinc-800 ',
   [QueueStatus.CALLED]: 'bg-blue-50 text-blue-700 border-blue-200',
-  [QueueStatus.IN_PROGRESS]: 'bg-amber-50 text-amber-700 border-amber-200',
-  [QueueStatus.DONE]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  [QueueStatus.IN_PROGRESS]: 'bg-amber-50 transition-colors dark:bg-amber-500/10 text-amber-700 transition-colors dark:text-amber-400 border-amber-200 transition-colors dark:border-amber-500/20 ',
+  [QueueStatus.DONE]: 'bg-emerald-50 transition-colors dark:bg-emerald-500/10 text-emerald-700 border-emerald-200 transition-colors dark:border-emerald-500/20 ',
   [QueueStatus.SKIPPED]: 'bg-gray-50 text-gray-600 border-gray-200',
-  [QueueStatus.CANCELLED]: 'bg-rose-50 text-rose-700 border-rose-200',
+  [QueueStatus.CANCELLED]: 'bg-rose-50 transition-colors dark:bg-rose-500/10 text-rose-700 transition-colors dark:text-rose-400 border-rose-200 transition-colors dark:border-rose-500/20 ',
 }
 
 export default function DoctorQueueManagement() {
@@ -150,10 +150,10 @@ export default function DoctorQueueManagement() {
   return (
     <div className="animate-in fade-in space-y-6 duration-500">
       <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950">
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100 ">
           Terima Pasien
         </h1>
-        <p className="text-slate-600">
+        <p className="text-slate-600 transition-colors dark:text-zinc-300 ">
           Selamat datang, {user?.name}. Kelola pemeriksaan pasien dan lihat riwayat medis.
         </p>
       </div>
@@ -168,8 +168,8 @@ export default function DoctorQueueManagement() {
           onOpenCdss={setCdssQueue}
         />
       ) : (
-        <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center shadow-sm">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+        <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-10 text-center shadow-sm">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 transition-colors dark:bg-indigo-900/20 text-indigo-600 transition-colors dark:text-indigo-400 ">
             <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -179,22 +179,22 @@ export default function DoctorQueueManagement() {
               />
             </svg>
           </div>
-          <h2 className="font-['Manrope'] text-xl font-bold text-zinc-900">Belum ada pasien aktif</h2>
-          <p className="mt-2 max-w-md text-sm text-slate-500">
+          <h2 className="font-['Manrope'] text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Belum ada pasien aktif</h2>
+          <p className="mt-2 max-w-md text-sm text-slate-500 transition-colors dark:text-zinc-400 ">
             Panggil pasien dari daftar antrean di bawah untuk memulai pemeriksaan.
           </p>
         </div>
       )}
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
-            <h3 className="font-['Manrope'] text-lg font-bold text-zinc-900">Daftar Antrean</h3>
-            <p className="text-sm text-slate-500">
+            <h3 className="font-['Manrope'] text-lg font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Daftar Antrean</h3>
+            <p className="text-sm text-slate-500 transition-colors dark:text-zinc-400 ">
               Pasien menunggu di poli {profile?.department?.name || 'Anda'}
             </p>
           </div>
-          <span className="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700">
+          <span className="inline-flex items-center rounded-full border border-indigo-100 transition-colors dark:border-indigo-800/50 bg-indigo-50 transition-colors dark:bg-indigo-900/20 px-3 py-1 text-xs font-bold text-indigo-700 transition-colors dark:text-indigo-400 ">
             {activeCount} aktif
           </span>
         </div>
@@ -204,23 +204,23 @@ export default function DoctorQueueManagement() {
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600" />
           </div>
         ) : errorTable ? (
-          <div className="py-8 text-center text-sm font-medium text-rose-600">{errorTable}</div>
+          <div className="py-8 text-center text-sm font-medium text-rose-600 transition-colors dark:text-rose-400 ">{errorTable}</div>
         ) : departmentQueues.length === 0 ? (
-          <div className="py-8 text-center text-sm text-slate-500 italic">
+          <div className="py-8 text-center text-sm text-slate-500 transition-colors dark:text-zinc-400 italic">
             Belum ada antrean untuk departemen Anda hari ini.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="border-b border-slate-100 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <tr className="border-b border-slate-100 transition-colors dark:border-zinc-800 text-xs font-bold tracking-wider text-slate-500 transition-colors dark:text-zinc-400 uppercase">
                   <th className="p-3 pl-0">No. Antrean</th>
                   <th className="p-3">Nama Pasien</th>
                   <th className="p-3">Status</th>
                   <th className="p-3 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-sm font-medium text-zinc-900">
+              <tbody className="divide-y divide-slate-100 transition-colors dark:divide-zinc-800 text-sm font-medium text-zinc-900 transition-colors dark:text-zinc-100 ">
                 {departmentQueues.map((queue) => {
                   const isCurrent = queue.id === activePatientQueue?.id
                   const isBlocked =
@@ -239,7 +239,7 @@ export default function DoctorQueueManagement() {
                           : 'hover:bg-slate-50/70'
                       }`}
                     >
-                      <td className="p-3 pl-0 font-mono font-bold text-zinc-900">
+                      <td className="p-3 pl-0 font-mono font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">
                         {queue.department?.code || 'XX'}-{queue.queueNumber}
                         {isCurrent && (
                           <span className="ml-2 rounded bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
@@ -261,7 +261,7 @@ export default function DoctorQueueManagement() {
                             <button
                               type="button"
                               onClick={() => setCdssQueue(queue)}
-                              className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-600 transition-colors hover:bg-violet-100"
+                              className="rounded-lg border border-violet-200 bg-violet-50 transition-colors dark:bg-violet-900/20 px-3 py-1.5 text-[11px] font-bold text-violet-600 transition-colors dark:text-violet-400 transition-colors hover:bg-violet-100"
                             >
                               CDSS
                             </button>
@@ -277,7 +277,7 @@ export default function DoctorQueueManagement() {
                             <button
                               type="button"
                               onClick={() => setNotesQueue(queue)}
-                              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-700 transition-colors hover:bg-amber-100"
+                              className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-3 py-1.5 text-[11px] font-bold text-amber-700 transition-colors dark:text-amber-400 transition-colors hover:bg-amber-100"
                             >
                               Catatan
                             </button>
@@ -318,7 +318,7 @@ export default function DoctorQueueManagement() {
                             <button
                               type="button"
                               onClick={() => handleCancelQueue(queue.id, queue.status)}
-                              className="rounded-lg border border-transparent p-1.5 text-slate-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+                              className="rounded-lg border border-transparent p-1.5 text-slate-400 transition-colors dark:text-zinc-500 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
                               title="Batalkan antrean"
                             >
                               <svg
@@ -347,9 +347,9 @@ export default function DoctorQueueManagement() {
         )}
 
         {waitingQueues.length > 0 && !activePatientQueue && (
-          <p className="mt-4 text-xs text-slate-500">
+          <p className="mt-4 text-xs text-slate-500 transition-colors dark:text-zinc-400 ">
             {waitingQueues.length} pasien menunggu · Panggil nomor{' '}
-            <span className="font-bold text-indigo-700">
+            <span className="font-bold text-indigo-700 transition-colors dark:text-indigo-400 ">
               {waitingQueues[0]?.department?.code}-{waitingQueues[0]?.queueNumber}
             </span>{' '}
             untuk memulai

@@ -15,6 +15,8 @@ import { VISIT_STAGE_LABELS } from '../../lib/queueVisitFlow'
 import { useAlertStore } from '../../store/alertStore'
 import { useDepartmentStore } from '../../store/departmentStore'
 import { useQueueStore } from '../../store/queueStore'
+import CustomSearchBar from '../ui/CustomSearchBar'
+import CustomSelect from '../ui/CustomSelect'
 
 export default function AdminQueueManagement() {
   const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore()
@@ -90,82 +92,45 @@ export default function AdminQueueManagement() {
       <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
         {/* AREA FILTER & SEARCH (Identik dengan Reservasi) */}
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <div className="relative w-full md:w-72">
-            <input
-              type="text"
-              placeholder="Cari nama, NIK, atau no antrean..."
+          <div className="w-full md:w-72">
+            <CustomSearchBar
+              label="Cari Antrean"
               value={queueSearchQuery}
-              onChange={(e) => setQueueSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+              onChange={(val) => setQueueSearchQuery(val)}
+              placeholder="Cari nama, NIK, atau no antrean..."
             />
-            <div className="absolute top-3.5 right-3 text-slate-400 dark:text-zinc-500">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                ></path>
-              </svg>
-            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <div className="relative min-w-[200px]">
-              <label className="absolute -top-2.5 left-3 z-10 bg-white dark:bg-[#1e1f20] px-1.5 text-[11px] font-bold tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
-                Filter Departemen
-              </label>
-              <select
+            <div className="min-w-[200px]">
+              <CustomSelect
+                label="Filter Departemen"
                 value={selectedDepartmentFilter}
-                onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
-                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
-              >
-                <option value="">Semua Departemen</option>
-                {departments.map((dept: Department) => (
-                  <option key={dept.id} value={dept.id}>
-                    {dept.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400 dark:text-zinc-500">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
+                onChange={(val) => setSelectedDepartmentFilter(val)}
+                options={[
+                  { value: '', label: 'Semua Departemen' },
+                  ...departments.map((dept: Department) => ({ value: dept.id, label: dept.name })),
+                ]}
+                placeholder="Semua Departemen"
+              />
             </div>
 
-            <div className="relative min-w-[200px]">
-              <label className="absolute -top-2.5 left-3 z-10 bg-white dark:bg-[#1e1f20] px-1.5 text-[11px] font-bold tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
-                Status Antrean
-              </label>
-              <select
+            <div className="min-w-[200px]">
+              <CustomSelect
+                label="Status Antrean"
                 value={selectedStatusFilter}
-                onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
-              >
-                <option value="">Semua Status</option>
-                <option value="WAITING">Menunggu</option>
-                <option value="CALLED">Dipanggil</option>
-                <option value="IN_PROGRESS">Diperiksa</option>
-                <option value="DONE">Selesai</option>
-                <option value="SKIPPED">Dilewati</option>
-                <option value="CANCELLED">Dibatalkan</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400 dark:text-zinc-500">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
+                onChange={(val) => setSelectedStatusFilter(val)}
+                options={[
+                  { value: '', label: 'Semua Status' },
+                  { value: 'WAITING', label: 'Menunggu' },
+                  { value: 'CALLED', label: 'Dipanggil' },
+                  { value: 'IN_PROGRESS', label: 'Diperiksa' },
+                  { value: 'DONE', label: 'Selesai' },
+                  { value: 'SKIPPED', label: 'Dilewati' },
+                  { value: 'CANCELLED', label: 'Dibatalkan' },
+                ]}
+                placeholder="Semua Status"
+              />
             </div>
           </div>
         </div>

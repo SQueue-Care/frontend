@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import DoctorNotesDisplay from '../shared/DoctorNotesDisplay'
 import { usePatientStore } from '../../store/patientStore'
 
+import CustomSearchBar from '../ui/CustomSearchBar'
+
 export default function AdminPatientsManagement() {
   const { patients, pagination, isLoading, medicalProfile, fetchPatients, fetchMedicalProfile } =
     usePatientStore()
@@ -30,13 +32,12 @@ export default function AdminPatientsManagement() {
         <p className="text-slate-600 dark:text-zinc-400">Cari pasien terdaftar dan lihat profil serta ringkasan kunjungan.</p>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <input
-          type="search"
+      <div className="w-full sm:w-96">
+        <CustomSearchBar
+          label="Pencarian"
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+          onChange={(val) => { setSearch(val); setPage(1) }}
           placeholder="Cari nama, email, NIK, atau BPJS..."
-          className="flex-1 rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
         />
       </div>
 

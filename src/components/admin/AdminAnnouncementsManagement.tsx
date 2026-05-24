@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAlertStore } from '../../store/alertStore'
 import { useNotificationStore, type Announcement } from '../../store/notificationStore'
+import CustomInput from '../ui/CustomInput'
+import CustomSelect from '../ui/CustomSelect'
 
 const CATEGORY_LABELS: Record<string, string> = {
   info: 'Informasi',
@@ -155,60 +157,59 @@ export default function AdminAnnouncementsManagement() {
             {editing ? 'Edit Pengumuman' : 'Pengumuman Baru'}
           </h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block sm:col-span-2">
-              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Judul</span>
-              <input
+            <div className="sm:col-span-2">
+              <CustomInput
+                label="Judul"
                 value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
+                onChange={(val) => setForm((f) => ({ ...f, title: val }))}
                 placeholder="Contoh: Libur Nasional — Jam Operasional"
               />
-            </label>
-            <label className="block sm:col-span-2">
-              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Isi Pengumuman</span>
-              <textarea
+            </div>
+            <div className="sm:col-span-2">
+              <CustomInput
+                label="Isi Pengumuman"
                 value={form.body}
-                onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
-                rows={4}
-                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
+                onChange={(val) => setForm((f) => ({ ...f, body: val }))}
                 placeholder="Tuliskan detail pengumuman..."
+                multiline={true}
+                rows={4}
               />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Kategori</span>
-              <select
+            </div>
+            <div>
+              <CustomSelect
+                label="Kategori"
                 value={form.category}
-                onChange={(e) =>
+                onChange={(val) =>
                   setForm((f) => ({
                     ...f,
-                    category: e.target.value as Announcement['category'],
+                    category: val as Announcement['category'],
                   }))
                 }
-                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
-              >
-                <option value="info">Informasi</option>
-                <option value="warning">Penting</option>
-                <option value="service">Layanan</option>
-              </select>
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Target</span>
-              <select
+                options={[
+                  { value: 'info', label: 'Informasi' },
+                  { value: 'warning', label: 'Penting' },
+                  { value: 'service', label: 'Layanan' },
+                ]}
+              />
+            </div>
+            <div>
+              <CustomSelect
+                label="Target"
                 value={form.targetRole}
-                onChange={(e) =>
+                onChange={(val) =>
                   setForm((f) => ({
                     ...f,
-                    targetRole: e.target.value as 'ALL' | 'PATIENT' | 'DOCTOR' | 'ADMIN',
+                    targetRole: val as 'ALL' | 'PATIENT' | 'DOCTOR' | 'ADMIN',
                   }))
                 }
-                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2.5 text-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-white"
-              >
-                <option value="ALL">Semua Pengguna</option>
-                <option value="PATIENT">Pasien</option>
-                <option value="DOCTOR">Dokter</option>
-                <option value="ADMIN">Admin</option>
-              </select>
-            </label>
+                options={[
+                  { value: 'ALL', label: 'Semua Pengguna' },
+                  { value: 'PATIENT', label: 'Pasien' },
+                  { value: 'DOCTOR', label: 'Dokter' },
+                  { value: 'ADMIN', label: 'Admin' },
+                ]}
+              />
+            </div>
             <label className="block">
               <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Aktif Dari</span>
               <input

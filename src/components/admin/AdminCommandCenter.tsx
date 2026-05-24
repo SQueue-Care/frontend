@@ -10,6 +10,7 @@ import QueuePerformanceChart from '../analytics/QueuePerformanceChart'
 import TotalPatientsStat from '../analytics/TotalPatientsStat'
 import WaitTimeStat from '../analytics/WaitTimeStat'
 import StatCard from '../ui/StatCard'
+import CustomSelect from '../ui/CustomSelect'
 
 export default function AdminCommandCenter() {
   const [analyticsDays, setAnalyticsDays] = useState(1)
@@ -53,29 +54,17 @@ export default function AdminCommandCenter() {
         </div>
 
         {/* Dropdown Filter Poliklinik */}
-        <div className="group relative w-full md:w-64">
-          <select
+        <div className="w-full md:w-64">
+          <CustomSelect
+            label="Filter Poliklinik"
             value={selectedDepartment}
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="relative z-10 block w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] px-4 py-2.5 text-sm font-bold text-zinc-800 dark:text-zinc-200 shadow-sm transition-all hover:border-teal-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 focus:outline-none"
-          >
-            <option value="">Semua Poliklinik</option>
-            {departments.map((dept) => (
-              <option key={dept.id} value={dept.id}>
-                {dept.name}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-20 flex items-center pr-3 text-slate-400 dark:text-zinc-500 transition-colors group-hover:text-teal-500">
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </div>
+            onChange={(val) => setSelectedDepartment(val)}
+            options={[
+              { value: '', label: 'Semua Poliklinik' },
+              ...departments.map((dept) => ({ value: dept.id, label: dept.name })),
+            ]}
+            placeholder="Semua Poliklinik"
+          />
         </div>
       </div>
 
@@ -110,15 +99,19 @@ export default function AdminCommandCenter() {
             <h3 className="font-['Manrope'] font-extrabold text-zinc-950 dark:text-zinc-100">
               Analitik Performa Antrean
             </h3>
-            <select
-              value={analyticsDays}
-              onChange={(e) => setAnalyticsDays(parseInt(e.target.value))}
-              className="cursor-pointer rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-zinc-400 transition-colors outline-none focus:ring-2 focus:ring-teal-500"
-            >
-              <option value="1">Hari Ini</option>
-              <option value="7">7 Hari Terakhir</option>
-              <option value="30">30 Hari Terakhir</option>
-            </select>
+            <div className="w-48">
+              <CustomSelect
+                label="Rentang Waktu"
+                value={analyticsDays.toString()}
+                onChange={(val) => setAnalyticsDays(parseInt(val, 10))}
+                options={[
+                  { value: '1', label: 'Hari Ini' },
+                  { value: '7', label: '7 Hari Terakhir' },
+                  { value: '30', label: '30 Hari Terakhir' },
+                ]}
+                placeholder="Hari Ini"
+              />
+            </div>
           </div>
           <div className="flex-1">
             <QueuePerformanceChart days={analyticsDays} />

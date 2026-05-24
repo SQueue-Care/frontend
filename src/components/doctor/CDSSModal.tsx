@@ -73,12 +73,12 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
   const getUrgencyBadgeClasses = (urgency?: string) => {
     switch (urgency) {
       case 'high':
-        return 'bg-rose-50 text-rose-600 border-rose-200'
+        return 'bg-rose-50 transition-colors dark:bg-rose-500/10 text-rose-600 transition-colors dark:text-rose-400 border-rose-200 transition-colors dark:border-rose-500/20 '
       case 'medium':
-        return 'bg-amber-50 text-amber-600 border-amber-200'
+        return 'bg-amber-50 transition-colors dark:bg-amber-500/10 text-amber-600 transition-colors dark:text-amber-400 border-amber-200 transition-colors dark:border-amber-500/20 '
       case 'low':
       default:
-        return 'bg-emerald-50 text-emerald-600 border-emerald-200'
+        return 'bg-emerald-50 transition-colors dark:bg-emerald-500/10 text-emerald-600 transition-colors dark:text-emerald-400 border-emerald-200 transition-colors dark:border-emerald-500/20 '
     }
   }
 
@@ -89,13 +89,13 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-lg">
+        <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white transition-colors dark:bg-[#1e1f20] shadow-lg">
           {/* Header */}
-          <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-            <h2 className="text-xl font-bold text-zinc-900">🧠 Analisis CDSS</h2>
+          <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] px-6 py-4">
+            <h2 className="text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">🧠 Analisis CDSS</h2>
             <button
               onClick={onClose}
-              className="text-slate-400 transition-colors hover:text-slate-600"
+              className="text-slate-400 transition-colors dark:text-zinc-500 transition-colors hover:text-slate-600"
             >
               ✕
             </button>
@@ -105,14 +105,14 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
           <div className="space-y-6 p-6">
             {/* Notes Input */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-zinc-700">
+              <label className="mb-2 block text-sm font-semibold text-zinc-700 transition-colors dark:text-zinc-300 ">
                 Catatan Pasien
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 disabled={isLoading}
-                className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-zinc-800 placeholder-slate-400 transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none disabled:bg-slate-50"
+                className="w-full rounded-lg border border-slate-200 transition-colors dark:border-zinc-800 px-4 py-3 text-sm text-zinc-800 transition-colors dark:text-zinc-200 placeholder-slate-400 transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none disabled:bg-slate-50"
                 rows={5}
                 placeholder="Masukkan keluhan/catatan pasien..."
               />
@@ -138,7 +138,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
 
             {/* Existing result indicator */}
             {hasExistingResult && (
-              <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-center">
+              <div className="rounded-lg border border-emerald-200 transition-colors dark:border-emerald-500/20 bg-emerald-50 transition-colors dark:bg-emerald-500/10 p-3 text-center">
                 <p className="text-sm font-semibold text-emerald-700">
                   ✓ Hasil analisis sudah ada di database
                 </p>
@@ -147,8 +147,8 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
 
             {/* Error Message */}
             {error && (
-              <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3">
-                <p className="text-sm font-medium text-rose-600">❌ {error}</p>
+              <div className="rounded-lg border border-rose-200 transition-colors dark:border-rose-500/20 bg-rose-50 transition-colors dark:bg-rose-500/10 px-4 py-3">
+                <p className="text-sm font-medium text-rose-600 transition-colors dark:text-rose-400 ">❌ {error}</p>
               </div>
             )}
 
@@ -157,18 +157,18 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
               <>
                 {/* Candidates */}
                 <div>
-                  <h3 className="mb-3 text-sm font-bold tracking-widest text-zinc-700 uppercase">
+                  <h3 className="mb-3 text-sm font-bold tracking-widest text-zinc-700 transition-colors dark:text-zinc-300 uppercase">
                     Kandidat Diagnosis
                   </h3>
                   <div className="space-y-3">
                     {result.candidates.map((candidate, idx) => (
                       <div
                         key={idx}
-                        className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 transition-colors hover:bg-slate-100/50"
+                        className="rounded-lg border border-slate-200 transition-colors dark:border-zinc-800 bg-slate-50/50 transition-colors dark:bg-[#131314]/50 p-4 transition-colors hover:bg-slate-100/50"
                       >
                         <div className="mb-2 flex items-start justify-between">
                           <div className="flex-1">
-                            <p className="font-bold text-zinc-900">
+                            <p className="font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">
                               {idx + 1}. {candidate.diagnosis}
                             </p>
                           </div>
@@ -187,8 +187,8 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
                         {/* Confidence Bar */}
                         <div className="mb-3">
                           <div className="mb-1 flex items-center justify-between">
-                            <span className="text-xs text-slate-600">Confidence</span>
-                            <span className="text-xs font-bold text-slate-700">
+                            <span className="text-xs text-slate-600 transition-colors dark:text-zinc-300 ">Confidence</span>
+                            <span className="text-xs font-bold text-slate-700 transition-colors dark:text-zinc-300 ">
                               {Math.round(candidate.confidence * 100)}%
                             </span>
                           </div>
@@ -201,25 +201,25 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
                         </div>
 
                         {/* Reasoning */}
-                        <p className="mb-2 text-sm text-slate-600">{candidate.reasoning}</p>
+                        <p className="mb-2 text-sm text-slate-600 transition-colors dark:text-zinc-300 ">{candidate.reasoning}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Disclaimer */}
-                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
-                  <p className="text-xs text-amber-700">⚠️ {result.disclaimer}</p>
+                <div className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-4 py-3">
+                  <p className="text-xs text-amber-700 transition-colors dark:text-amber-400 ">⚠️ {result.disclaimer}</p>
                 </div>
               </>
             )}
           </div>
 
           {/* Footer */}
-          <div className="sticky bottom-0 flex justify-end border-t border-slate-200 bg-white px-6 py-4">
+          <div className="sticky bottom-0 flex justify-end border-t border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] px-6 py-4">
             <button
               onClick={onClose}
-              className="rounded-lg bg-slate-100 px-6 py-2 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-200"
+              className="rounded-lg bg-slate-100 transition-colors dark:bg-[#1e1f20] px-6 py-2 text-sm font-bold text-slate-700 transition-colors dark:text-zinc-300 transition-colors hover:bg-slate-200"
             >
               Tutup
             </button>

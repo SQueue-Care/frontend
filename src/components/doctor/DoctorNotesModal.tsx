@@ -62,18 +62,18 @@ function DoctorNotesModalContent({
     <>
       <div className="fixed inset-0 z-40 bg-black/50 transition-opacity" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-lg">
-          <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
+        <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white transition-colors dark:bg-[#1e1f20] shadow-lg">
+          <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] px-6 py-4">
             <div>
-              <h2 className="text-xl font-bold text-zinc-900">Catatan Dokter</h2>
-              <p className="text-sm text-slate-500">
+              <h2 className="text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Catatan Dokter</h2>
+              <p className="text-sm text-slate-500 transition-colors dark:text-zinc-400 ">
                 {queue.patient?.user?.name || 'Pasien'} · No.{' '}
                 {queue.department?.code || 'XX'}-{queue.queueNumber}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="text-slate-400 transition-colors hover:text-slate-600"
+              className="text-slate-400 transition-colors dark:text-zinc-500 transition-colors hover:text-slate-600"
               type="button"
             >
               ✕
@@ -82,58 +82,58 @@ function DoctorNotesModalContent({
 
           <div className="space-y-5 p-6">
             {!canEdit && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              <div className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-800">
                 Catatan dokter hanya dapat diisi saat pasien dipanggil, sedang diperiksa, atau
                 setelah pemeriksaan selesai.
               </div>
             )}
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-zinc-700">Diagnosis</label>
+              <label className="mb-2 block text-sm font-semibold text-zinc-700 transition-colors dark:text-zinc-300 ">Diagnosis</label>
               <textarea
                 value={diagnosis}
                 onChange={(e) => setDiagnosis(e.target.value)}
                 disabled={!canEdit || isSaving}
-                className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-zinc-800 placeholder-slate-400 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none disabled:bg-slate-50"
+                className="w-full rounded-lg border border-slate-200 transition-colors dark:border-zinc-800 px-4 py-3 text-sm text-zinc-800 transition-colors dark:text-zinc-200 placeholder-slate-400 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none disabled:bg-slate-50"
                 rows={3}
                 placeholder="Contoh: ISPA ringan, hipertensi terkontrol..."
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-zinc-700">
+              <label className="mb-2 block text-sm font-semibold text-zinc-700 transition-colors dark:text-zinc-300 ">
                 Cara Makan Obat
               </label>
               <textarea
                 value={medicationInstructions}
                 onChange={(e) => setMedicationInstructions(e.target.value)}
                 disabled={!canEdit || isSaving}
-                className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-zinc-800 placeholder-slate-400 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none disabled:bg-slate-50"
+                className="w-full rounded-lg border border-slate-200 transition-colors dark:border-zinc-800 px-4 py-3 text-sm text-zinc-800 transition-colors dark:text-zinc-200 placeholder-slate-400 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none disabled:bg-slate-50"
                 rows={3}
                 placeholder="Contoh: Paracetamol 500 mg, 3x sehari setelah makan..."
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-zinc-700">
+              <label className="mb-2 block text-sm font-semibold text-zinc-700 transition-colors dark:text-zinc-300 ">
                 Saran & Pengingat
               </label>
               <textarea
                 value={advice}
                 onChange={(e) => setAdvice(e.target.value)}
                 disabled={!canEdit || isSaving}
-                className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-zinc-800 placeholder-slate-400 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none disabled:bg-slate-50"
+                className="w-full rounded-lg border border-slate-200 transition-colors dark:border-zinc-800 px-4 py-3 text-sm text-zinc-800 transition-colors dark:text-zinc-200 placeholder-slate-400 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none disabled:bg-slate-50"
                 rows={3}
                 placeholder="Contoh: Istirahat cukup, minum air putih, kontrol jika demam &gt; 3 hari..."
               />
             </div>
 
             {queue.notes?.trim() && (
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <p className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+              <div className="rounded-lg border border-slate-200 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] p-4">
+                <p className="mb-1 text-xs font-bold tracking-wider text-slate-500 transition-colors dark:text-zinc-400 uppercase">
                   Keluhan awal pasien
                 </p>
-                <p className="text-sm whitespace-pre-wrap text-slate-700">{queue.notes}</p>
+                <p className="text-sm whitespace-pre-wrap text-slate-700 transition-colors dark:text-zinc-300 ">{queue.notes}</p>
               </div>
             )}
 

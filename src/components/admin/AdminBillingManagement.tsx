@@ -3,6 +3,7 @@ import { formatRupiah } from '../../lib/formatCurrency'
 import type { Bill, BillStatus } from '../../lib/types'
 import { useAlertStore } from '../../store/alertStore'
 import { useBillingStore } from '../../store/billingStore'
+import CustomInput from '../ui/CustomInput'
 
 type BillFilter = 'all' | 'unpaid' | 'bpjs' | 'paid'
 
@@ -217,11 +218,10 @@ export default function AdminBillingManagement() {
           <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#1e1f20] p-6 shadow-xl">
             <h3 className="text-lg font-extrabold text-zinc-900 dark:text-zinc-100">Verifikasi BPJS</h3>
             <p className="mt-1 text-sm text-slate-600 dark:text-zinc-400">{selectedBill.patient?.user?.name}</p>
-            <label className="mt-4 block text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase">Nomor SEP</label>
-            <input
+            <CustomInput
+              label="Nomor SEP"
               value={sepNumber}
-              onChange={(e) => setSepNumber(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-3 py-2 text-sm"
+              onChange={(val) => setSepNumber(val)}
               placeholder="Contoh: 0123R00101234567890"
             />
             <div className="mt-5 flex justify-end gap-2">

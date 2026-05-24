@@ -6,6 +6,10 @@ import type { AppointmentDetail, AppointmentStatusPayload, Department } from '..
 import { useAlertStore } from '../../store/alertStore'
 import { useDepartmentStore } from '../../store/departmentStore'
 
+// Impor komponen Custom UI
+import CustomSearchBar from '../ui/CustomSearchBar'
+import CustomSelect from '../ui/CustomSelect'
+
 export default function AdminAppointmentManagement() {
   const { departments } = useDepartmentStore()
   const showAlert = useAlertStore((s) => s.showAlert)
@@ -101,80 +105,43 @@ export default function AdminAppointmentManagement() {
       <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
         {/* AREA FILTER & SEARCH */}
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <div className="relative w-full md:w-72">
-            <input
-              type="text"
-              placeholder="Cari nama pasien atau NIK..."
+          <div className="w-full md:w-72">
+            <CustomSearchBar
+              label="Cari Reservasi"
               value={appointmentSearchQuery}
-              onChange={(e) => setAppointmentSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+              onChange={(val) => setAppointmentSearchQuery(val)}
+              placeholder="Cari nama pasien atau NIK..."
             />
-            <div className="absolute top-3.5 right-3 text-slate-400 dark:text-zinc-500">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                ></path>
-              </svg>
-            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <div className="relative min-w-[200px]">
-              <label className="absolute -top-2.5 left-3 z-10 bg-white dark:bg-[#1e1f20] px-1.5 text-[11px] font-bold tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
-                Filter Departemen
-              </label>
-              <select
+            <div className="min-w-[200px] flex-1">
+              <CustomSelect
+                label="Filter Departemen"
                 value={selectedDepartmentFilter}
-                onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
-                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
-              >
-                <option value="">Semua Departemen</option>
-                {departments.map((dept: Department) => (
-                  <option key={dept.id} value={dept.id}>
-                    {dept.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400 dark:text-zinc-500">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
+                onChange={(val) => setSelectedDepartmentFilter(val)}
+                options={[
+                  { value: '', label: 'Semua Departemen' },
+                  ...departments.map((dept: Department) => ({ value: dept.id, label: dept.name })),
+                ]}
+                placeholder="Semua Departemen"
+              />
             </div>
 
-            <div className="relative min-w-[200px]">
-              <label className="absolute -top-2.5 left-3 z-10 bg-white dark:bg-[#1e1f20] px-1.5 text-[11px] font-bold tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
-                Status Reservasi
-              </label>
-              <select
+            <div className="min-w-[200px] flex-1">
+              <CustomSelect
+                label="Status Reservasi"
                 value={selectedStatusFilter}
-                onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                className="relative z-0 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-4 py-3 pr-10 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
-              >
-                <option value="">Semua Status</option>
-                <option value="BOOKED">Menunggu Konfirmasi</option>
-                <option value="CONFIRMED">Terkonfirmasi</option>
-                <option value="COMPLETED">Selesai</option>
-                <option value="CANCELLED">Dibatalkan</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center px-4 text-slate-400 dark:text-zinc-500">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
+                onChange={(val) => setSelectedStatusFilter(val)}
+                options={[
+                  { value: '', label: 'Semua Status' },
+                  { value: 'BOOKED', label: 'Menunggu Konfirmasi' },
+                  { value: 'CONFIRMED', label: 'Terkonfirmasi' },
+                  { value: 'COMPLETED', label: 'Selesai' },
+                  { value: 'CANCELLED', label: 'Dibatalkan' },
+                ]}
+                placeholder="Semua Status"
+              />
             </div>
           </div>
         </div>
@@ -235,12 +202,12 @@ export default function AdminAppointmentManagement() {
                         </div>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700">
+                        <div className="font-bold text-slate-700 dark:text-slate-300">
                           {apt.doctor?.user?.name || '-'}
                         </div>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700">
+                        <div className="font-bold text-slate-700 dark:text-slate-300">
                           {new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
                             year: 'numeric',
                             month: 'short',
@@ -262,7 +229,7 @@ export default function AdminAppointmentManagement() {
                         </div>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700">
+                        <div className="font-bold text-slate-700 dark:text-slate-300">
                           {apt.department?.name || '-'}
                         </div>
                       </td>
@@ -279,7 +246,7 @@ export default function AdminAppointmentManagement() {
                             <>
                               <button
                                 onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
-                                className="rounded-lg border border-transparent p-1.5 text-emerald-600 dark:text-emerald-400 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+                                className="rounded-lg border border-transparent p-1.5 text-emerald-600 dark:text-emerald-400 transition-colors hover:border-emerald-200 hover:bg-emerald-50 dark:hover:border-emerald-500/30 dark:hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-300"
                                 title="Konfirmasi"
                               >
                                 <svg
@@ -298,7 +265,7 @@ export default function AdminAppointmentManagement() {
                               </button>
                               <button
                                 onClick={() => handleUpdateAppointmentStatus(apt.id, 'CANCELLED')}
-                                className="rounded-lg border border-transparent p-1.5 text-rose-600 dark:text-rose-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                                className="rounded-lg border border-transparent p-1.5 text-rose-600 dark:text-rose-400 transition-colors hover:border-rose-200 hover:bg-rose-50 dark:hover:border-rose-500/30 dark:hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300"
                                 title="Batalkan"
                               >
                                 <svg
@@ -372,13 +339,13 @@ export default function AdminAppointmentManagement() {
                   </div>
                   <div className="mt-1 text-xs font-medium text-slate-500 dark:text-zinc-400">
                     NIK:{' '}
-                    <span className="font-mono font-bold text-slate-700">
+                    <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
                       {selectedAptDetail.patient?.nik || '-'}
                     </span>
                   </div>
                   <div className="text-xs font-medium text-slate-500 dark:text-zinc-400">
                     BPJS:{' '}
-                    <span className="font-mono font-bold text-slate-700">
+                    <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
                       {selectedAptDetail.patient?.bpjsNumber || 'Tidak Ada (Mandiri)'}
                     </span>
                   </div>

@@ -4,6 +4,7 @@ import { getErrorMessage } from '../../lib/errors'
 import { useAlertStore } from '../../store/alertStore'
 import { useAuthStore } from '../../store/authStore'
 import { useDoctorStore } from '../../store/doctorStore'
+import CustomInput from '../ui/CustomInput'
 
 export default function DoctorProfileSettings() {
   const user = useAuthStore((state) => state.user)
@@ -73,26 +74,26 @@ export default function DoctorProfileSettings() {
   return (
     <div className="animate-in fade-in flex w-full flex-col items-stretch gap-6 duration-500 lg:flex-row">
       {/* KARTU KIRI: FORMULIR PROFIL */}
-      <div className="flex w-full shrink-0 flex-col justify-between rounded-2xl border border-slate-200 bg-white p-8 shadow-sm lg:w-[460px]">
+      <div className="flex w-full shrink-0 flex-col justify-between rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-8 shadow-sm lg:w-[460px]">
         {isLoadingProfile ? (
-          <div className="my-auto py-10 text-center font-medium text-slate-500">
+          <div className="my-auto py-10 text-center font-medium text-slate-500 transition-colors dark:text-zinc-400 ">
             Memuat data profil dokter...
           </div>
         ) : (
           <>
-            <div className="mb-6 flex shrink-0 items-center justify-between border-b border-slate-100 pb-6">
+            <div className="mb-6 flex shrink-0 items-center justify-between border-b border-slate-100 transition-colors dark:border-zinc-800 pb-6">
               <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-2xl font-bold text-indigo-700">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-100 transition-colors dark:bg-indigo-900/30 text-2xl font-bold text-indigo-700 transition-colors dark:text-indigo-400 ">
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
                 </div>
                 <div>
-                  <h2 className="text-lg leading-tight font-bold text-zinc-900">
+                  <h2 className="text-lg leading-tight font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">
                     {user?.name || 'Nama Dokter'}
                   </h2>
-                  <p className="mt-0.5 text-xs font-medium text-slate-500">
+                  <p className="mt-0.5 text-xs font-medium text-slate-500 transition-colors dark:text-zinc-400 ">
                     {profile?.department?.name || 'Departemen Belum Ditentukan'}
                   </p>
-                  <span className="mt-2 inline-block rounded bg-emerald-50 px-2 py-0.5 text-[9px] font-black tracking-wider text-emerald-700 uppercase">
+                  <span className="mt-2 inline-block rounded bg-emerald-50 transition-colors dark:bg-emerald-500/10 px-2 py-0.5 text-[9px] font-black tracking-wider text-emerald-700 uppercase">
                     SIP Aktif
                   </span>
                 </div>
@@ -104,63 +105,43 @@ export default function DoctorProfileSettings() {
               className="flex flex-1 flex-col justify-between space-y-5"
             >
               <div className="space-y-4">
-                <div>
-                  <label className="mb-1 block text-xs font-bold text-slate-700">
-                    Bidang Spesialisasi
-                  </label>
-                  <input
-                    type="text"
-                    disabled={!isEditing}
+                <div className={!isEditing ? "pointer-events-none opacity-60" : ""}>
+                  <CustomInput
+                    label="Bidang Spesialisasi"
                     value={isEditing ? formData.specialization : profileValues.specialization}
-                    onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-zinc-800 outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
+                    onChange={(val) => setFormData({ ...formData, specialization: val })}
                     placeholder="Contoh: Kardiologi Intervensi"
-                    required
                   />
                 </div>
-                <div>
-                  <label className="mb-1 block text-xs font-bold text-slate-700">
-                    Nomor Surat Izin Praktik (SIP)
-                  </label>
-                  <input
-                    type="text"
-                    disabled={!isEditing}
+                <div className={!isEditing ? "pointer-events-none opacity-60" : ""}>
+                  <CustomInput
+                    label="Nomor Surat Izin Praktik (SIP)"
                     value={isEditing ? formData.licenseNumber : profileValues.licenseNumber}
-                    onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-zinc-800 outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
+                    onChange={(val) => setFormData({ ...formData, licenseNumber: val })}
                     placeholder="Opsional"
                   />
                 </div>
-                <div>
-                  <label className="mb-1 block text-xs font-bold text-slate-700">
-                    Rata-rata Waktu Layanan (Menit)
-                  </label>
-                  <input
+                <div className={!isEditing ? "pointer-events-none opacity-60" : ""}>
+                  <CustomInput
                     type="number"
-                    min="1"
-                    max="180"
-                    disabled={!isEditing}
-                    value={isEditing ? formData.avgServiceMin : profileValues.avgServiceMin}
-                    onChange={(e) =>
-                      setFormData({ ...formData, avgServiceMin: Number(e.target.value) })
-                    }
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-zinc-800 outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
+                    label="Rata-rata Waktu Layanan (Menit)"
+                    value={String(isEditing ? formData.avgServiceMin : profileValues.avgServiceMin)}
+                    onChange={(val) => setFormData({ ...formData, avgServiceMin: Number(val) })}
                     placeholder="Standar: 10 Menit"
-                    required
                   />
-                  <p className="mt-1 text-[10px] font-medium text-slate-400">
+                  <p className="mt-1 text-[10px] font-medium text-slate-400 transition-colors dark:text-zinc-500 ">
                     *Digunakan oleh sistem AI untuk prediksi antrean.
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 flex shrink-0 justify-end gap-2 border-t border-slate-100 pt-4">
+              <div className="mt-4 flex shrink-0 justify-end gap-2 border-t border-slate-100 transition-colors dark:border-zinc-800 pt-4">
                 {isEditing ? (
                   <>
                     <button
                       type="button"
                       onClick={() => setIsEditing(false)}
-                      className="rounded-xl bg-slate-100 px-4 py-2 text-xs font-bold tracking-widest text-slate-600 uppercase transition-colors hover:bg-slate-200"
+                      className="rounded-xl bg-slate-100 transition-colors dark:bg-[#1e1f20] px-4 py-2 text-xs font-bold tracking-widest text-slate-600 transition-colors dark:text-zinc-300 uppercase transition-colors hover:bg-slate-200"
                     >
                       Batal
                     </button>
@@ -188,9 +169,9 @@ export default function DoctorProfileSettings() {
       </div>
 
       {/* KARTU KANAN: JADWAL PRAKTIK */}
-      <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="mb-6 flex shrink-0 items-center justify-between border-b border-slate-100 pb-4">
-          <h3 className="text-lg font-bold text-zinc-900">Jadwal Praktik Rutin</h3>
+      <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-8 shadow-sm">
+        <div className="mb-6 flex shrink-0 items-center justify-between border-b border-slate-100 transition-colors dark:border-zinc-800 pb-4">
+          <h3 className="text-lg font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Jadwal Praktik Rutin</h3>
         </div>
 
         <div className="no-scrollbar flex-1 scrollbar-none overflow-y-auto pr-1 pb-12 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -199,7 +180,7 @@ export default function DoctorProfileSettings() {
               <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600"></div>
             </div>
           ) : schedules.length === 0 ? (
-            <p className="py-10 text-center text-sm text-slate-500 italic">
+            <p className="py-10 text-center text-sm text-slate-500 transition-colors dark:text-zinc-400 italic">
               Tidak ada jadwal praktik yang terdaftar dalam sistem.
             </p>
           ) : (
@@ -217,18 +198,18 @@ export default function DoctorProfileSettings() {
                 return (
                   <div
                     key={sched.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-4 transition-colors hover:border-indigo-200"
+                    className="flex items-center justify-between rounded-xl border border-slate-100 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] p-4 transition-colors hover:border-indigo-200"
                   >
                     <div>
                       <p className="text-sm font-bold text-slate-800">
                         Hari {dayNames[sched.dayOfWeek] || sched.dayOfWeek}
                       </p>
-                      <p className="mt-1 text-xs font-semibold text-slate-500">
+                      <p className="mt-1 text-xs font-semibold text-slate-500 transition-colors dark:text-zinc-400 ">
                         {sched.startTime} - {sched.endTime} WIB
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="inline-block rounded bg-indigo-100 px-2.5 py-1 text-[10px] font-black tracking-wider text-indigo-700 uppercase">
+                      <span className="inline-block rounded bg-indigo-100 transition-colors dark:bg-indigo-900/30 px-2.5 py-1 text-[10px] font-black tracking-wider text-indigo-700 transition-colors dark:text-indigo-400 uppercase">
                         Kapasitas: {sched.capacity}
                       </span>
                     </div>

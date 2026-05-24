@@ -16,6 +16,8 @@ interface AnalyticsSummary {
   }
 }
 
+import CustomSelect from '../ui/CustomSelect'
+
 export default function AdminDailyReport() {
   const today = useMemo(() => new Date(), [])
   const { departments, fetchDepartments } = useDepartmentStore()
@@ -94,20 +96,20 @@ export default function AdminDailyReport() {
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        <select
-          value={deptFilter}
-          onChange={(e) => setDeptFilter(e.target.value)}
-          className="rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
-        >
-          <option value="">Semua Poliklinik</option>
-          {departments.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
+        <div className="w-full md:w-64">
+          <CustomSelect
+            label="Filter Poliklinik"
+            value={deptFilter}
+            onChange={(val) => setDeptFilter(val)}
+            options={[
+              { value: '', label: 'Semua Poliklinik' },
+              ...departments.map((d) => ({ value: d.id, label: d.name })),
+            ]}
+            placeholder="Semua Poliklinik"
+          />
+        </div>
         {summary && (
-          <span className="text-sm font-semibold text-teal-700 dark:text-teal-400">
+          <span className="text-sm font-semibold text-teal-700 dark:text-teal-400 mt-2 md:mt-0">
             Tingkat selesai: {summary.completionRate}%
           </span>
         )}

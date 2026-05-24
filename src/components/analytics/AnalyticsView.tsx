@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from 'react'
 import { Bar, Line } from 'react-chartjs-2'
 import apiClient from '../../lib/apiClient'
+import CustomDatePicker from '../ui/CustomDatePicker'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend)
 
@@ -215,24 +216,18 @@ export default function AnalyticsView() {
       {/* Filter Bar */}
       <div className="mb-8 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
         <div className="flex flex-wrap items-end gap-4">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">Dari Tanggal</label>
-            <input
-              type="date"
+          <div className="w-full md:w-64">
+            <CustomDatePicker
+              label="Dari Tanggal"
               value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:ring-2 focus:ring-teal-500"
+              onChange={(val) => setFromDate(val)}
             />
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Sampai Tanggal
-            </label>
-            <input
-              type="date"
+          <div className="w-full md:w-64">
+            <CustomDatePicker
+              label="Sampai Tanggal"
               value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:ring-2 focus:ring-teal-500"
+              onChange={(val) => setToDate(val)}
             />
           </div>
           <button

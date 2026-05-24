@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import apiClient from '../../lib/apiClient'
 import { getErrorMessage } from '../../lib/errors'
+import { useThemeStore } from '../../store/themeStore'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend)
 
@@ -42,6 +43,8 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
   const [data, setData] = useState<RangeStatsData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const theme = useThemeStore((state) => state.theme)
+  const isDark = theme === 'dark'
 
   useEffect(() => {
     let cancelled = false
@@ -69,7 +72,7 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600 transition-colors dark:border-teal-400"></div>
       </div>
     )
   }
@@ -77,7 +80,7 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
   if (error) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-sm text-rose-500 italic">{error}</p>
+        <p className="text-sm text-rose-500 transition-colors dark:text-rose-400 italic">{error}</p>
       </div>
     )
   }
@@ -106,9 +109,13 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
     pointRadius: 4,
     pointHoverRadius: 6,
     pointBackgroundColor: COLOR_PALETTE[idx % COLOR_PALETTE.length],
-    pointBorderColor: '#fff',
+    pointBorderColor: isDark ? '#1e1f20' : '#fff',
     pointBorderWidth: 2,
   }))
+
+  const textColor = isDark ? '#a1a1aa' : '#64748b' // zinc-400 : slate-500
+  const gridColor = isDark ? '#27272a' : '#e2e8f0' // zinc-800 : slate-200
+  const titleColor = isDark ? '#d4d4d8' : '#475569' // zinc-300 : slate-600
 
   const chartOptions: ChartOptions<'line'> = {
     responsive: true,
@@ -118,7 +125,7 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
         position: 'top' as const,
         labels: {
           font: { size: 12, weight: 'bold' },
-          color: '#64748b',
+          color: textColor,
           padding: 15,
           usePointStyle: true,
         },
@@ -126,6 +133,11 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
       tooltip: {
         mode: 'index' as const,
         intersect: false,
+        backgroundColor: isDark ? '#131314' : 'rgba(0, 0, 0, 0.8)',
+        titleColor: isDark ? '#f4f4f5' : '#fff', // zinc-100 : white
+        bodyColor: isDark ? '#d4d4d8' : '#fff', // zinc-300 : white
+        borderColor: isDark ? '#27272a' : 'transparent', // zinc-800 : transparent
+        borderWidth: 1,
         callbacks: {
           label: (context) => {
             return `${context.dataset.label}: ${context.parsed.y} antrian`
@@ -137,23 +149,23 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
       y: {
         beginAtZero: true,
         ticks: {
-          color: '#64748b',
+          color: textColor,
           font: { size: 11 },
         },
         grid: {
-          color: '#e2e8f0',
+          color: gridColor,
           display: true,
         },
         title: {
           display: true,
           text: 'Total Antrian',
-          color: '#475569',
+          color: titleColor,
           font: { size: 12, weight: 'bold' },
         },
       },
       x: {
         ticks: {
-          color: '#64748b',
+          color: textColor,
           font: { size: 11 },
         },
         grid: {
