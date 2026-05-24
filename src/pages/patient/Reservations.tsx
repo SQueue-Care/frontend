@@ -20,20 +20,26 @@ const APPOINTMENT_STATUS_LABELS: Record<string, string> = {
   CANCELLED: 'Dibatalkan',
 }
 
-export default function PatientReservations() {
+export default function PatientReservations({ embedded = false }: { embedded?: boolean }) {
   const { openAppointmentDetail } = useOutletContext<PatientPortalContext>()
   const { patientAppointments, isLoadingAppointments } = useQueueStore()
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-700 ease-out">
-      <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold tracking-tighter text-zinc-950 dark:text-white">
-          Jadwal Reservasi
-        </h1>
-        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-          Daftar pemesanan sesi konsultasi medis Anda yang telah terjadwal.
-        </p>
-      </div>
+    <div
+      className={
+        embedded ? 'space-y-0' : 'animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-700 ease-out'
+      }
+    >
+      {!embedded && (
+        <div>
+          <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold tracking-tighter text-zinc-950 dark:text-white">
+            Jadwal Reservasi
+          </h1>
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+            Daftar pemesanan sesi konsultasi medis Anda yang telah terjadwal.
+          </p>
+        </div>
+      )}
 
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         <div className="no-scrollbar overflow-x-auto">

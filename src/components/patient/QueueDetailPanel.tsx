@@ -1,3 +1,5 @@
+import QueueVisitFlow from './QueueVisitFlow'
+import { DoctorNotesSection } from '../shared/DoctorNotesDisplay'
 import type { Queue } from '../../lib/types'
 
 interface QueueDetailPanelProps {
@@ -120,6 +122,13 @@ export default function QueueDetailPanel({
                 </div>
               </div>
 
+              <QueueVisitFlow
+                status={queue.status}
+                doctorNotes={queue.doctorNotes}
+                visitFlow={queue.visitFlow}
+                nextDestination={queue.nextDestination}
+              />
+
               <div className="space-y-6 rounded-3xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">
                 {/* Blok Informasi Pasien */}
                 <div>
@@ -239,23 +248,8 @@ export default function QueueDetailPanel({
                   </div>
                 </div>
 
-                {/* 2. BLOK CATATAN & PENGINGAT DOKTER (Muncul saat Antrean Selesai/DONE) */}
                 {queue.status === 'DONE' && (
-                  <div className="animate-in fade-in duration-500">
-                    <h4 className="mb-3 border-b border-amber-200 pb-2 text-[10px] font-black tracking-widest text-amber-600 uppercase transition-colors dark:border-amber-900/50 dark:text-amber-500">
-                      Catatan Dokter & Pengingat Penyakit
-                    </h4>
-                    <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 shadow-sm transition-colors dark:border-amber-900/50 dark:bg-amber-900/10">
-                      <p className="text-sm leading-relaxed font-semibold whitespace-pre-wrap text-zinc-800 transition-colors dark:text-amber-100">
-                        {/* Asumsi field dari backend/store menggunakan nama doctorNotes */}
-                        {queue.doctorNotes || (
-                          <span className="font-normal text-slate-400 italic transition-colors dark:text-zinc-500">
-                            Pemeriksaan selesai. Dokter tidak meninggalkan catatan pengingat khusus.
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
+                  <DoctorNotesSection doctorNotes={queue.doctorNotes} variant="panel" />
                 )}
               </div>
             </div>

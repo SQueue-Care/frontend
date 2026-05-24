@@ -24,6 +24,52 @@ export type AppointmentStatus = (typeof AppointmentStatus)[keyof typeof Appointm
 
 export type ReservationStatus = 'BOOKED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
 
+export type PaymentType = 'BPJS' | 'UMUM' | 'ASURANSI_SWASTA'
+export type BillStatus = 'PENDING' | 'PAID' | 'WAIVED' | 'BPJS_PENDING'
+
+export type VisitStage =
+  | 'REGISTRATION'
+  | 'WAITING'
+  | 'EXAMINATION'
+  | 'ADMIN'
+  | 'PHARMACY'
+  | 'COMPLETE'
+  | 'TERMINAL'
+
+export type VisitFlowStepStatus = 'pending' | 'current' | 'completed' | 'skipped'
+
+export type VisitDestinationIcon = 'waiting' | 'doctor' | 'cashier' | 'pharmacy' | 'exit' | 'info'
+
+export interface VisitFlowStep {
+  stage: VisitStage
+  code: string
+  label: string
+  description: string
+  status: VisitFlowStepStatus
+  locationName?: string | null
+  roomName?: string | null
+  building?: string | null
+}
+
+export interface VisitNextDestination {
+  stage: VisitStage
+  label: string
+  instruction: string
+  locationName?: string | null
+  roomName?: string | null
+  building?: string | null
+  icon: VisitDestinationIcon
+}
+
+export interface VisitFlow {
+  currentStage: VisitStage
+  steps: VisitFlowStep[]
+  nextDestination: VisitNextDestination | null
+  summary: string
+  pharmacyRequired: boolean
+  paymentStatus: BillStatus | null
+}
+
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 export type Role = 'PATIENT' | 'ADMIN' | 'DOCTOR'
@@ -44,6 +90,17 @@ export interface Department {
   code: string
   name: string
   description: string | null
+  building?: string | null
+  waitingRoomName?: string | null
+  examinationRoom?: string | null
+  adminCounter?: string | null
+  pharmacyLocation?: string | null
+  activeQueueCount?: number
+  doctors?: Array<{
+    id: string
+    specialization?: string
+    user?: { name: string }
+  }>
 }
 
 // ─── User Account (Admin) ─────────────────────────────────────────────────────
@@ -67,6 +124,8 @@ export interface PatientProfile {
   phone?: string
   gender?: 'MALE' | 'FEMALE' | 'OTHER'
   birthDate?: string
+  bloodType?: string
+  allergies?: string
   address?: string
   appointmentIds?: string[]
   user: {
@@ -75,6 +134,11 @@ export interface PatientProfile {
     name: string
     role: string
   }
+}
+
+export interface PatientMedicalProfile {
+  patient: PatientProfile
+  medicalHistory: Queue[]
 }
 
 // ─── Doctor ───────────────────────────────────────────────────────────────────
@@ -130,6 +194,26 @@ export interface BookingSchedule {
   startTime: string
   endTime: string
   capacity: number
+  booked?: number
+  remaining?: number
+  isFull?: boolean
+}
+
+export interface DepartmentAvailability {
+  date: string
+  departmentId: string
+  quota: {
+    total: number
+    booked: number
+    remaining: number
+    isFull: boolean
+  }
+  schedules: Array<
+    BookingSchedule & {
+      scheduleId: string
+      doctorId: string
+    }
+  >
 }
 
 // ─── Queue ────────────────────────────────────────────────────────────────────
@@ -147,6 +231,12 @@ export interface OverviewStats {
   departments: DepartmentStats[]
 }
 
+export interface DoctorNotes {
+  diagnosis?: string | null
+  medicationInstructions?: string | null
+  advice?: string | null
+}
+
 export interface Queue {
   id: string
   queueNumber: number
@@ -155,10 +245,20 @@ export interface Queue {
   checkInAt?: string
   createdAt?: string
   notes?: string | null
-  doctorNotes?: string | null
+  doctorNotes?: DoctorNotes | null
   currentServingNumber?: number | null
   actualWaitMinutes?: number | null
   estimatedWaitMinutes?: number | null
+  currentVisitStage?: VisitStage
+  pharmacyRequired?: boolean
+  visitFlow?: VisitFlow
+  nextDestination?: VisitNextDestination | null
+  bill?: {
+    id: string
+    status: BillStatus
+    paymentType: PaymentType
+    patientShare: number | null
+  } | null
   prediction?: {
     source: string
     estimatedMin?: number
@@ -168,12 +268,19 @@ export interface Queue {
     id: string
     name: string
     code: string
+    building?: string | null
+    waitingRoomName?: string | null
+    examinationRoom?: string | null
+    adminCounter?: string | null
+    pharmacyLocation?: string | null
   }
   doctor: {
+    id?: string
     user: {
       name: string
     }
   } | null
+  doctorId?: string | null
 }
 
 // ─── Appointment ──────────────────────────────────────────────────────────────
@@ -246,4 +353,44 @@ export interface WaitTimeEstimate {
 export interface ChartTooltipContext {
   parsed: { y: number }
   label: string
+}
+
+// ─── Billing ──────────────────────────────────────────────────────────────────
+
+export interface BillLineItem {
+  id: string
+  description: string
+  quantity: number
+  unitPrice: number
+  amount: number
+}
+
+export interface Bill {
+  id: string
+  patientId: string
+  queueId: string | null
+  paymentType: PaymentType
+  status: BillStatus
+  totalAmount: number
+  patientShare: number | null
+  sepNumber: string | null
+  bpjsNumber: string | null
+  dueDate: string | null
+  paidAt: string | null
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+  lineItems: BillLineItem[]
+  patient?: {
+    id: string
+    bpjsNumber: string | null
+    user: { id: string; name: string; email: string }
+  } | null
+  queue?: {
+    id: string
+    queueNumber: number
+    queueDate: string
+    department: DepartmentRef
+    doctor: { user: { name: string } } | null
+  } | null
 }

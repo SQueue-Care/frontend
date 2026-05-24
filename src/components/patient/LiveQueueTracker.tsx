@@ -1,10 +1,10 @@
 // src/components/patient/LiveQueueTracker.tsx
 import { useEffect, useState } from 'react'
-import { QueueStatus } from '../../lib/types'
+import { useNavigate } from 'react-router-dom'
+import { destinationIconPath } from '../../lib/queueVisitFlow'
 import { useAlertStore } from '../../store/alertStore'
 import { useQueueStore } from '../../store/queueStore'
 import ConfirmModal from '../ui/ConfirmModal'
-import QueueDetailsModal from './QueueDetailModal'
 
 interface LiveQueueTrackerProps {
   queueId: string | null
@@ -41,7 +41,7 @@ const getStatusText = (status: string) => {
 }
 
 export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueueTrackerProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const navigate = useNavigate()
   const [isCancelling, setIsCancelling] = useState(false)
   const [isConfirmCancelOpen, setIsConfirmCancelOpen] = useState(false)
   const { activeQueueDetail, fetchActiveQueue, cancelQueue } = useQueueStore()
@@ -53,9 +53,13 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
     fetchActiveQueue(queueId)
 
     const timer = setInterval(() => {
-      const currentStatus = useQueueStore.getState().activeQueueDetail?.status
+      const detail = useQueueStore.getState().activeQueueDetail
+      const currentStatus = detail?.status
+      const visitComplete =
+        detail?.visitFlow?.currentStage === 'COMPLETE' ||
+        detail?.visitFlow?.currentStage === 'TERMINAL'
       if (
-        currentStatus === 'DONE' ||
+        visitComplete ||
         currentStatus === 'CANCELLED' ||
         currentStatus === 'SKIPPED'
       ) {
@@ -123,7 +127,11 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
   const isWaiting = activeQueueDetail.status === 'WAITING'
   const isInProgress =
     activeQueueDetail.status === 'IN_PROGRESS' || activeQueueDetail.status === 'CALLED'
-  const status = activeQueueDetail.status as QueueStatus
+  const isPostExam =
+    activeQueueDetail.status === 'DONE' &&
+    activeQueueDetail.visitFlow?.currentStage !== 'COMPLETE' &&
+    activeQueueDetail.visitFlow?.currentStage !== 'TERMINAL'
+  const nextDestination = activeQueueDetail.nextDestination ?? activeQueueDetail.visitFlow?.nextDestination
 
   const themeParams = {
     bg: isInProgress
@@ -192,6 +200,26 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
             >
               {activeQueueDetail?.doctor?.user?.name || 'Dokter belum ditentukan'}
             </p>
+            {nextDestination &&
+              nextDestination.stage !== 'COMPLETE' &&
+              nextDestination.stage !== 'TERMINAL' && (
+                <div className="mt-3 rounded-xl border border-teal-200/80 bg-white/70 px-3 py-2.5 dark:border-teal-900/40 dark:bg-[#131314]/60">
+                  <p className="text-[9px] font-black tracking-widest text-teal-700 uppercase dark:text-teal-400">
+                    Langkah berikutnya
+                  </p>
+                  <p className="mt-0.5 text-xs font-extrabold text-teal-950 dark:text-teal-100">
+                    {nextDestination.instruction}
+                  </p>
+                  {(nextDestination.roomName ?? nextDestination.locationName) && (
+                    <p className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-teal-800/80 dark:text-teal-300/70">
+                      <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d={destinationIconPath(nextDestination.icon)} />
+                      </svg>
+                      {nextDestination.roomName ?? nextDestination.locationName}
+                    </p>
+                  )}
+                </div>
+              )}
           </div>
 
           <div className="flex items-center gap-6">
@@ -238,23 +266,17 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
             </button>
           )}
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => navigate(`/portal/queues/${queueId}`)}
             className={`flex-1 rounded-lg px-3 py-2.5 text-center text-[9px] font-black tracking-widest whitespace-nowrap uppercase shadow-sm transition-all duration-300 outline-none md:flex-none md:px-6 md:text-[10px] ${
               isInProgress
                 ? 'bg-amber-500 text-white shadow-amber-500/20 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-500'
                 : 'bg-teal-600 text-white shadow-teal-600/20 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-600'
             }`}
           >
-            {isInProgress ? 'Instruksi Pemanggilan' : 'Detail Kunjungan'}
+            {isInProgress ? 'Instruksi Pemanggilan' : isPostExam ? 'Lanjutkan Kunjungan' : 'Detail Kunjungan'}
           </button>
         </div>
       </div>
-
-      <QueueDetailsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        status={status}
-      />
 
       <ConfirmModal
         isOpen={isConfirmCancelOpen}

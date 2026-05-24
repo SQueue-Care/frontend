@@ -14,6 +14,7 @@ interface QueueState {
   activeQueueDetail: Queue | null
   fetchActiveQueue: (id: string) => Promise<void>
   cancelQueue: (id: string) => Promise<void>
+  markVisitStage: (id: string, action: 'ADMIN_ARRIVED' | 'PHARMACY_COMPLETE') => Promise<Queue | null>
 
   // State untuk daftar antrean tabel
   queues: Queue[]
@@ -94,6 +95,20 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   cancelQueue: async (id) => {
     await apiClient.post(`/queues/${id}/cancel`)
     set({ activeQueueDetail: null })
+  },
+
+  markVisitStage: async (id, action) => {
+    try {
+      const response = await apiClient.patch(`/queues/${id}/visit-stage`, { action })
+      const queue = response.data.data as Queue
+      if (get().activeQueueDetail?.id === id) {
+        set({ activeQueueDetail: queue })
+      }
+      return queue
+    } catch (error: unknown) {
+      console.error('Gagal memperbarui tahap kunjungan:', error)
+      return null
+    }
   },
 
   fetchOverviewStats: async () => {

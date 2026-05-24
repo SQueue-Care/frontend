@@ -2,11 +2,10 @@
 import { create } from 'zustand'
 import apiClient from '../lib/apiClient'
 import { getErrorMessage } from '../lib/errors'
-import type { PatientProfile } from '../lib/types'
+import type { PatientMedicalProfile, PatientProfile } from '../lib/types'
 
-export type { PatientProfile }
+export type { PatientMedicalProfile, PatientProfile }
 
-// Tipe untuk metadata pagination dari backend
 interface Pagination {
   page: number
   pageSize: number
@@ -15,9 +14,8 @@ interface Pagination {
 }
 
 interface PatientState {
-  // State untuk satu profil pasien
   profile: PatientProfile | null
-  // State untuk daftar pasien dan totalnya
+  medicalProfile: PatientMedicalProfile | null
   patients: PatientProfile[]
   totalPatients: number
   pagination: Pagination | null
@@ -31,7 +29,8 @@ interface PatientState {
   updateProfile: (patientId: string, data: Partial<PatientProfile>) => Promise<void>
 
   // Fungsi baru untuk mengambil daftar pasien
-  fetchPatients: (query: { page: number; pageSize: number }) => Promise<void>
+  fetchPatients: (query: { page: number; pageSize: number; search?: string }) => Promise<void>
+  fetchMedicalProfile: (patientId: string) => Promise<PatientMedicalProfile | null>
 
   // Fungsi untuk menambahkan appointment ID ke profil pasien
   addAppointmentId: (patientId: string, appointmentId: string) => Promise<void>
@@ -40,6 +39,7 @@ interface PatientState {
 export const usePatientStore = create<PatientState>((set, get) => ({
   // State yang sudah ada
   profile: null,
+  medicalProfile: null,
   isSaving: false,
 
   // State baru
@@ -57,6 +57,7 @@ export const usePatientStore = create<PatientState>((set, get) => ({
       const params = new URLSearchParams()
       params.append('page', query.page.toString())
       params.append('pageSize', query.pageSize.toString())
+      if (query.search?.trim()) params.append('search', query.search.trim())
 
       const response = await apiClient.get(`/patients?${params.toString()}`)
 
@@ -71,6 +72,22 @@ export const usePatientStore = create<PatientState>((set, get) => ({
         error: getErrorMessage(error, 'Gagal memuat data pasien.'),
         isLoading: false,
       })
+    }
+  },
+
+  fetchMedicalProfile: async (patientId) => {
+    set({ isLoading: true, error: null, medicalProfile: null })
+    try {
+      const response = await apiClient.get(`/patients/${patientId}/medical-profile`)
+      const data = response.data.data as PatientMedicalProfile
+      set({ medicalProfile: data, isLoading: false })
+      return data
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Gagal memuat riwayat medis pasien.'),
+        isLoading: false,
+      })
+      return null
     }
   },
 

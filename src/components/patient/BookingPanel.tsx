@@ -53,11 +53,13 @@ export default function BookingPanel({
   const {
     departmentDoctors,
     doctorSchedules,
+    departmentAvailability,
     isLoadingDoctors,
     isLoadingSchedules,
     isSubmitting,
     fetchDoctorsByDepartment,
     fetchSchedulesByDoctor,
+    fetchDepartmentAvailability,
     submitBooking,
     resetBookingState,
   } = useBookingStore()
@@ -82,9 +84,19 @@ export default function BookingPanel({
       const localDateObj = new Date(year, month - 1, day)
 
       const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
-      fetchSchedulesByDoctor(selectedDoctorId, days[localDateObj.getDay()])
+      const dayOfWeek = days[localDateObj.getDay()]
+      fetchSchedulesByDoctor(selectedDoctorId, dayOfWeek, selectedDate)
+      if (selectedDept) {
+        fetchDepartmentAvailability(selectedDept.id, selectedDate, selectedDoctorId)
+      }
     }
-  }, [selectedDoctorId, selectedDate, fetchSchedulesByDoctor])
+  }, [
+    selectedDoctorId,
+    selectedDate,
+    selectedDept,
+    fetchSchedulesByDoctor,
+    fetchDepartmentAvailability,
+  ])
 
   const handleClose = () => {
     setSelectedDoctorId(null)
@@ -129,7 +141,11 @@ export default function BookingPanel({
         onBookingSuccess(result.id, result.isAppointment)
       }
     } catch (err: unknown) {
-      showAlert(getErrorMessage(err, 'Terjadi kesalahan. Silakan cek console browser.'), 'error')
+      const msg = getErrorMessage(
+        err,
+        'Terjadi kesalahan saat mendaftar. Silakan coba lagi atau pilih waktu lain.',
+      )
+      showAlert(msg, 'error')
     }
   }
 
@@ -303,6 +319,18 @@ export default function BookingPanel({
 
               {selectedDoctorId && selectedDate && (
                 <section className="animate-in fade-in slide-in-from-bottom-4">
+                  {departmentAvailability && (
+                    <div
+                      className={`mb-4 rounded-2xl border p-3 text-center text-xs font-bold ${
+                        departmentAvailability.quota.isFull
+                          ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400'
+                          : 'border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/20 dark:text-teal-400'
+                      }`}
+                    >
+                      Kuota poli hari ini: {departmentAvailability.quota.remaining}/
+                      {departmentAvailability.quota.total} tersisa
+                    </div>
+                  )}
                   <label className="mb-3 block text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                     Pilih Sesi Waktu
                   </label>
@@ -328,12 +356,25 @@ export default function BookingPanel({
                         }
                         const dayNameIndo = dayNames[sched.dayOfWeek] || sched.dayOfWeek
                         const isSelected = selectedScheduleId === sched.id
+                        const isFull =
+                          sched.isFull ||
+                          departmentAvailability?.quota.isFull ||
+                          (sched.remaining !== undefined && sched.remaining <= 0)
+                        const remaining = sched.remaining ?? sched.capacity
 
                         return (
                           <button
                             key={sched.id}
-                            onClick={() => setSelectedScheduleId(sched.id)}
-                            className={`relative flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-4 transition-all duration-300 outline-none ${isSelected ? 'scale-[1.02] border-teal-500 bg-teal-50/50 shadow-sm dark:bg-teal-900/20' : 'border-slate-100 bg-white hover:border-teal-200 hover:bg-slate-50 dark:border-zinc-800 dark:bg-[#131314] dark:hover:border-teal-900/50 dark:hover:bg-zinc-800/80'}`}
+                            type="button"
+                            disabled={isFull}
+                            onClick={() => !isFull && setSelectedScheduleId(sched.id)}
+                            className={`relative flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-4 transition-all duration-300 outline-none ${
+                              isFull
+                                ? 'cursor-not-allowed border-slate-100 bg-slate-50 opacity-60 dark:border-zinc-800 dark:bg-[#131314]'
+                                : isSelected
+                                  ? 'scale-[1.02] border-teal-500 bg-teal-50/50 shadow-sm dark:bg-teal-900/20'
+                                  : 'border-slate-100 bg-white hover:border-teal-200 hover:bg-slate-50 dark:border-zinc-800 dark:bg-[#131314] dark:hover:border-teal-900/50 dark:hover:bg-zinc-800/80'
+                            }`}
                           >
                             <span
                               className={`text-[10px] font-black tracking-wider uppercase transition-colors ${isSelected ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-zinc-500'}`}
@@ -346,9 +387,15 @@ export default function BookingPanel({
                               {sched.startTime} - {sched.endTime}
                             </span>
                             <div
-                              className={`mt-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition-colors ${isSelected ? 'border-teal-200 bg-teal-100 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/40 dark:text-teal-400' : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-400'}`}
+                              className={`mt-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition-colors ${
+                                isFull
+                                  ? 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-800/50 dark:bg-rose-900/30 dark:text-rose-400'
+                                  : isSelected
+                                    ? 'border-teal-200 bg-teal-100 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/40 dark:text-teal-400'
+                                    : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-400'
+                              }`}
                             >
-                              Kapasitas: {sched.capacity}
+                              {isFull ? 'Penuh' : `Tersisa: ${remaining}/${sched.capacity}`}
                             </div>
                           </button>
                         )

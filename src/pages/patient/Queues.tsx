@@ -1,6 +1,5 @@
-import { useOutletContext } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useQueueStore } from '../../store/queueStore'
-import type { PatientPortalContext } from './Portal'
 
 const QUEUE_STATUS_STYLES: Record<string, string> = {
   WAITING:
@@ -25,20 +24,26 @@ const QUEUE_STATUS_LABELS: Record<string, string> = {
   CANCELLED: 'Dibatalkan',
 }
 
-export default function PatientQueues() {
-  const { openQueueDetail } = useOutletContext<PatientPortalContext>()
+export default function PatientQueues({ embedded = false }: { embedded?: boolean }) {
+  const navigate = useNavigate()
   const { patientHistory, isLoadingTable } = useQueueStore()
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-700 ease-out">
-      <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold tracking-tighter text-zinc-950 dark:text-white">
-          Riwayat Kunjungan
-        </h1>
-        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-          Arsip rekam jejak pengambilan nomor antrean klinik Anda.
-        </p>
-      </div>
+    <div
+      className={
+        embedded ? 'space-y-0' : 'animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-700 ease-out'
+      }
+    >
+      {!embedded && (
+        <div>
+          <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold tracking-tighter text-zinc-950 dark:text-white">
+            Riwayat Antrean
+          </h1>
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+            Arsip rekam jejak pengambilan nomor antrean klinik Anda.
+          </p>
+        </div>
+      )}
 
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         <div className="no-scrollbar overflow-x-auto">
@@ -76,7 +81,7 @@ export default function PatientQueues() {
                   <tr
                     key={item.id}
                     className="cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
-                    onClick={() => openQueueDetail(item)}
+                    onClick={() => navigate(`/portal/queues/${item.id}`)}
                   >
                     <td className="p-6 pl-8 align-top">
                       <div className="mb-1 text-base font-extrabold text-zinc-900 dark:text-white">

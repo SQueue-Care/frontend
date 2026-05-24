@@ -3,7 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import BookingPanel from '../../components/patient/BookingPanel'
 import QueueDetailPanel from '../../components/patient/QueueDetailPanel'
 import ReservationDetailPanel from '../../components/patient/ReservationDetailPanel'
-import DashboardShell, { type NavItem } from '../../layouts/DashboardShell'
+import NotificationBell from '../../components/shared/NotificationBell'
+import DashboardShell, { type NavSection } from '../../layouts/DashboardShell'
 import apiClient from '../../lib/apiClient'
 import { getErrorMessage } from '../../lib/errors'
 import type { AppointmentDetail, Queue } from '../../lib/types'
@@ -12,6 +13,7 @@ import { useAuthStore } from '../../store/authStore'
 import { useDepartmentStore } from '../../store/departmentStore'
 import { usePatientStore } from '../../store/patientStore'
 import { useQueueStore } from '../../store/queueStore'
+import { patientNavIcons } from './patientNavIcons'
 
 // ─────────────────────────────────────────────────────────────
 // Outlet context shared with all child pages
@@ -24,78 +26,89 @@ export type PatientPortalContext = {
   setActiveQueueOverride: (id: string | null) => void
 }
 
-type PortalView = 'dashboard' | 'polyclinics' | 'reservations' | 'queues' | 'profile'
+export type PortalView =
+  | 'dashboard'
+  | 'polyclinics'
+  | 'visits'
+  | 'reservations'
+  | 'queues'
+  | 'prescriptions'
+  | 'medical-records'
+  | 'guide'
+  | 'announcements'
+  | 'profile'
+  | 'billing'
+  | 'help'
+  | 'notifications'
 
 const PAGE_TITLES: Record<PortalView, string> = {
-  dashboard: 'Portal Pasien',
-  polyclinics: 'Layanan Poliklinik',
+  dashboard: 'Beranda',
+  polyclinics: 'Jadwal & Info Poliklinik',
+  visits: 'Riwayat Kunjungan',
   reservations: 'Jadwal Reservasi',
   queues: 'Riwayat Antrean',
+  prescriptions: 'Resep & Obat',
+  'medical-records': 'Rekam Medis',
+  guide: 'Panduan Kunjungan',
+  announcements: 'Pengumuman',
   profile: 'Profil Medis',
+  billing: 'Tagihan & Pembayaran',
+  help: 'Bantuan & FAQ',
+  notifications: 'Notifikasi',
 }
 
-const NAV_ITEMS: NavItem[] = [
+const NAV_SECTIONS: NavSection[] = [
   {
-    id: 'dashboard',
-    label: 'Dashboard',
-    icon: (
-      <svg
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        className="h-5 w-5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: 'polyclinics',
-    label: 'Poliklinik',
-    icon: (
-      <svg
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        className="h-5 w-5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: 'history',
-    label: 'Riwayat Kunjungan',
-    icon: (
-      <svg
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        className="h-5 w-5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-    ),
-    children: [
-      { id: 'reservations', label: 'Jadwal Reservasi' },
-      { id: 'queues', label: 'Riwayat Antrean' },
+    title: 'Beranda',
+    items: [
+      { id: 'dashboard', label: 'Beranda', icon: patientNavIcons.dashboard },
     ],
   },
+  {
+    title: 'Layanan',
+    items: [
+      { id: 'polyclinics', label: 'Poliklinik', icon: patientNavIcons.polyclinics },
+    ],
+  },
+  {
+    title: 'Kunjungan',
+    items: [
+      { id: 'visits', label: 'Riwayat Kunjungan', icon: patientNavIcons.visits },
+      { id: 'medical-records', label: 'Rekam Medis', icon: patientNavIcons.medicalRecords },
+      { id: 'prescriptions', label: 'Resep & Obat', icon: patientNavIcons.prescriptions },
+    ],
+  },
+  {
+    title: 'Informasi',
+    items: [
+      { id: 'guide', label: 'Panduan Kunjungan', icon: patientNavIcons.guide },
+      { id: 'announcements', label: 'Pengumuman', icon: patientNavIcons.announcements },
+    ],
+  },
+  {
+    title: 'Akun & Bantuan',
+    items: [
+      { id: 'profile', label: 'Profil Medis', icon: patientNavIcons.profile },
+      { id: 'billing', label: 'Tagihan', icon: patientNavIcons.billing },
+      { id: 'help', label: 'Bantuan', icon: patientNavIcons.help },
+    ],
+  },
+]
+
+const VALID_VIEWS: PortalView[] = [
+  'dashboard',
+  'polyclinics',
+  'visits',
+  'reservations',
+  'queues',
+  'prescriptions',
+  'medical-records',
+  'guide',
+  'announcements',
+  'profile',
+  'billing',
+  'help',
+  'notifications',
 ]
 
 // ─────────────────────────────────────────────────────────────
@@ -112,11 +125,12 @@ export default function PatientPortalLayout() {
   const { addAppointmentId } = usePatientStore()
   const { patientHistory, fetchPatientHistory, fetchPatientAppointments } = useQueueStore()
 
-  // Derive active nav item from URL
   const activeView = useMemo((): PortalView => {
     const segment = location.pathname.split('/')[2] ?? ''
-    const valid: PortalView[] = ['dashboard', 'polyclinics', 'reservations', 'queues', 'profile']
-    return valid.includes(segment as PortalView) ? (segment as PortalView) : 'dashboard'
+    if (segment === 'queues' && location.pathname.split('/')[3]) {
+      return 'queues'
+    }
+    return VALID_VIEWS.includes(segment as PortalView) ? (segment as PortalView) : 'dashboard'
   }, [location.pathname])
 
   const patientId = user?.patient?.id ?? (user?.role === 'PATIENT' ? user?.id : null)
@@ -220,7 +234,7 @@ export default function PatientPortalLayout() {
   return (
     <>
       <DashboardShell
-        navItems={NAV_ITEMS}
+        navSections={NAV_SECTIONS}
         activeView={activeView}
         onNavigate={(id) => navigate(`/portal/${id}`)}
         user={user ? { name: user.name, email: user.email } : null}
@@ -230,6 +244,7 @@ export default function PatientPortalLayout() {
         pageTitle={PAGE_TITLES[activeView]}
         supportsTheme
         onProfileClick={() => navigate('/portal/profile')}
+        headerExtras={<NotificationBell />}
       >
         <Outlet context={outletContext} />
       </DashboardShell>

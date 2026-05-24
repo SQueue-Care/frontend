@@ -15,9 +15,15 @@ export interface NavItem {
   children?: NavSubItem[]
 }
 
+export interface NavSection {
+  title: string
+  items: NavItem[]
+}
+
 interface DashboardShellProps {
   children: React.ReactNode
-  navItems: NavItem[]
+  navItems?: NavItem[]
+  navSections?: NavSection[]
   activeView: string
   onNavigate: (id: string) => void
   user: { name: string; email: string } | null
@@ -33,6 +39,7 @@ interface DashboardShellProps {
 export default function DashboardShell({
   children,
   navItems,
+  navSections,
   activeView,
   onNavigate,
   user,
@@ -55,7 +62,12 @@ export default function DashboardShell({
   }, [theme, supportsTheme])
 
   // Close sidebar and user menu whenever the active view changes
-  const autoExpandedParentId = navItems.find((item) =>
+  const resolvedSections: NavSection[] =
+    navSections ?? (navItems ? [{ title: '', items: navItems }] : [])
+
+  const flatNavItems = resolvedSections.flatMap((s) => s.items)
+
+  const autoExpandedParentId = flatNavItems.find((item) =>
     item.children?.some((c) => c.id === activeView)
   )?.id
 
@@ -147,8 +159,22 @@ export default function DashboardShell({
 
         {/* Navigation */}
         <nav className="mt-2 flex-1 overflow-x-hidden overflow-y-auto p-3 [&::-webkit-scrollbar]:hidden">
-          <ul className="flex w-full flex-col space-y-1.5">
-            {navItems.map((item) => {
+          <div className="flex w-full flex-col space-y-4">
+            {resolvedSections.map((section) => (
+              <div key={section.title || 'default'} className="flex flex-col">
+                {section.title && isSidebarOpen && (
+                  <p className="animate-in fade-in mb-2 px-4 text-[10px] font-black tracking-widest text-slate-400 uppercase duration-200 dark:text-zinc-500">
+                    {section.title}
+                  </p>
+                )}
+                {section.title && !isSidebarOpen && (
+                  <div
+                    className="mx-auto mb-2 hidden h-px w-8 bg-slate-200 lg:block dark:bg-zinc-700"
+                    aria-hidden
+                  />
+                )}
+                <ul className="flex w-full flex-col space-y-1.5">
+                  {section.items.map((item) => {
               const active = isItemActive(item)
 
               if (item.children) {
@@ -230,7 +256,10 @@ export default function DashboardShell({
                 </li>
               )
             })}
-          </ul>
+                </ul>
+              </div>
+            ))}
+          </div>
         </nav>
 
         {/* User footer */}

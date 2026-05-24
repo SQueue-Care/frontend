@@ -11,6 +11,7 @@ import {
 } from '../../lib/queueStateMachine'
 import type { Department } from '../../lib/types'
 import { QueueStatus } from '../../lib/types'
+import { VISIT_STAGE_LABELS } from '../../lib/queueVisitFlow'
 import { useAlertStore } from '../../store/alertStore'
 import { useDepartmentStore } from '../../store/departmentStore'
 import { useQueueStore } from '../../store/queueStore'
@@ -273,6 +274,11 @@ export default function AdminQueueManagement() {
                         >
                           {statusLabel[item.status] || item.status}
                         </span>
+                        {item.visitFlow?.currentStage && item.status === 'DONE' && (
+                          <p className="mt-1 text-[10px] font-bold text-teal-700">
+                            Tahap: {VISIT_STAGE_LABELS[item.visitFlow.currentStage] ?? item.visitFlow.currentStage}
+                          </p>
+                        )}
                       </td>
                       <td className="p-5 pr-8 text-right">
                         <div className="flex flex-wrap items-center justify-end gap-2">

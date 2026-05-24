@@ -1,5 +1,4 @@
-// src/components/DoctorQueueManagement.tsx
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import apiClient from '../../lib/apiClient'
 import { getErrorMessage } from '../../lib/errors'
 import {
@@ -16,28 +15,92 @@ import { useAuthStore } from '../../store/authStore'
 import { useDoctorStore } from '../../store/doctorStore'
 import { useQueueStore } from '../../store/queueStore'
 import CDSSModal from './CDSSModal'
+import DoctorPatientExamination from './DoctorPatientExamination'
+import DoctorNotesModal from './DoctorNotesModal'
+
+const ACTIVE_STATUSES: QueueStatus[] = [QueueStatus.CALLED, QueueStatus.IN_PROGRESS]
+
+const STATUS_LABEL: Record<QueueStatus, string> = {
+  [QueueStatus.WAITING]: 'Menunggu',
+  [QueueStatus.CALLED]: 'Dipanggil',
+  [QueueStatus.IN_PROGRESS]: 'Diperiksa',
+  [QueueStatus.DONE]: 'Selesai',
+  [QueueStatus.SKIPPED]: 'Dilewati',
+  [QueueStatus.CANCELLED]: 'Dibatalkan',
+}
+
+const STATUS_CLASSES: Record<QueueStatus, string> = {
+  [QueueStatus.WAITING]: 'bg-slate-50 text-slate-700 border-slate-200',
+  [QueueStatus.CALLED]: 'bg-blue-50 text-blue-700 border-blue-200',
+  [QueueStatus.IN_PROGRESS]: 'bg-amber-50 text-amber-700 border-amber-200',
+  [QueueStatus.DONE]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  [QueueStatus.SKIPPED]: 'bg-gray-50 text-gray-600 border-gray-200',
+  [QueueStatus.CANCELLED]: 'bg-rose-50 text-rose-700 border-rose-200',
+}
 
 export default function DoctorQueueManagement() {
   const user = useAuthStore((state) => state.user)
   const { profile } = useDoctorStore()
   const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore()
   const showAlert = useAlertStore((s) => s.showAlert)
+
   const [cdssQueue, setCdssQueue] = useState<Queue | null>(null)
+  const [notesQueue, setNotesQueue] = useState<Queue | null>(null)
 
   const departmentId = profile?.department?.id || profile?.departmentId
+  const doctorId = profile?.id
 
-  // Memuat antrean secara otomatis khusus poliklinik dokter yang bersangkutan
   useEffect(() => {
     if (departmentId) {
       fetchQueues({ departmentId, date: new Date() })
     }
   }, [departmentId, fetchQueues])
 
-  const refreshDepartmentQueues = () => {
+  const refreshDepartmentQueues = useCallback(() => {
     if (departmentId) {
       fetchQueues({ departmentId, date: new Date() })
     }
-  }
+  }, [departmentId, fetchQueues])
+
+  const departmentQueues = useMemo(() => {
+    if (!departmentId) return []
+
+    const activeStatuses: QueueStatus[] = [
+      QueueStatus.WAITING,
+      QueueStatus.CALLED,
+      QueueStatus.IN_PROGRESS,
+    ]
+    const filtered = queues.filter((queue) => queue.department?.id === departmentId)
+
+    return [...filtered].sort((a, b) => {
+      const aActive = activeStatuses.includes(a.status) ? 0 : 1
+      const bActive = activeStatuses.includes(b.status) ? 0 : 1
+      if (aActive !== bActive) return aActive - bActive
+      return a.queueNumber - b.queueNumber
+    })
+  }, [departmentId, queues])
+
+  const activePatientQueue = useMemo(() => {
+    if (!doctorId) return null
+    return (
+      departmentQueues.find(
+        (q) => ACTIVE_STATUSES.includes(q.status) && q.doctorId === doctorId
+      ) ?? null
+    )
+  }, [departmentQueues, doctorId])
+
+  const hasBlockingPatient = Boolean(activePatientQueue)
+
+  const waitingQueues = useMemo(
+    () => departmentQueues.filter((q) => q.status === QueueStatus.WAITING),
+    [departmentQueues]
+  )
+
+  const activeCount = departmentQueues.filter((q) =>
+    ([QueueStatus.WAITING, QueueStatus.CALLED, QueueStatus.IN_PROGRESS] as QueueStatus[]).includes(
+      q.status
+    )
+  ).length
 
   const handleUpdateQueueStatus = async (
     queueId: string,
@@ -46,6 +109,15 @@ export default function DoctorQueueManagement() {
   ) => {
     if (!isValidQueueTransition(currentStatus, nextStatus)) {
       showAlert('Transisi status tidak valid.', 'warning')
+      return
+    }
+
+    if (
+      ACTIVE_STATUSES.includes(nextStatus) &&
+      hasBlockingPatient &&
+      activePatientQueue?.id !== queueId
+    ) {
+      showAlert('Selesaikan pasien saat ini terlebih dahulu', 'warning')
       return
     }
 
@@ -75,61 +147,61 @@ export default function DoctorQueueManagement() {
     }
   }
 
-  // Mengurutkan antrean: Status aktif di atas, selesai/batal di bawah
-  const departmentQueues = useMemo(() => {
-    if (!departmentId) return []
-
-    const activeStatuses: QueueStatus[] = [
-      QueueStatus.WAITING,
-      QueueStatus.CALLED,
-      QueueStatus.IN_PROGRESS,
-    ]
-    const filtered = queues.filter((queue) => queue.department?.id === departmentId)
-
-    return [...filtered].sort((a, b) => {
-      const aActive = activeStatuses.includes(a.status) ? 0 : 1
-      const bActive = activeStatuses.includes(b.status) ? 0 : 1
-      if (aActive !== bActive) return aActive - bActive
-      return new Date(b.queueDate).getTime() - new Date(a.queueDate).getTime()
-    })
-  }, [departmentId, queues])
-
   return (
-    <div className="animate-in fade-in duration-500">
-      <div className="mb-8">
+    <div className="animate-in fade-in space-y-6 duration-500">
+      <div>
         <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950">
-          Selamat Datang, {user?.name}
+          Terima Pasien
         </h1>
         <p className="text-slate-600">
-          Pantau jadwal harian dan antrean pasien yang ditugaskan kepada Anda.
+          Selamat datang, {user?.name}. Kelola pemeriksaan pasien dan lihat riwayat medis.
         </p>
       </div>
+
+      {activePatientQueue ? (
+        <DoctorPatientExamination
+          key={activePatientQueue.id}
+          queue={activePatientQueue}
+          hasBlockingPatient={hasBlockingPatient}
+          onUpdateStatus={handleUpdateQueueStatus}
+          onOpenNotes={setNotesQueue}
+          onOpenCdss={setCdssQueue}
+        />
+      ) : (
+        <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center shadow-sm">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+          <h2 className="font-['Manrope'] text-xl font-bold text-zinc-900">Belum ada pasien aktif</h2>
+          <p className="mt-2 max-w-md text-sm text-slate-500">
+            Panggil pasien dari daftar antrean di bawah untuk memulai pemeriksaan.
+          </p>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-bold text-zinc-900">Antrean Poli Hari Ini</h3>
-            <p className="text-sm text-slate-500">Antrean pasien untuk departemen Anda.</p>
+            <h3 className="font-['Manrope'] text-lg font-bold text-zinc-900">Daftar Antrean</h3>
+            <p className="text-sm text-slate-500">
+              Pasien menunggu di poli {profile?.department?.name || 'Anda'}
+            </p>
           </div>
           <span className="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700">
-            {
-              departmentQueues.filter((queue) =>
-                (
-                  [
-                    QueueStatus.WAITING,
-                    QueueStatus.CALLED,
-                    QueueStatus.IN_PROGRESS,
-                  ] as QueueStatus[]
-                ).includes(queue.status)
-              ).length
-            }{' '}
-            aktif
+            {activeCount} aktif
           </span>
         </div>
 
         {isLoadingTable ? (
           <div className="flex justify-center py-10">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600" />
           </div>
         ) : errorTable ? (
           <div className="py-8 text-center text-sm font-medium text-rose-600">{errorTable}</div>
@@ -150,69 +222,91 @@ export default function DoctorQueueManagement() {
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm font-medium text-zinc-900">
                 {departmentQueues.map((queue) => {
-                  const statusLabel: Record<QueueStatus, string> = {
-                    [QueueStatus.WAITING]: 'Menunggu',
-                    [QueueStatus.CALLED]: 'Dipanggil',
-                    [QueueStatus.IN_PROGRESS]: 'Diperiksa',
-                    [QueueStatus.DONE]: 'Selesai',
-                    [QueueStatus.SKIPPED]: 'Dilewati',
-                    [QueueStatus.CANCELLED]: 'Dibatalkan',
-                  }
-
-                  const statusClasses: Record<QueueStatus, string> = {
-                    [QueueStatus.WAITING]: 'bg-slate-50 text-slate-700 border-slate-200',
-                    [QueueStatus.CALLED]: 'bg-blue-50 text-blue-700 border-blue-200',
-                    [QueueStatus.IN_PROGRESS]: 'bg-amber-50 text-amber-700 border-amber-200',
-                    [QueueStatus.DONE]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                    [QueueStatus.SKIPPED]: 'bg-gray-50 text-gray-600 border-gray-200',
-                    [QueueStatus.CANCELLED]: 'bg-rose-50 text-rose-700 border-rose-200',
-                  }
+                  const isCurrent = queue.id === activePatientQueue?.id
+                  const isBlocked =
+                    hasBlockingPatient &&
+                    activePatientQueue?.id !== queue.id &&
+                    getAllowedQueueTransitions(queue.status).some((s) =>
+                      ACTIVE_STATUSES.includes(s)
+                    )
 
                   return (
-                    <tr key={queue.id} className="transition-colors hover:bg-slate-50/70">
+                    <tr
+                      key={queue.id}
+                      className={`transition-colors ${
+                        isCurrent
+                          ? 'bg-indigo-50/80 ring-1 ring-inset ring-indigo-100'
+                          : 'hover:bg-slate-50/70'
+                      }`}
+                    >
                       <td className="p-3 pl-0 font-mono font-bold text-zinc-900">
                         {queue.department?.code || 'XX'}-{queue.queueNumber}
+                        {isCurrent && (
+                          <span className="ml-2 rounded bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                            AKTIF
+                          </span>
+                        )}
                       </td>
                       <td className="p-3">{queue.patient?.user?.name || '-'}</td>
                       <td className="p-3">
                         <span
-                          className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-bold ${statusClasses[queue.status]}`}
+                          className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-bold ${STATUS_CLASSES[queue.status]}`}
                         >
-                          {statusLabel[queue.status]}
+                          {STATUS_LABEL[queue.status]}
                         </span>
                       </td>
                       <td className="p-3 text-right">
                         <div className="flex flex-wrap items-center justify-end gap-2">
-                          {(
-                            [
-                              QueueStatus.WAITING,
-                              QueueStatus.CALLED,
-                              QueueStatus.IN_PROGRESS,
-                            ] as QueueStatus[]
-                          ).includes(queue.status) && (
+                          {ACTIVE_STATUSES.includes(queue.status) && (
                             <button
+                              type="button"
                               onClick={() => setCdssQueue(queue)}
                               className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-600 transition-colors hover:bg-violet-100"
-                              title="Analisis CDSS"
                             >
                               CDSS
                             </button>
                           )}
 
+                          {(
+                            [
+                              QueueStatus.CALLED,
+                              QueueStatus.IN_PROGRESS,
+                              QueueStatus.DONE,
+                            ] as QueueStatus[]
+                          ).includes(queue.status) && (
+                            <button
+                              type="button"
+                              onClick={() => setNotesQueue(queue)}
+                              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-700 transition-colors hover:bg-amber-100"
+                            >
+                              Catatan
+                            </button>
+                          )}
+
                           {getAllowedQueueTransitions(queue.status)
                             .filter((nextStatus) => nextStatus !== QueueStatus.CANCELLED)
-                            .map((nextStatus) => (
-                              <button
-                                key={nextStatus}
-                                onClick={() =>
-                                  handleUpdateQueueStatus(queue.id, queue.status, nextStatus)
-                                }
-                                className={QUEUE_TRANSITION_CLASSES[nextStatus]}
-                                title={QUEUE_TRANSITION_TITLES[nextStatus]}
-                              >
-                                {QUEUE_TRANSITION_LABELS[nextStatus]}
-                              </button>
-                            ))}
+                            .map((nextStatus) => {
+                              const blocked =
+                                isBlocked && ACTIVE_STATUSES.includes(nextStatus)
+                              return (
+                                <button
+                                  key={nextStatus}
+                                  type="button"
+                                  disabled={blocked}
+                                  onClick={() =>
+                                    handleUpdateQueueStatus(queue.id, queue.status, nextStatus)
+                                  }
+                                  className={`${QUEUE_TRANSITION_CLASSES[nextStatus]} disabled:cursor-not-allowed disabled:opacity-40`}
+                                  title={
+                                    blocked
+                                      ? 'Selesaikan pasien saat ini terlebih dahulu'
+                                      : QUEUE_TRANSITION_TITLES[nextStatus]
+                                  }
+                                >
+                                  {QUEUE_TRANSITION_LABELS[nextStatus]}
+                                </button>
+                              )
+                            })}
 
                           {(
                             [
@@ -222,6 +316,7 @@ export default function DoctorQueueManagement() {
                             ] as QueueStatus[]
                           ).includes(queue.status) && (
                             <button
+                              type="button"
                               onClick={() => handleCancelQueue(queue.id, queue.status)}
                               className="rounded-lg border border-transparent p-1.5 text-slate-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
                               title="Batalkan antrean"
@@ -250,9 +345,25 @@ export default function DoctorQueueManagement() {
             </table>
           </div>
         )}
+
+        {waitingQueues.length > 0 && !activePatientQueue && (
+          <p className="mt-4 text-xs text-slate-500">
+            {waitingQueues.length} pasien menunggu · Panggil nomor{' '}
+            <span className="font-bold text-indigo-700">
+              {waitingQueues[0]?.department?.code}-{waitingQueues[0]?.queueNumber}
+            </span>{' '}
+            untuk memulai
+          </p>
+        )}
       </div>
 
       <CDSSModal isOpen={!!cdssQueue} onClose={() => setCdssQueue(null)} queue={cdssQueue} />
+      <DoctorNotesModal
+        isOpen={!!notesQueue}
+        onClose={() => setNotesQueue(null)}
+        queue={notesQueue}
+        onSaved={refreshDepartmentQueues}
+      />
     </div>
   )
 }

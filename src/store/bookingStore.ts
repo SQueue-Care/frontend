@@ -1,8 +1,9 @@
 // src/store/bookingStore.ts
 import { create } from 'zustand'
+import { isAxiosError } from 'axios'
 import apiClient from '../lib/apiClient'
 import { getErrorMessage } from '../lib/errors'
-import type { BookingSchedule, DepartmentDoctor } from '../lib/types'
+import type { BookingSchedule, DepartmentAvailability, DepartmentDoctor } from '../lib/types'
 
 export type { BookingSchedule, DepartmentDoctor }
 
@@ -13,25 +14,29 @@ interface BookingResponse {
   estimatedWaitTime?: number
 }
 
+function isConflictError(error: unknown): boolean {
+  return isAxiosError(error) && error.response?.status === 409
+}
+
 interface BookingState {
   departmentDoctors: DepartmentDoctor[]
   doctorSchedules: BookingSchedule[]
+  departmentAvailability: DepartmentAvailability | null
   isLoadingDoctors: boolean
   isLoadingSchedules: boolean
   isSubmitting: boolean
   error: string | null
 
   fetchDoctorsByDepartment: (departmentId: string) => Promise<void>
-  // Update: Sekarang menerima string DayOfWeek
-  fetchSchedulesByDoctor: (doctorId: string, dayOfWeek: string) => Promise<void>
+  fetchSchedulesByDoctor: (doctorId: string, dayOfWeek: string, date: string) => Promise<void>
+  fetchDepartmentAvailability: (departmentId: string, date: string, doctorId?: string) => Promise<void>
 
-  // Fungsi baru untuk integrasi Smart Submit
   submitBooking: (payload: {
     departmentId: string
     doctorId: string
     scheduleId: string
     date: string
-    notes: string // Tambahkan ini di interface
+    notes: string
   }) => Promise<{
     id?: string
     queueNumber?: string
@@ -45,6 +50,7 @@ interface BookingState {
 export const useBookingStore = create<BookingState>((set, get) => ({
   departmentDoctors: [],
   doctorSchedules: [],
+  departmentAvailability: null,
   isLoadingDoctors: false,
   isLoadingSchedules: false,
   isSubmitting: false,
@@ -63,11 +69,24 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     }
   },
 
-  fetchSchedulesByDoctor: async (doctorId, dayOfWeek) => {
+  fetchDepartmentAvailability: async (departmentId, date, doctorId) => {
+    try {
+      const params = new URLSearchParams({ date })
+      if (doctorId) params.set('doctorId', doctorId)
+      const response = await apiClient.get(`/departments/${departmentId}/availability?${params}`)
+      set({ departmentAvailability: response.data.data })
+    } catch (error: unknown) {
+      set({ departmentAvailability: null })
+      console.warn('Gagal memuat ketersediaan:', getErrorMessage(error))
+    }
+  },
+
+  fetchSchedulesByDoctor: async (doctorId, dayOfWeek, date) => {
     set({ isLoadingSchedules: true, error: null, doctorSchedules: [] })
     try {
-      // Menggunakan endpoint /schedules dengan filter sesuai api.md
-      const response = await apiClient.get(`/schedules?doctorId=${doctorId}&dayOfWeek=${dayOfWeek}`)
+      const response = await apiClient.get(
+        `/schedules?doctorId=${doctorId}&dayOfWeek=${dayOfWeek}&date=${date}`,
+      )
       set({ doctorSchedules: response.data.data || [], isLoadingSchedules: false })
     } catch (error: unknown) {
       set({
@@ -77,54 +96,35 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     }
   },
 
-  submitBooking: async (payload: {
-    departmentId: string
-    doctorId: string
-    scheduleId: string
-    date: string
-    notes: string
-  }) => {
+  submitBooking: async (payload) => {
     set({ isSubmitting: true, error: null })
     try {
-      // 1. Ambil jam dari jadwal (Fallback ke 08:00 jika tidak ditemukan)
       const selectedSchedule = get().doctorSchedules.find((s) => s.id === payload.scheduleId)
       const startTime = selectedSchedule?.startTime || '08:00'
       const selectedDateOnly = payload.date.split('T')[0]
 
-      // 2. KOREKSI MUTLAK WAKTU: Konversi ke UTC ISO-8601 murni agar tidak ditolak Database
-      // Ini mengatasi bug waktu tertahan di 00:00:00
       const scheduledAtIso = new Date(`${selectedDateOnly}T${startTime}:00`).toISOString()
 
-      // 3. Deteksi Hari Ini dengan zona waktu lokal klien
       const now = new Date()
       const todayString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
       const isToday = selectedDateOnly === todayString
 
       let responseData: BookingResponse | null = null
 
-      // 4. Payload Universal (Memastikan backend menerima semua variasi properti yang diminta)
       const apiPayload = {
         departmentId: payload.departmentId,
         doctorId: payload.doctorId,
         scheduleId: payload.scheduleId,
-        date: selectedDateOnly, // Fallback untuk validasi strict
-        queueDate: selectedDateOnly, // Untuk tabel Queue
-        scheduledAt: scheduledAtIso, // Untuk tabel Appointment
-        notes: payload.notes || '', // Keluhan / Catatan
+        date: selectedDateOnly,
+        queueDate: selectedDateOnly,
+        scheduledAt: scheduledAtIso,
+        notes: payload.notes || '',
       }
 
       if (isToday) {
-        // Alur Pendaftaran Hari Ini -> Prioritas ke /queues
-        try {
-          const response = await apiClient.post('/queues', apiPayload)
-          responseData = response.data.data
-        } catch (queueError: unknown) {
-          console.warn('Penuh/Gagal di Queue, mengalihkan ke Appointment...', queueError)
-          const response = await apiClient.post('/appointments', apiPayload)
-          responseData = response.data.data
-        }
+        const response = await apiClient.post('/queues', apiPayload)
+        responseData = response.data.data
       } else {
-        // Alur Reservasi Masa Depan -> Langsung ke /appointments
         const response = await apiClient.post('/appointments', apiPayload)
         responseData = response.data.data
       }
@@ -142,14 +142,24 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         isAppointment: !isToday,
       }
     } catch (error: unknown) {
-      const errorMsg = getErrorMessage(error, 'Gagal mengirim pendaftaran.')
-      console.error('GAGAL SUBMIT API:', errorMsg) // Akan terlihat merah di console browser
-      set({ error: errorMsg, isSubmitting: false })
+      const conflictMsg = isConflictError(error)
+        ? getErrorMessage(
+            error,
+            'Slot penuh, silakan pilih waktu lain atau coba lagi dalam beberapa saat.',
+          )
+        : getErrorMessage(error, 'Gagal mengirim pendaftaran.')
+      set({ error: conflictMsg, isSubmitting: false })
       throw error
     }
   },
 
   resetBookingState: () => {
-    set({ departmentDoctors: [], doctorSchedules: [], error: null, isSubmitting: false })
+    set({
+      departmentDoctors: [],
+      doctorSchedules: [],
+      departmentAvailability: null,
+      error: null,
+      isSubmitting: false,
+    })
   },
 }))

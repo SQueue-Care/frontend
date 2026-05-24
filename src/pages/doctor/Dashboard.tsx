@@ -1,94 +1,44 @@
 import { useEffect, useMemo } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import DashboardShell, { type NavItem } from '../../layouts/DashboardShell'
+import DashboardShell, { type NavSection } from '../../layouts/DashboardShell'
+import NotificationBell from '../../components/shared/NotificationBell'
 import { useAuthStore } from '../../store/authStore'
 import { useDoctorStore } from '../../store/doctorStore'
+import { doctorNavIcons } from './doctorNavIcons'
 
-type DoctorView = 'dashboard' | 'appointments' | 'cdss' | 'profile'
+type DoctorView = 'dashboard' | 'queues' | 'appointments' | 'patients' | 'profile' | 'cdss' | 'notifications'
 
 const PAGE_TITLES: Record<DoctorView, string> = {
-  dashboard: 'Ruang Praktik Utama',
+  dashboard: 'Dashboard Praktik',
+  queues: 'Antrean Hari Ini',
   appointments: 'Jadwal Reservasi',
+  patients: 'Riwayat Pasien',
+  profile: 'Profil Praktik',
   cdss: 'Riwayat CDSS',
-  profile: 'Profil Medis',
+  notifications: 'Notifikasi',
 }
 
-const NAV_ITEMS: NavItem[] = [
+const VALID_VIEWS: DoctorView[] = ['dashboard', 'queues', 'appointments', 'patients', 'profile', 'cdss', 'notifications']
+
+const NAV_SECTIONS: NavSection[] = [
   {
-    id: 'dashboard',
-    label: 'Ruang Praktik',
-    icon: (
-      <svg
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        className="h-5 w-5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-        />
-      </svg>
-    ),
+    title: 'Praktik',
+    items: [
+      { id: 'dashboard', label: 'Dashboard', icon: doctorNavIcons.dashboard },
+      { id: 'queues', label: 'Antrean Hari Ini', icon: doctorNavIcons.queues },
+      { id: 'appointments', label: 'Jadwal Reservasi', icon: doctorNavIcons.appointments },
+    ],
   },
   {
-    id: 'appointments',
-    label: 'Jadwal Reservasi',
-    icon: (
-      <svg
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        className="h-5 w-5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-        />
-      </svg>
-    ),
+    title: 'Pasien',
+    items: [{ id: 'patients', label: 'Riwayat Pasien', icon: doctorNavIcons.patients }],
   },
   {
-    id: 'cdss',
-    label: 'Riwayat CDSS',
-    icon: (
-      <svg
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        className="h-5 w-5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5h.01"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: 'profile',
-    label: 'Profil Medis',
-    icon: (
-      <svg
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        className="h-5 w-5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-        />
-      </svg>
-    ),
+    title: 'Akun',
+    items: [
+      { id: 'profile', label: 'Profil Praktik', icon: doctorNavIcons.profile },
+      { id: 'cdss', label: 'Riwayat CDSS', icon: doctorNavIcons.cdss },
+    ],
   },
 ]
 
@@ -101,8 +51,7 @@ export default function DoctorLayout() {
 
   const activeView = useMemo((): DoctorView => {
     const segment = location.pathname.split('/')[2] ?? ''
-    const valid: DoctorView[] = ['dashboard', 'appointments', 'cdss', 'profile']
-    return valid.includes(segment as DoctorView) ? (segment as DoctorView) : 'dashboard'
+    return VALID_VIEWS.includes(segment as DoctorView) ? (segment as DoctorView) : 'dashboard'
   }, [location.pathname])
 
   useEffect(() => {
@@ -117,7 +66,7 @@ export default function DoctorLayout() {
 
   return (
     <DashboardShell
-      navItems={NAV_ITEMS}
+      navSections={NAV_SECTIONS}
       activeView={activeView}
       onNavigate={(id) => navigate(`/doctor/${id}`)}
       user={user ? { name: user.name, email: user.email } : null}
@@ -125,6 +74,7 @@ export default function DoctorLayout() {
       logoLabel="Doctor"
       logoAccent="Portal"
       pageTitle={PAGE_TITLES[activeView]}
+      headerExtras={<NotificationBell />}
     >
       <Outlet />
     </DashboardShell>
