@@ -62,14 +62,14 @@ function NextDestinationBanner({
           </svg>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-black tracking-widest text-teal-700 uppercase dark:text-teal-400">
+          <p className="text-[10px] tracking-widest text-teal-700 uppercase dark:text-teal-400">
             Langkah berikutnya
           </p>
-          <p className="mt-0.5 font-['Manrope'] text-base font-extrabold text-teal-950 dark:text-teal-100">
+          <p className="mt-0.5 font-['Manrope'] text-base text-teal-950 dark:text-teal-100">
             {nextDestination.instruction}
           </p>
           {locationHint && (
-            <p className="mt-1 text-xs font-semibold text-teal-800/80 dark:text-teal-300/80">
+            <p className="mt-1 text-xs text-teal-800/80 dark:text-teal-300/80">
               📍 {locationHint}
               {nextDestination.building ? ` · ${nextDestination.building}` : ''}
             </p>
@@ -79,7 +79,7 @@ function NextDestinationBanner({
               type="button"
               onClick={onPharmacyComplete}
               disabled={isPharmacyCompleting}
-              className="mt-3 rounded-lg bg-teal-600 px-4 py-2 text-[10px] font-black tracking-widest text-white uppercase transition hover:bg-teal-700 disabled:opacity-60 dark:bg-teal-700 dark:hover:bg-teal-600"
+              className="mt-3 rounded-lg bg-teal-600 px-4 py-2 text-[10px] tracking-widest text-white uppercase transition hover:bg-teal-700 disabled:opacity-60 dark:bg-teal-700 dark:hover:bg-teal-600"
             >
               {isPharmacyCompleting ? 'Menyimpan...' : 'Obat sudah diambil'}
             </button>
@@ -145,7 +145,7 @@ export default function QueueVisitFlow({
               className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${stepDotClass(step.state)}`}
               aria-hidden
             />
-            <h3 className={`text-sm font-extrabold transition-colors ${stepTitleClass(step.state)}`}>
+            <h3 className={`text-sm transition-colors ${stepTitleClass(step.state)}`}>
               {step.title}
               {step.state === 'completed' && <span className="sr-only">, selesai</span>}
               {step.state === 'current' && <span className="sr-only">, tahap saat ini</span>}
@@ -155,13 +155,13 @@ export default function QueueVisitFlow({
               {step.description}
             </p>
             {(step.locationName || step.roomName) && step.state === 'current' && (
-              <p className="mt-1 text-[10px] font-bold text-teal-700 dark:text-teal-400">
+              <p className="mt-1 text-[10px] text-teal-700 dark:text-teal-400">
                 📍 {step.roomName ?? step.locationName}
                 {step.building ? ` · ${step.building}` : ''}
               </p>
             )}
             {step.state === 'upcoming' && (
-              <p className="mt-1 text-[10px] font-bold tracking-widest text-slate-400 uppercase dark:text-zinc-600">
+              <p className="mt-1 text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-600">
                 Belum
               </p>
             )}

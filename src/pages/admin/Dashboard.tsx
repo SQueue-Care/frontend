@@ -172,15 +172,15 @@ export default function AdminLayout() {
       <NotificationBell />
       <div className="hidden h-6 w-px bg-slate-200 md:block dark:bg-zinc-800" />
       <div className="hidden flex-col text-right md:flex">
-        <span className="text-sm leading-none font-bold text-zinc-900 dark:text-zinc-100">
+        <span className="text-sm leading-none text-zinc-900 dark:text-zinc-100">
           {user?.name ?? 'Administrator'}
         </span>
-        <span className="mt-0.5 text-[11px] font-semibold tracking-wide text-teal-600 uppercase dark:text-teal-400">
+        <span className="mt-0.5 text-[11px] tracking-wide text-teal-600 uppercase dark:text-teal-400">
           {user?.role ?? 'Admin'}
         </span>
       </div>
       <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-teal-200 bg-teal-100 dark:border-zinc-700 dark:bg-zinc-800">
-        <span className="text-sm font-bold text-teal-700 dark:text-teal-400">
+        <span className="text-sm text-teal-700 dark:text-teal-400">
           {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
         </span>
       </div>

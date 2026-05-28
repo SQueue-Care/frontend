@@ -18,23 +18,19 @@ function NotificationCard({
 }) {
   return (
     <li
-      className={`rounded-3xl border bg-white p-5 shadow-sm transition-colors dark:bg-[#1e1f20] ${
-        item.isRead
-          ? 'border-slate-200 dark:border-zinc-800'
-          : 'border-teal-200 bg-teal-50/30 dark:border-teal-500/30 dark:bg-teal-500/5'
-      }`}
+      className={`rounded-3xl border bg-white p-5 shadow-sm transition-colors dark:bg-[#1e1f20] ${ item.isRead ? 'border-slate-200 dark:border-zinc-800' : 'border-teal-200 bg-teal-50/30 dark:border-teal-500/30 dark:bg-teal-500/5' }`}
     >
       <button type="button" onClick={() => onOpen(item)} className="w-full text-left">
         <div className="mb-2 flex flex-wrap items-center gap-2">
-          <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-black tracking-widest text-slate-500 uppercase dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+          <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] tracking-widest text-slate-500 uppercase dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
             {TYPE_LABELS[item.type] ?? item.type}
           </span>
           {!item.isRead && (
-            <span className="rounded-lg bg-teal-100 px-2 py-0.5 text-[10px] font-black text-teal-700 dark:bg-teal-500/20 dark:text-teal-400">
+            <span className="rounded-lg bg-teal-100 px-2 py-0.5 text-[10px] text-teal-700 dark:bg-teal-500/20 dark:text-teal-400">
               Baru
             </span>
           )}
-          <time className="ml-auto text-xs font-bold text-slate-400 dark:text-zinc-500">
+          <time className="ml-auto text-xs text-slate-400 dark:text-zinc-500">
             {new Date(item.createdAt).toLocaleString('id-ID')}
           </time>
         </div>
@@ -71,7 +67,7 @@ export default function NotificationsPage() {
           <button
             type="button"
             onClick={() => void markAllRead()}
-            className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs font-black tracking-wide text-teal-700 uppercase transition-colors hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400"
+            className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs tracking-wide text-teal-700 uppercase transition-colors hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400"
           >
             Tandai Semua Dibaca
           </button>

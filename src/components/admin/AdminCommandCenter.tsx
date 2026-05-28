@@ -96,7 +96,7 @@ export default function AdminCommandCenter() {
         {/* Grafik Performa Antrean */}
         <div className="flex min-h-[400px] flex-col rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-xl lg:col-span-2">
           <div className="mb-6 flex items-center justify-between">
-            <h3 className="font-['Manrope'] font-extrabold text-zinc-950 dark:text-zinc-100">
+            <h3 className="font-['Manrope'] text-zinc-950 dark:text-zinc-100">
               Analitik Performa Antrean
             </h3>
             <div className="w-48">
@@ -120,7 +120,7 @@ export default function AdminCommandCenter() {
 
         {/* Grafik Beban Kerja Departemen */}
         <div className="flex flex-col rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-xl">
-          <h3 className="mb-6 font-['Manrope'] font-extrabold text-zinc-950 dark:text-zinc-100">
+          <h3 className="mb-6 font-['Manrope'] text-zinc-950 dark:text-zinc-100">
             Beban Kerja Departemen
           </h3>
           <div className="flex flex-1 items-center justify-center">

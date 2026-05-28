@@ -38,7 +38,7 @@ export default function PatientVisitGuide() {
             key={step.title}
             className="flex gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-teal-600 font-black text-white shadow-lg shadow-teal-500/20">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-teal-600 text-white shadow-lg shadow-teal-500/20">
               {index + 1}
             </span>
             <div>
@@ -52,7 +52,7 @@ export default function PatientVisitGuide() {
       </ol>
 
       <div className="rounded-3xl border border-amber-200 bg-amber-50/60 p-6 dark:border-amber-900/50 dark:bg-amber-900/10">
-        <h3 className="mb-2 font-['Manrope'] text-base font-extrabold text-amber-900 dark:text-amber-200">
+        <h3 className="mb-2 font-['Manrope'] text-base text-amber-900 dark:text-amber-200">
           Tips penting
         </h3>
         <ul className="list-inside list-disc space-y-2 text-sm text-amber-900/90 dark:text-amber-100/90">

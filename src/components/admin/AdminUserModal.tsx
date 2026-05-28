@@ -64,32 +64,32 @@ function AdminUserModalInner({
 
         {/* Informasi Akun */}
         <div className="mb-6 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
-          <h3 className="mb-4 text-sm font-bold tracking-wide text-slate-700 uppercase">
+          <h3 className="mb-4 text-sm tracking-wide text-slate-700 uppercase">
             Informasi Akun
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Nama</p>
+              <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Nama</p>
               <p className="text-sm font-medium text-slate-900">
                 {user.user?.name || user.name || '-'}
               </p>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Email</p>
+              <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Email</p>
               <p className="text-sm font-medium text-slate-900">
                 {user.user?.email || user.email || '-'}
               </p>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Role</p>
+              <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Role</p>
               <p className="text-sm font-medium text-slate-900">
                 {user.user?.role || user.role || '-'}
               </p>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Status Saat Ini</p>
+              <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Status Saat Ini</p>
               <span
-                className={`inline-block rounded-md border px-2.5 py-1 text-xs font-bold ${user.user?.isActive !== false ? 'border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400'}`}
+                className={`inline-block rounded-md border px-2.5 py-1 text-xs ${user.user?.isActive !== false ? 'border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400'}`}
               >
                 {user.user?.isActive !== false ? 'Aktif' : 'Blokir'}
               </span>
@@ -100,26 +100,26 @@ function AdminUserModalInner({
         {/* Informasi Profil Pasien */}
         {(user.user?.role === 'PATIENT' || user.role === 'PATIENT') && (
           <div className="mb-6 rounded-lg border border-blue-200 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 p-4">
-            <h3 className="mb-4 text-sm font-bold tracking-wide text-slate-700 uppercase">
+            <h3 className="mb-4 text-sm tracking-wide text-slate-700 uppercase">
               Informasi Profil Pasien
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">NIK</p>
+                <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">NIK</p>
                 <p className="font-mono text-sm font-medium text-slate-900">{user.nik || '-'}</p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Nomor BPJS</p>
+                <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Nomor BPJS</p>
                 <p className="font-mono text-sm font-medium text-slate-900">
                   {user.bpjsNumber || '-'}
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Telepon</p>
+                <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Telepon</p>
                 <p className="text-sm font-medium text-slate-900">{user.phone || '-'}</p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Jenis Kelamin</p>
+                <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Jenis Kelamin</p>
                 <p className="text-sm font-medium text-slate-900">
                   {user.gender === 'MALE'
                     ? 'Laki-laki'
@@ -129,7 +129,7 @@ function AdminUserModalInner({
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Tanggal Lahir</p>
+                <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Tanggal Lahir</p>
                 <p className="text-sm font-medium text-slate-900">
                   {user.birthDate
                     ? new Date(user.birthDate).toLocaleDateString('id-ID', {
@@ -141,7 +141,7 @@ function AdminUserModalInner({
                 </p>
               </div>
               <div className="col-span-2">
-                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Alamat</p>
+                <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Alamat</p>
                 <p className="text-sm font-medium text-slate-900">{user.address || '-'}</p>
               </div>
             </div>
@@ -151,16 +151,16 @@ function AdminUserModalInner({
         {/* Informasi Profil Dokter */}
         {(user.user?.role === 'DOCTOR' || user.role === 'DOCTOR') && (
           <div className="mb-6 rounded-lg border border-purple-200 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 p-4">
-            <h3 className="mb-4 text-sm font-bold tracking-wide text-slate-700 uppercase">
+            <h3 className="mb-4 text-sm tracking-wide text-slate-700 uppercase">
               Informasi Profil Dokter
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">Spesialisasi</p>
+                <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">Spesialisasi</p>
                 <p className="text-sm font-medium text-slate-900">{user.specialization || '-'}</p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">
+                <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">
                   Rata-rata Layanan
                 </p>
                 <p className="text-sm font-medium text-slate-900">
@@ -173,7 +173,7 @@ function AdminUserModalInner({
 
         {/* Status Akun Edit */}
         <div className="mb-6 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
-          <label className="mb-3 block text-sm font-semibold text-slate-700">
+          <label className="mb-3 block text-sm text-slate-700">
             Ubah Status Akun
           </label>
           <div className="flex gap-4">
@@ -203,14 +203,14 @@ function AdminUserModalInner({
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 font-semibold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800"
           >
             Batal
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-70"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-70"
           >
             {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
           </button>

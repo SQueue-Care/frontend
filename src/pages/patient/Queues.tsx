@@ -49,7 +49,7 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
         <div className="no-scrollbar overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/80 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
+              <tr className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                 <th className="p-6 pl-8">Layanan Medis</th>
                 <th className="p-6">Tgl. Kunjungan</th>
                 <th className="p-6">Jam Kunjungan</th>
@@ -62,7 +62,7 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
                 <tr>
                   <td
                     colSpan={5}
-                    className="animate-pulse p-16 text-center text-xs font-bold tracking-widest text-teal-700 uppercase dark:text-teal-500"
+                    className="animate-pulse p-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500"
                   >
                     Menyinkronkan riwayat...
                   </td>
@@ -84,15 +84,15 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
                     onClick={() => navigate(`/portal/queues/${item.id}`)}
                   >
                     <td className="p-6 pl-8 align-top">
-                      <div className="mb-1 text-base font-extrabold text-zinc-900 dark:text-white">
+                      <div className="mb-1 text-base text-zinc-900 dark:text-white">
                         {item?.department?.name ?? 'Poliklinik'}
                       </div>
-                      <div className="text-[11px] font-bold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+                      <div className="text-[11px] tracking-wide text-slate-500 uppercase dark:text-slate-400">
                         {item?.doctor?.user?.name ?? 'Dokter belum ditentukan'}
                       </div>
                     </td>
                     <td className="p-6 align-top">
-                      <div className="font-extrabold text-zinc-900 dark:text-white">
+                      <div className="text-zinc-900 dark:text-white">
                         {new Date(item.queueDate).toLocaleDateString('id-ID', {
                           day: '2-digit',
                           month: 'short',
@@ -101,7 +101,7 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
                       </div>
                     </td>
                     <td className="p-6 align-top">
-                      <div className="inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-[10px] font-black tracking-widest text-slate-600 uppercase dark:bg-slate-900/50 dark:text-slate-400">
+                      <div className="inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-[10px] tracking-widest text-slate-600 uppercase dark:bg-slate-900/50 dark:text-slate-400">
                         {new Date(item.queueDate).toLocaleTimeString('id-ID', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -123,7 +123,7 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
                     </td>
                     <td className="p-6 pr-8 text-right align-top">
                       <span
-                        className={`inline-flex min-w-[120px] items-center justify-center rounded-lg border px-3.5 py-1.5 text-[10px] font-black tracking-widest uppercase transition-colors ${QUEUE_STATUS_STYLES[item.status] ?? 'border-slate-200 bg-slate-50 text-slate-500'}`}
+                        className={`inline-flex min-w-[120px] items-center justify-center rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${QUEUE_STATUS_STYLES[item.status] ?? 'border-slate-200 bg-slate-50 text-slate-500'}`}
                       >
                         {QUEUE_STATUS_LABELS[item.status] ?? item.status}
                       </span>

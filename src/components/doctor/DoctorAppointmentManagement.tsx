@@ -105,10 +105,10 @@ export default function DoctorAppointmentManagement() {
   return (
     <div className="animate-in fade-in duration-500">
       <div className="mb-8">
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100 ">
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
           Jadwal Reservasi Pasien
         </h1>
-        <p className="text-slate-600 transition-colors dark:text-zinc-300 ">
+        <p className="text-slate-600 transition-colors dark:text-zinc-300">
           Kelola dan perbarui status reservasi pasien yang terjadwal dengan Anda.
         </p>
       </div>
@@ -154,7 +154,7 @@ export default function DoctorAppointmentManagement() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-100 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] text-[10px] font-black tracking-widest text-slate-500 transition-colors dark:text-zinc-400 uppercase">
+              <thead className="border-b border-slate-100 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] text-[10px] tracking-widest text-slate-500 transition-colors dark:text-zinc-400 uppercase">
                 <tr>
                   <th className="p-5 pl-8">Nama Pasien</th>
                   <th className="p-5">Tanggal</th>
@@ -165,7 +165,7 @@ export default function DoctorAppointmentManagement() {
                   <th className="p-5 pr-8 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 transition-colors dark:divide-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] text-sm font-medium text-zinc-900 transition-colors dark:text-zinc-100 ">
+              <tbody className="divide-y divide-slate-100 transition-colors dark:divide-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] text-sm font-medium text-zinc-900 transition-colors dark:text-zinc-100">
                 {filteredAppointments.map((apt) => {
                   const statusClasses: Record<string, string> = {
                     BOOKED: 'bg-amber-50 transition-colors dark:bg-amber-500/10 text-amber-600 transition-colors dark:text-amber-400 border-amber-200 transition-colors dark:border-amber-500/20 ',
@@ -182,10 +182,10 @@ export default function DoctorAppointmentManagement() {
 
                   return (
                     <tr key={apt.id} className="group transition-colors hover:bg-slate-50/50">
-                      <td className="p-5 pl-8 font-extrabold text-zinc-950 transition-colors dark:text-zinc-100 uppercase transition-colors group-hover:text-indigo-600">
+                      <td className="p-5 pl-8 text-zinc-950 transition-colors dark:text-zinc-100 uppercase transition-colors group-hover:text-indigo-600">
                         {apt.patient?.user?.name || '-'}
                       </td>
-                      <td className="p-5 font-bold text-slate-700 transition-colors dark:text-zinc-300 ">
+                      <td className="p-5 text-slate-700 transition-colors dark:text-zinc-300">
                         {new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
                           year: 'numeric',
                           month: 'short',
@@ -193,22 +193,22 @@ export default function DoctorAppointmentManagement() {
                         })}
                       </td>
                       <td className="p-5">
-                        <span className="rounded-md border border-slate-200 transition-colors dark:border-zinc-800 bg-slate-100 transition-colors dark:bg-[#1e1f20] px-2 py-1 font-mono text-[11px] font-black tracking-widest text-slate-600 transition-colors dark:text-zinc-300 ">
+                        <span className="rounded-md border border-slate-200 transition-colors dark:border-zinc-800 bg-slate-100 transition-colors dark:bg-[#1e1f20] px-2 py-1 font-mono text-[11px] tracking-widest text-slate-600 transition-colors dark:text-zinc-300">
                           {new Date(apt.scheduledAt).toLocaleTimeString('id-ID', {
                             hour: '2-digit',
                             minute: '2-digit',
                           })}
                         </span>
                       </td>
-                      <td className="p-5 font-mono text-xs font-bold text-slate-400 transition-colors dark:text-zinc-500 ">
+                      <td className="p-5 font-mono text-xs text-slate-400 transition-colors dark:text-zinc-500">
                         {apt.patient?.nik || '-'}
                       </td>
-                      <td className="max-w-xs truncate p-5 text-xs text-slate-600 transition-colors dark:text-zinc-300 ">
+                      <td className="max-w-xs truncate p-5 text-xs text-slate-600 transition-colors dark:text-zinc-300">
                         {apt.notes || '-'}
                       </td>
                       <td className="p-5">
                         <span
-                          className={`rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase ${statusClasses[apt.status] || 'border-slate-200 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] text-slate-600 transition-colors dark:text-zinc-300 '}`}
+                          className={`rounded-lg border px-3 py-1 text-[10px] tracking-widest uppercase ${statusClasses[apt.status] || 'border-slate-200 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] text-slate-600 transition-colors dark:text-zinc-300 '}`}
                         >
                           {statusLabel[apt.status] || apt.status}
                         </span>
@@ -276,17 +276,17 @@ export default function DoctorAppointmentManagement() {
         <div className="animate-in fade-in fixed inset-0 z-70 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm duration-300">
           <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] shadow-2xl">
             <div className="border-b border-slate-100 transition-colors dark:border-zinc-800 bg-rose-50/30 p-6">
-              <h3 className="text-lg font-black tracking-tighter text-zinc-900 transition-colors dark:text-zinc-100 uppercase">
+              <h3 className="text-lg tracking-tighter text-zinc-900 transition-colors dark:text-zinc-100 uppercase">
                 Konfirmasi Pembatalan
               </h3>
-              <p className="mt-0.5 text-xs font-medium text-slate-500 transition-colors dark:text-zinc-400 ">
+              <p className="mt-0.5 text-xs font-medium text-slate-500 transition-colors dark:text-zinc-400">
                 Berikan alasan medis atau operasional terkait pembatalan ini.
               </p>
             </div>
             <form onSubmit={handleDoctorCancelAppointment}>
               <div className="space-y-4 p-6">
                 <div>
-                  <label className="mb-2 block text-[10px] font-black tracking-widest text-slate-400 transition-colors dark:text-zinc-500 uppercase">
+                  <label className="mb-2 block text-[10px] tracking-widest text-slate-400 transition-colors dark:text-zinc-500 uppercase">
                     Alasan Catatan Pembatalan
                   </label>
                   <textarea
@@ -307,13 +307,13 @@ export default function DoctorAppointmentManagement() {
                     setSelectedCancelAptId(null)
                     setCancellationReason('')
                   }}
-                  className="rounded-xl border border-slate-200 transition-colors dark:border-zinc-800 px-4 py-2.5 text-xs font-semibold tracking-widest text-slate-600 transition-colors dark:text-zinc-300 uppercase transition-colors hover:bg-slate-100 transition-colors dark:hover:bg-zinc-800 "
+                  className="rounded-xl border border-slate-200 transition-colors dark:border-zinc-800 px-4 py-2.5 text-xs tracking-widest text-slate-600 transition-colors dark:text-zinc-300 uppercase transition-colors hover:bg-slate-100 transition-colors dark:hover:bg-zinc-800"
                 >
                   Kembali
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-rose-600 px-4 py-2.5 text-xs font-black tracking-widest text-white uppercase shadow-lg shadow-rose-600/10 transition-colors hover:bg-rose-700"
+                  className="rounded-xl bg-rose-600 px-4 py-2.5 text-xs tracking-widest text-white uppercase shadow-lg shadow-rose-600/10 transition-colors hover:bg-rose-700"
                 >
                   Konfirmasi Batal
                 </button>

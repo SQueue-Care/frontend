@@ -23,7 +23,7 @@ export default function PatientPrescriptions() {
       </p>
 
       {isLoadingTable ? (
-        <div className="py-16 text-center text-xs font-bold tracking-widest text-teal-700 uppercase dark:text-teal-500">
+        <div className="py-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500">
           Memuat data resep...
         </div>
       ) : visitsWithNotes.length === 0 ? (
@@ -44,7 +44,7 @@ export default function PatientPrescriptions() {
                   <h2 className="font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-white">
                     {visit.department?.name ?? 'Poliklinik'}
                   </h2>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {visit.doctor?.user?.name ?? 'Dokter'} ·{' '}
                     {new Date(visit.queueDate).toLocaleDateString('id-ID', {
                       day: 'numeric',
@@ -56,7 +56,7 @@ export default function PatientPrescriptions() {
                 <button
                   type="button"
                   onClick={() => navigate(`/portal/queues/${visit.id}`)}
-                  className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs font-black text-teal-700 transition-colors hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400 dark:hover:bg-teal-500/20"
+                  className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs text-teal-700 transition-colors hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400 dark:hover:bg-teal-500/20"
                 >
                   Detail Kunjungan
                 </button>

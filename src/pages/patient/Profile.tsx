@@ -18,11 +18,11 @@ function ProfileField({
 }) {
   return (
     <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-zinc-800/50 dark:bg-[#131314]/50">
-      <label className="mb-1 block text-[9px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+      <label className="mb-1 block text-[9px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
         {label}
       </label>
       <div
-        className={`text-xs font-bold text-zinc-900 dark:text-zinc-100 ${mono ? 'font-mono tracking-wider' : ''}`}
+        className={`text-xs text-zinc-900 dark:text-zinc-100 ${mono ? 'font-mono tracking-wider' : ''}`}
       >
         {value || (
           <span className="font-sans text-[11px] font-medium text-slate-400 italic dark:text-zinc-600">
@@ -177,7 +177,7 @@ export default function PatientProfile() {
               <div className="pointer-events-none absolute top-0 right-0 h-48 w-48 translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-50 blur-3xl dark:bg-teal-900/10" />
               <div className="relative z-10 flex items-center gap-4">
                 <div className="relative shrink-0">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-teal-100 bg-teal-50 text-2xl font-black text-teal-600 shadow-sm dark:border-zinc-800 dark:bg-[#131314] dark:text-teal-400">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-teal-100 bg-teal-50 text-2xl text-teal-600 shadow-sm dark:border-zinc-800 dark:bg-[#131314] dark:text-teal-400">
                     {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                   </div>
                   <div className="absolute -right-1 -bottom-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-emerald-500 dark:border-[#1e1f20] dark:bg-emerald-600">
@@ -203,7 +203,7 @@ export default function PatientProfile() {
                   <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-zinc-400">
                     {user?.email ?? 'email@contoh.com'}
                   </p>
-                  <span className="inline-flex rounded border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[9px] font-black tracking-widest text-emerald-700 uppercase dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                  <span className="inline-flex rounded border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[9px] tracking-widest text-emerald-700 uppercase dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
                     Pasien Terverifikasi
                   </span>
                 </div>
@@ -211,7 +211,7 @@ export default function PatientProfile() {
               {!isEditing && (
                 <button
                   onClick={startEditing}
-                  className="relative z-10 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-zinc-900 shadow-sm transition-all outline-none hover:border-teal-500 hover:bg-slate-50 sm:w-auto dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-100 dark:hover:border-teal-800 dark:hover:bg-zinc-800"
+                  className="relative z-10 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs text-zinc-900 shadow-sm transition-all outline-none hover:border-teal-500 hover:bg-slate-50 sm:w-auto dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-100 dark:hover:border-teal-800 dark:hover:bg-zinc-800"
                 >
                   Edit Profil
                 </button>
@@ -220,7 +220,7 @@ export default function PatientProfile() {
 
             <form onSubmit={handleSave} className="p-6">
               <div className="mb-6">
-                <h3 className="mb-4 border-b border-slate-100 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:text-zinc-500">
+                <h3 className="mb-4 border-b border-slate-100 pb-2 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:text-zinc-500">
                   Identitas Medis Pribadi
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -309,7 +309,7 @@ export default function PatientProfile() {
               </div>
 
               <div className="mb-2">
-                <h3 className="mb-4 border-b border-slate-100 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:text-zinc-500">
+                <h3 className="mb-4 border-b border-slate-100 pb-2 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:text-zinc-500">
                   Domisili
                 </h3>
                 <div className="w-full rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-zinc-800/50 dark:bg-[#131314]/50">
@@ -323,7 +323,7 @@ export default function PatientProfile() {
                       rows={2}
                     />
                   ) : (
-                    <div className="text-xs leading-relaxed font-bold text-zinc-900 dark:text-zinc-100">
+                    <div className="text-xs leading-relaxed text-zinc-900 dark:text-zinc-100">
                       {formData.address || (
                         <span className="text-[11px] font-medium text-slate-400 italic dark:text-zinc-600">
                           Alamat belum ditambahkan.
@@ -339,14 +339,14 @@ export default function PatientProfile() {
                   <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="rounded-lg border border-transparent bg-slate-100 px-4 py-2 text-xs font-extrabold text-slate-600 transition-colors outline-none hover:bg-slate-200 dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-400 dark:hover:bg-zinc-800"
+                    className="rounded-lg border border-transparent bg-slate-100 px-4 py-2 text-xs text-slate-600 transition-colors outline-none hover:bg-slate-200 dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-400 dark:hover:bg-zinc-800"
                   >
                     Batalkan
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-teal-500/10 transition-all outline-none hover:bg-teal-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-teal-700 dark:hover:bg-teal-600"
+                    className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-xs text-white shadow-md shadow-teal-500/10 transition-all outline-none hover:bg-teal-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-teal-700 dark:hover:bg-teal-600"
                   >
                     {isSaving ? (
                       <>

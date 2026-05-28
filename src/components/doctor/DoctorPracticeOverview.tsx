@@ -45,28 +45,28 @@ export default function DoctorPracticeOverview() {
   return (
     <div className="animate-in fade-in space-y-6 duration-500">
       <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100 ">Dashboard Praktik</h1>
-        <p className="text-slate-600 transition-colors dark:text-zinc-300 ">
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">Dashboard Praktik</h1>
+        <p className="text-slate-600 transition-colors dark:text-zinc-300">
           Selamat datang, {user?.name}. Ringkasan praktik hari ini di {profile?.department?.name ?? 'poli Anda'}.
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm">
-          <p className="text-xs font-bold text-slate-500 transition-colors dark:text-zinc-400 uppercase">Total Hari Ini</p>
-          <p className="mt-1 text-3xl font-extrabold text-zinc-900 transition-colors dark:text-zinc-100 ">{stats.total}</p>
+          <p className="text-xs text-slate-500 transition-colors dark:text-zinc-400 uppercase">Total Hari Ini</p>
+          <p className="mt-1 text-3xl text-zinc-900 transition-colors dark:text-zinc-100">{stats.total}</p>
         </div>
         <div className="rounded-2xl border border-amber-100 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 p-5">
-          <p className="text-xs font-bold text-amber-700 transition-colors dark:text-amber-400 uppercase">Menunggu</p>
-          <p className="mt-1 text-3xl font-extrabold text-amber-800">{stats.waiting}</p>
+          <p className="text-xs text-amber-700 transition-colors dark:text-amber-400 uppercase">Menunggu</p>
+          <p className="mt-1 text-3xl text-amber-800">{stats.waiting}</p>
         </div>
         <div className="rounded-2xl border border-indigo-100 transition-colors dark:border-indigo-800/50 bg-indigo-50 transition-colors dark:bg-indigo-900/20 p-5">
-          <p className="text-xs font-bold text-indigo-700 transition-colors dark:text-indigo-400 uppercase">Sedang Dilayani</p>
-          <p className="mt-1 text-3xl font-extrabold text-indigo-800 transition-colors dark:text-indigo-300 ">{stats.inProgress}</p>
+          <p className="text-xs text-indigo-700 transition-colors dark:text-indigo-400 uppercase">Sedang Dilayani</p>
+          <p className="mt-1 text-3xl text-indigo-800 transition-colors dark:text-indigo-300">{stats.inProgress}</p>
         </div>
         <div className="rounded-2xl border border-emerald-100 transition-colors dark:border-emerald-500/20 bg-emerald-50 transition-colors dark:bg-emerald-500/10 p-5">
-          <p className="text-xs font-bold text-emerald-700 uppercase">Selesai</p>
-          <p className="mt-1 text-3xl font-extrabold text-emerald-800">{stats.done}</p>
+          <p className="text-xs text-emerald-700 uppercase">Selesai</p>
+          <p className="mt-1 text-3xl text-emerald-800">{stats.done}</p>
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export default function DoctorPracticeOverview() {
           <h2 className="font-['Manrope'] text-lg font-bold text-indigo-900">Pasien Saat Ini</h2>
           <Link
             to="/doctor/queues"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-xs text-white hover:bg-indigo-700"
           >
             Buka Antrean
           </Link>
@@ -86,21 +86,21 @@ export default function DoctorPracticeOverview() {
           </div>
         ) : activePatient ? (
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-xl font-black text-white">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-xl text-white">
               {activePatient.queueNumber}
             </div>
             <div>
-              <p className="text-lg font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">{activePatient.patient?.user?.name}</p>
-              <p className="text-sm text-indigo-700 transition-colors dark:text-indigo-400 ">
+              <p className="text-lg text-zinc-900 transition-colors dark:text-zinc-100">{activePatient.patient?.user?.name}</p>
+              <p className="text-sm text-indigo-700 transition-colors dark:text-indigo-400">
                 Status:{' '}
                 {activePatient.status === QueueStatus.IN_PROGRESS ? 'Sedang diperiksa' : 'Sudah dipanggil'}
               </p>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-slate-600 transition-colors dark:text-zinc-300 ">
+          <p className="text-sm text-slate-600 transition-colors dark:text-zinc-300">
             Belum ada pasien aktif. Panggil pasien dari{' '}
-            <Link to="/doctor/queues" className="font-bold text-indigo-600 transition-colors dark:text-indigo-400 underline">
+            <Link to="/doctor/queues" className="text-indigo-600 transition-colors dark:text-indigo-400 underline">
               antrean hari ini
             </Link>
             .
@@ -113,22 +113,22 @@ export default function DoctorPracticeOverview() {
           to="/doctor/queues"
           className="rounded-xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md"
         >
-          <p className="font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Antrean Hari Ini</p>
-          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400 ">Kelola pemeriksaan & catatan medis</p>
+          <p className="text-zinc-900 transition-colors dark:text-zinc-100">Antrean Hari Ini</p>
+          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400">Kelola pemeriksaan & catatan medis</p>
         </Link>
         <Link
           to="/doctor/appointments"
           className="rounded-xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md"
         >
-          <p className="font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Jadwal Reservasi</p>
-          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400 ">Lihat reservasi mendatang</p>
+          <p className="text-zinc-900 transition-colors dark:text-zinc-100">Jadwal Reservasi</p>
+          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400">Lihat reservasi mendatang</p>
         </Link>
         <Link
           to="/doctor/patients"
           className="rounded-xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md"
         >
-          <p className="font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Riwayat Pasien</p>
-          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400 ">Cari & lihat rekam medis</p>
+          <p className="text-zinc-900 transition-colors dark:text-zinc-100">Riwayat Pasien</p>
+          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400">Cari & lihat rekam medis</p>
         </Link>
       </div>
     </div>

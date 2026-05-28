@@ -33,22 +33,14 @@ export default function PatientVisitHistory() {
         <button
           type="button"
           onClick={() => setTab('queues')}
-          className={`rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
-            activeTab === 'queues'
-              ? 'bg-white text-teal-700 shadow-sm dark:bg-[#1e1f20] dark:text-teal-400'
-              : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200'
-          }`}
+          className={`rounded-xl px-5 py-2.5 text-sm transition-all ${ activeTab === 'queues' ? 'bg-white text-teal-700 shadow-sm dark:bg-[#1e1f20] dark:text-teal-400' : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200' }`}
         >
           Riwayat Antrean
         </button>
         <button
           type="button"
           onClick={() => setTab('reservations')}
-          className={`rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
-            activeTab === 'reservations'
-              ? 'bg-white text-teal-700 shadow-sm dark:bg-[#1e1f20] dark:text-teal-400'
-              : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200'
-          }`}
+          className={`rounded-xl px-5 py-2.5 text-sm transition-all ${ activeTab === 'reservations' ? 'bg-white text-teal-700 shadow-sm dark:bg-[#1e1f20] dark:text-teal-400' : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200' }`}
         >
           Jadwal Reservasi
         </button>

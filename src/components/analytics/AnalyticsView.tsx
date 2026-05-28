@@ -233,7 +233,7 @@ export default function AnalyticsView() {
           <button
             onClick={handleApplyFilter}
             disabled={loading}
-            className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-700 disabled:bg-slate-400"
+            className="rounded-lg bg-teal-600 px-4 py-2 text-sm text-white transition-colors hover:bg-teal-700 disabled:bg-slate-400"
           >
             {loading ? 'Memuat...' : 'Terapkan Filter'}
           </button>
@@ -242,7 +242,7 @@ export default function AnalyticsView() {
               onClick={() => {
                 setPresetDates(1)
               }}
-              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs font-bold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
+              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
             >
               Hari Ini
             </button>
@@ -250,7 +250,7 @@ export default function AnalyticsView() {
               onClick={() => {
                 setPresetDates(7)
               }}
-              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs font-bold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
+              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
             >
               7 Hari
             </button>
@@ -258,7 +258,7 @@ export default function AnalyticsView() {
               onClick={() => {
                 setPresetDates(30)
               }}
-              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs font-bold text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
+              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
             >
               30 Hari
             </button>
@@ -269,37 +269,37 @@ export default function AnalyticsView() {
       {/* KPI Cards */}
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-          <p className="mb-2 text-sm font-semibold text-slate-500 dark:text-zinc-400">Total Antrian</p>
-          <p className="text-3xl font-extrabold text-teal-600">{analytics.summary.totalQueues}</p>
+          <p className="mb-2 text-sm text-slate-500 dark:text-zinc-400">Total Antrian</p>
+          <p className="text-3xl text-teal-600">{analytics.summary.totalQueues}</p>
         </div>
         <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-          <p className="mb-2 text-sm font-semibold text-slate-500 dark:text-zinc-400">Tingkat Selesai</p>
-          <p className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">
+          <p className="mb-2 text-sm text-slate-500 dark:text-zinc-400">Tingkat Selesai</p>
+          <p className="text-3xl text-emerald-600 dark:text-emerald-400">
             {analytics.summary.completionRate}%
           </p>
         </div>
         <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-          <p className="mb-2 text-sm font-semibold text-slate-500 dark:text-zinc-400">Rata-rata Tunggu</p>
-          <p className="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400">
+          <p className="mb-2 text-sm text-slate-500 dark:text-zinc-400">Rata-rata Tunggu</p>
+          <p className="text-3xl text-indigo-600 dark:text-indigo-400">
             {analytics.summary.avgWaitMinutes}m
           </p>
         </div>
         <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-          <p className="mb-2 text-sm font-semibold text-slate-500 dark:text-zinc-400">Total Reservasi</p>
-          <p className="text-3xl font-extrabold text-amber-600 dark:text-amber-400">{appointments?.total || 0}</p>
+          <p className="mb-2 text-sm text-slate-500 dark:text-zinc-400">Total Reservasi</p>
+          <p className="text-3xl text-amber-600 dark:text-amber-400">{appointments?.total || 0}</p>
         </div>
       </div>
 
       {/* Charts */}
       <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-          <h3 className="mb-6 font-bold text-zinc-950 dark:text-zinc-100">Tren Harian</h3>
+          <h3 className="mb-6 text-zinc-950 dark:text-zinc-100">Tren Harian</h3>
           <div className="h-80">
             <Line data={lineChartData} options={lineChartOptions} />
           </div>
         </div>
         <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-          <h3 className="mb-6 font-bold text-zinc-950 dark:text-zinc-100">Perbandingan Departemen</h3>
+          <h3 className="mb-6 text-zinc-950 dark:text-zinc-100">Perbandingan Departemen</h3>
           <div className="h-80">
             <Bar data={barChartData} options={barChartOptions} />
           </div>
@@ -308,27 +308,27 @@ export default function AnalyticsView() {
 
       {/* Table */}
       <div className="mb-8 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-        <h3 className="mb-6 text-lg font-bold text-zinc-950 dark:text-zinc-100">Detail per Departemen</h3>
+        <h3 className="mb-6 text-lg text-zinc-950 dark:text-zinc-100">Detail per Departemen</h3>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead className="border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314]">
               <tr>
-                <th className="p-4 pl-6 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
+                <th className="p-4 pl-6 text-xs tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Departemen
                 </th>
-                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
+                <th className="p-4 text-xs tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Total
                 </th>
-                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
+                <th className="p-4 text-xs tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Selesai
                 </th>
-                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
+                <th className="p-4 text-xs tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Dibatalkan
                 </th>
-                <th className="p-4 text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
+                <th className="p-4 text-xs tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Selesai %
                 </th>
-                <th className="p-4 pr-6 text-right text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
+                <th className="p-4 pr-6 text-right text-xs tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
                   Avg Tunggu
                 </th>
               </tr>
@@ -339,7 +339,7 @@ export default function AnalyticsView() {
                   key={dept.departmentId}
                   className="border-b border-slate-100 dark:border-zinc-800 transition-colors last:border-0 hover:bg-slate-50/50 dark:hover:bg-[#131314]/50"
                 >
-                  <td className="p-4 pl-6 font-bold">{dept.name}</td>
+                  <td className="p-4 pl-6">{dept.name}</td>
                   <td className="p-4">{dept.total}</td>
                   <td className="p-4">{dept.done}</td>
                   <td className="p-4">{dept.cancelled}</td>
@@ -356,7 +356,7 @@ export default function AnalyticsView() {
 
       {/* Reservasi Summary */}
       <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-        <h3 className="mb-6 text-lg font-bold text-zinc-950 dark:text-zinc-100">Ringkasan Reservasi</h3>
+        <h3 className="mb-6 text-lg text-zinc-950 dark:text-zinc-100">Ringkasan Reservasi</h3>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
           {appointments &&
             Object.entries(appointments.byStatus).map(([status, count]) => (
@@ -364,8 +364,8 @@ export default function AnalyticsView() {
                 key={status}
                 className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4 text-center"
               >
-                <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{count}</p>
-                <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase">{status}</p>
+                <p className="text-2xl text-zinc-900 dark:text-zinc-100">{count}</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400 uppercase">{status}</p>
               </div>
             ))}
         </div>

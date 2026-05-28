@@ -92,7 +92,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
         <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white transition-colors dark:bg-[#1e1f20] shadow-lg">
           {/* Header */}
           <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] px-6 py-4">
-            <h2 className="text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">🧠 Analisis CDSS</h2>
+            <h2 className="text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100">🧠 Analisis CDSS</h2>
             <button
               onClick={onClose}
               className="text-slate-400 transition-colors dark:text-zinc-500 transition-colors hover:text-slate-600"
@@ -105,7 +105,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
           <div className="space-y-6 p-6">
             {/* Notes Input */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-zinc-700 transition-colors dark:text-zinc-300 ">
+              <label className="mb-2 block text-sm text-zinc-700 transition-colors dark:text-zinc-300">
                 Catatan Pasien
               </label>
               <textarea
@@ -122,7 +122,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
             <button
               onClick={handleAnalyze}
               disabled={isLoading || !notes.trim()}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-3 font-bold text-white transition-colors hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-3 text-white transition-colors hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isLoading ? (
                 <>
@@ -139,7 +139,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
             {/* Existing result indicator */}
             {hasExistingResult && (
               <div className="rounded-lg border border-emerald-200 transition-colors dark:border-emerald-500/20 bg-emerald-50 transition-colors dark:bg-emerald-500/10 p-3 text-center">
-                <p className="text-sm font-semibold text-emerald-700">
+                <p className="text-sm text-emerald-700">
                   ✓ Hasil analisis sudah ada di database
                 </p>
               </div>
@@ -148,7 +148,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
             {/* Error Message */}
             {error && (
               <div className="rounded-lg border border-rose-200 transition-colors dark:border-rose-500/20 bg-rose-50 transition-colors dark:bg-rose-500/10 px-4 py-3">
-                <p className="text-sm font-medium text-rose-600 transition-colors dark:text-rose-400 ">❌ {error}</p>
+                <p className="text-sm font-medium text-rose-600 transition-colors dark:text-rose-400">❌ {error}</p>
               </div>
             )}
 
@@ -157,7 +157,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
               <>
                 {/* Candidates */}
                 <div>
-                  <h3 className="mb-3 text-sm font-bold tracking-widest text-zinc-700 transition-colors dark:text-zinc-300 uppercase">
+                  <h3 className="mb-3 text-sm tracking-widest text-zinc-700 transition-colors dark:text-zinc-300 uppercase">
                     Kandidat Diagnosis
                   </h3>
                   <div className="space-y-3">
@@ -168,13 +168,13 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
                       >
                         <div className="mb-2 flex items-start justify-between">
                           <div className="flex-1">
-                            <p className="font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">
+                            <p className="text-zinc-900 transition-colors dark:text-zinc-100">
                               {idx + 1}. {candidate.diagnosis}
                             </p>
                           </div>
                           {candidate.urgency && (
                             <span
-                              className={`rounded-md border px-2.5 py-1 text-[11px] font-bold ${getUrgencyBadgeClasses(candidate.urgency)}`}
+                              className={`rounded-md border px-2.5 py-1 text-[11px] ${getUrgencyBadgeClasses(candidate.urgency)}`}
                             >
                               {candidate.urgency === 'high' && '🔴'}
                               {candidate.urgency === 'medium' && '🟡'}
@@ -187,8 +187,8 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
                         {/* Confidence Bar */}
                         <div className="mb-3">
                           <div className="mb-1 flex items-center justify-between">
-                            <span className="text-xs text-slate-600 transition-colors dark:text-zinc-300 ">Confidence</span>
-                            <span className="text-xs font-bold text-slate-700 transition-colors dark:text-zinc-300 ">
+                            <span className="text-xs text-slate-600 transition-colors dark:text-zinc-300">Confidence</span>
+                            <span className="text-xs text-slate-700 transition-colors dark:text-zinc-300">
                               {Math.round(candidate.confidence * 100)}%
                             </span>
                           </div>
@@ -201,7 +201,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
                         </div>
 
                         {/* Reasoning */}
-                        <p className="mb-2 text-sm text-slate-600 transition-colors dark:text-zinc-300 ">{candidate.reasoning}</p>
+                        <p className="mb-2 text-sm text-slate-600 transition-colors dark:text-zinc-300">{candidate.reasoning}</p>
                       </div>
                     ))}
                   </div>
@@ -209,7 +209,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
 
                 {/* Disclaimer */}
                 <div className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-4 py-3">
-                  <p className="text-xs text-amber-700 transition-colors dark:text-amber-400 ">⚠️ {result.disclaimer}</p>
+                  <p className="text-xs text-amber-700 transition-colors dark:text-amber-400">⚠️ {result.disclaimer}</p>
                 </div>
               </>
             )}
@@ -219,7 +219,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
           <div className="sticky bottom-0 flex justify-end border-t border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] px-6 py-4">
             <button
               onClick={onClose}
-              className="rounded-lg bg-slate-100 transition-colors dark:bg-[#1e1f20] px-6 py-2 text-sm font-bold text-slate-700 transition-colors dark:text-zinc-300 transition-colors hover:bg-slate-200"
+              className="rounded-lg bg-slate-100 transition-colors dark:bg-[#1e1f20] px-6 py-2 text-sm text-slate-700 transition-colors dark:text-zinc-300 transition-colors hover:bg-slate-200"
             >
               Tutup
             </button>

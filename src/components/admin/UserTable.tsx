@@ -138,7 +138,7 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="rounded-xl bg-teal-600 px-6 py-3 text-xs font-black tracking-widest text-white uppercase shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 dark:bg-teal-600/90 dark:hover:bg-teal-600"
+          className="rounded-xl bg-teal-600 px-6 py-3 text-xs tracking-widest text-white uppercase shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 dark:bg-teal-600/90 dark:hover:bg-teal-600"
         >
           + Tambah {role} Baru
         </button>
@@ -159,17 +159,17 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
           <div className="animate-in fade-in fixed inset-0 z-60 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm duration-300 dark:bg-[#131314]/80">
             <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-[#1e1f20]">
               <div className="border-b border-slate-100 bg-slate-50/50 p-8 text-center dark:border-zinc-800 dark:bg-[#131314]/50">
-                <h3 className="text-xl font-black tracking-tighter text-zinc-900 uppercase dark:text-zinc-100">
+                <h3 className="text-xl tracking-tighter text-zinc-900 uppercase dark:text-zinc-100">
                   Registrasi {role}
                 </h3>
-                <p className="mt-1 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-zinc-400">
+                <p className="mt-1 text-[10px] tracking-widest text-slate-500 uppercase dark:text-zinc-400">
                   Input Kredensial Baru
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4 p-8">
                 <div>
-                  <label className="mb-2 block text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-400">
+                  <label className="mb-2 block text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-400">
                     Nama Lengkap
                   </label>
                   <input
@@ -181,7 +181,7 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
                   />
                 </div>
                 <div>
-                  <label className="mb-2 block text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-400">
+                  <label className="mb-2 block text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-400">
                     Alamat Email
                   </label>
                   <input
@@ -193,7 +193,7 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
                   />
                 </div>
                 <div>
-                  <label className="mb-2 block text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-400">
+                  <label className="mb-2 block text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-400">
                     Kata Sandi
                   </label>
                   <input
@@ -207,7 +207,7 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
 
                 {role === 'DOCTOR' && (
                   <div>
-                    <label className="mb-2 block text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-400">
+                    <label className="mb-2 block text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-400">
                       Spesialisasi
                     </label>
                     <input
@@ -222,7 +222,7 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
 
                 {role === 'PATIENT' && (
                   <div>
-                    <label className="mb-2 block text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-400">
+                    <label className="mb-2 block text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-400">
                       Nomor Induk Kependudukan (NIK) -{' '}
                       <span className="text-slate-300 dark:text-zinc-600">Opsional</span>
                     </label>
@@ -239,13 +239,13 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="flex-1 rounded-xl border border-slate-200 px-4 py-3 text-xs font-bold tracking-widest text-slate-500 uppercase transition-all hover:bg-slate-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                    className="flex-1 rounded-xl border border-slate-200 px-4 py-3 text-xs tracking-widest text-slate-500 uppercase transition-all hover:bg-slate-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 rounded-xl bg-teal-600 px-4 py-3 text-xs font-black tracking-widest text-white uppercase shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 dark:bg-teal-600/90 dark:hover:bg-teal-600"
+                    className="flex-1 rounded-xl bg-teal-600 px-4 py-3 text-xs tracking-widest text-white uppercase shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 dark:bg-teal-600/90 dark:hover:bg-teal-600"
                   >
                     Simpan Akun
                   </button>
@@ -256,7 +256,7 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
         )}
 
         <table className="w-full border-collapse text-left">
-          <thead className="border-b border-slate-100 bg-slate-50 text-[10px] font-black tracking-widest text-slate-500 uppercase dark:border-zinc-800 dark:bg-[#131314]/50 dark:text-zinc-400">
+          <thead className="border-b border-slate-100 bg-slate-50 text-[10px] tracking-widest text-slate-500 uppercase dark:border-zinc-800 dark:bg-[#131314]/50 dark:text-zinc-400">
             <tr>
               <th className="p-5 pl-8">Identitas Pengguna</th>
               <th className="p-5">Hak Akses</th>
@@ -267,7 +267,7 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
           <tbody className="divide-y divide-slate-100 text-sm font-medium dark:divide-zinc-800">
             {loading ? (
               <tr>
-                <td colSpan={4} className="animate-pulse p-10 text-center font-bold text-slate-400 dark:text-zinc-500">
+                <td colSpan={4} className="animate-pulse p-10 text-center text-slate-400 dark:text-zinc-500">
                   Sinkronisasi Database...
                 </td>
               </tr>
@@ -285,23 +285,19 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
                 return (
                   <tr key={item.id} className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-[#131314]/50">
                     <td className="p-5 pl-8">
-                      <div className="font-extrabold text-zinc-950 uppercase transition-colors group-hover:text-teal-600 dark:text-zinc-100 dark:group-hover:text-teal-400">
+                      <div className="text-zinc-950 uppercase transition-colors group-hover:text-teal-600 dark:text-zinc-100 dark:group-hover:text-teal-400">
                         {userObj.name}
                       </div>
-                      <div className="text-[10px] font-bold text-slate-400 dark:text-zinc-500">{userObj.email}</div>
+                      <div className="text-[10px] text-slate-400 dark:text-zinc-500">{userObj.email}</div>
                     </td>
                     <td className="p-5">
-                      <span className="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-black tracking-widest text-slate-600 uppercase dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                      <span className="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] tracking-widest text-slate-600 uppercase dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
                         {role}
                       </span>
                     </td>
                     <td className="p-5">
                       <span
-                        className={`rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase ${
-                          userObj.isActive !== false
-                            ? 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400'
-                            : 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400'
-                        }`}
+                        className={`rounded-lg border px-3 py-1 text-[10px] tracking-widest uppercase ${ userObj.isActive !== false ? 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400' : 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400' }`}
                       >
                         {userObj.isActive !== false ? 'Aktif' : 'Blokir'}
                       </span>

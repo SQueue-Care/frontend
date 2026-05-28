@@ -123,9 +123,7 @@ export default function ResetPassword() {
 
       {/* KARTU UTAMA DENGAN ANIMASI PARITAS DASHBOARD */}
       <div 
-        className={`relative z-10 w-full max-w-md bg-white/90 dark:bg-[#1e1f20]/90 backdrop-blur-xl border border-slate-200/50 dark:border-zinc-800/50 rounded-3xl shadow-2xl p-8 sm:p-10 transition-all duration-700 ease-out ${
-          isMounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
+        className={`relative z-10 w-full max-w-md bg-white/90 dark:bg-[#1e1f20]/90 backdrop-blur-xl border border-slate-200/50 dark:border-zinc-800/50 rounded-3xl shadow-2xl p-8 sm:p-10 transition-all duration-700 ease-out ${ isMounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0' }`}
       >
         <div className="mb-8 text-center">
           <h2 className="font-['Manrope'] text-2xl md:text-[26px] font-semibold text-zinc-950 dark:text-white tracking-tight transition-colors">
@@ -196,10 +194,10 @@ export default function ResetPassword() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-zinc-900 dark:text-white">Instruksi Terkirim</h3>
+            <h3 className="text-xl text-zinc-900 dark:text-white">Instruksi Terkirim</h3>
             <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
               Kami telah mengirimkan langkah pemulihan ke kontak yang terhubung dengan akun{' '}
-              <span className="font-bold text-teal-600 dark:text-teal-400">{email}</span>. Silakan periksa kotak masuk Anda.
+              <span className="text-teal-600 dark:text-teal-400">{email}</span>. Silakan periksa kotak masuk Anda.
             </p>
           </div>
         )}

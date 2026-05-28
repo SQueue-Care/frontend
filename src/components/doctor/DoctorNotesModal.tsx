@@ -65,8 +65,8 @@ function DoctorNotesModalContent({
         <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white transition-colors dark:bg-[#1e1f20] shadow-lg">
           <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] px-6 py-4">
             <div>
-              <h2 className="text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Catatan Dokter</h2>
-              <p className="text-sm text-slate-500 transition-colors dark:text-zinc-400 ">
+              <h2 className="text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100">Catatan Dokter</h2>
+              <p className="text-sm text-slate-500 transition-colors dark:text-zinc-400">
                 {queue.patient?.user?.name || 'Pasien'} · No.{' '}
                 {queue.department?.code || 'XX'}-{queue.queueNumber}
               </p>
@@ -89,7 +89,7 @@ function DoctorNotesModalContent({
             )}
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-zinc-700 transition-colors dark:text-zinc-300 ">Diagnosis</label>
+              <label className="mb-2 block text-sm text-zinc-700 transition-colors dark:text-zinc-300">Diagnosis</label>
               <textarea
                 value={diagnosis}
                 onChange={(e) => setDiagnosis(e.target.value)}
@@ -101,7 +101,7 @@ function DoctorNotesModalContent({
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-zinc-700 transition-colors dark:text-zinc-300 ">
+              <label className="mb-2 block text-sm text-zinc-700 transition-colors dark:text-zinc-300">
                 Cara Makan Obat
               </label>
               <textarea
@@ -115,7 +115,7 @@ function DoctorNotesModalContent({
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-zinc-700 transition-colors dark:text-zinc-300 ">
+              <label className="mb-2 block text-sm text-zinc-700 transition-colors dark:text-zinc-300">
                 Saran & Pengingat
               </label>
               <textarea
@@ -130,10 +130,10 @@ function DoctorNotesModalContent({
 
             {queue.notes?.trim() && (
               <div className="rounded-lg border border-slate-200 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] p-4">
-                <p className="mb-1 text-xs font-bold tracking-wider text-slate-500 transition-colors dark:text-zinc-400 uppercase">
+                <p className="mb-1 text-xs tracking-wider text-slate-500 transition-colors dark:text-zinc-400 uppercase">
                   Keluhan awal pasien
                 </p>
-                <p className="text-sm whitespace-pre-wrap text-slate-700 transition-colors dark:text-zinc-300 ">{queue.notes}</p>
+                <p className="text-sm whitespace-pre-wrap text-slate-700 transition-colors dark:text-zinc-300">{queue.notes}</p>
               </div>
             )}
 
@@ -141,7 +141,7 @@ function DoctorNotesModalContent({
               onClick={handleSave}
               disabled={!canEdit || isSaving}
               type="button"
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 py-3 font-bold text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 py-3 text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isSaving ? (
                 <>

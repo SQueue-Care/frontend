@@ -63,12 +63,12 @@ function MetaBadges({ bill }: { bill: Bill }) {
   return (
     <div className="flex flex-wrap gap-2">
       <span
-        className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase ${paymentTypeBadgeClass(bill.paymentType)}`}
+        className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] tracking-wider uppercase ${paymentTypeBadgeClass(bill.paymentType)}`}
       >
         {PAYMENT_TYPE_LABELS[bill.paymentType]}
       </span>
       <span
-        className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase ${statusBadgeClass(bill.status)}`}
+        className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] tracking-wider uppercase ${statusBadgeClass(bill.status)}`}
       >
         {STATUS_LABELS[bill.status]}
       </span>
@@ -94,7 +94,7 @@ function LineItemContent({ item }: { item: Bill['lineItems'][number] }) {
           {item.quantity} × {formatRupiah(item.unitPrice)}
         </p>
       </div>
-      <span className="text-sm font-bold text-zinc-900 dark:text-white">
+      <span className="text-sm text-zinc-900 dark:text-white">
         {formatRupiah(item.amount)}
       </span>
     </>
@@ -106,10 +106,10 @@ function BillTotalSummary({ bill }: { bill: Bill }) {
   return (
     <>
       <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-zinc-800">
-        <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
+        <span className="text-sm text-slate-600 dark:text-slate-400">
           {bill.paymentType === 'BPJS' ? 'Estimasi bagian pasien' : 'Total'}
         </span>
-        <span className="font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-white">
+        <span className="font-['Manrope'] text-lg text-zinc-900 dark:text-white">
           {formatRupiah(displayAmount)}
         </span>
       </div>
@@ -125,7 +125,7 @@ function BillTotalSummary({ bill }: { bill: Bill }) {
 function PaymentInstructionsBox() {
   return (
     <div className="rounded-2xl border border-teal-200 bg-teal-50/60 p-4 dark:border-teal-900/50 dark:bg-teal-900/10">
-      <h3 className="mb-1 text-sm font-bold text-teal-800 dark:text-teal-300">
+      <h3 className="mb-1 text-sm text-teal-800 dark:text-teal-300">
         Cara Pembayaran
       </h3>
       <p className="text-sm text-teal-700/90 dark:text-teal-200/80">
@@ -139,7 +139,7 @@ function PaymentInstructionsBox() {
 function BpjsInfoPanel({ bill }: { bill: Bill }) {
   return (
     <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-5 dark:border-blue-900/50 dark:bg-blue-900/10">
-      <h3 className="mb-2 font-['Manrope'] text-sm font-extrabold text-blue-900 dark:text-blue-300">
+      <h3 className="mb-2 font-['Manrope'] text-sm text-blue-900 dark:text-blue-300">
         Informasi BPJS
       </h3>
       <p className="mb-3 text-sm leading-relaxed text-blue-800/90 dark:text-blue-200/80">
@@ -187,7 +187,7 @@ function DetailHeader({ onClose, title }: { onClose: () => void; title: string }
   return (
     <div className="mb-6 flex items-start justify-between gap-4">
       <div>
-        <p className="text-xs font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400">
+        <p className="text-xs tracking-widest text-slate-500 uppercase dark:text-slate-400">
           Detail Tagihan
         </p>
         <h2 className="font-['Manrope'] text-xl font-extrabold text-zinc-900 dark:text-white">
@@ -197,7 +197,7 @@ function DetailHeader({ onClose, title }: { onClose: () => void; title: string }
       <button
         type="button"
         onClick={onClose}
-        className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
       >
         Tutup
       </button>
@@ -224,7 +224,7 @@ function BillDetailOverlay({
         {bill.paymentType === 'BPJS' && <BpjsInfoPanel bill={bill} />}
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-zinc-800 dark:bg-[#1e1f20]">
-          <h3 className="mb-4 font-['Manrope'] text-sm font-extrabold text-zinc-900 dark:text-white">
+          <h3 className="mb-4 font-['Manrope'] text-sm text-zinc-900 dark:text-white">
             Rincian Tagihan
           </h3>
           <ul className="divide-y divide-slate-100 dark:divide-zinc-800">
@@ -250,7 +250,7 @@ function BillDetailOverlay({
             type="button"
             onClick={onPay}
             disabled={isPaying}
-            className="w-full rounded-2xl bg-teal-600 px-6 py-3.5 text-sm font-black text-white transition-colors hover:bg-teal-700 disabled:opacity-60 dark:bg-teal-500 dark:hover:bg-teal-600"
+            className="w-full rounded-2xl bg-teal-600 px-6 py-3.5 text-sm text-white transition-colors hover:bg-teal-700 disabled:opacity-60 dark:bg-teal-500 dark:hover:bg-teal-600"
           >
             {isPaying
               ? 'Memproses...'
@@ -327,11 +327,7 @@ export default function PatientBilling() {
             key={key}
             type="button"
             onClick={() => setFilter(key)}
-            className={`rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
-              filter === key
-                ? 'bg-white text-teal-700 shadow-sm dark:bg-[#1e1f20] dark:text-teal-400'
-                : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200'
-            }`}
+            className={`rounded-xl px-5 py-2.5 text-sm transition-all ${ filter === key ? 'bg-white text-teal-700 shadow-sm dark:bg-[#1e1f20] dark:text-teal-400' : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200' }`}
           >
             {label}
           </button>
@@ -345,7 +341,7 @@ export default function PatientBilling() {
       )}
 
       {isLoading ? (
-        <div className="py-12 text-center text-xs font-bold tracking-widest text-teal-700 uppercase dark:text-teal-500">
+        <div className="py-12 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500">
           Memuat tagihan...
         </div>
       ) : filteredBills.length === 0 ? (
@@ -370,17 +366,17 @@ export default function PatientBilling() {
                   <h2 className="font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-white">
                     {bill.queue?.department?.name ?? 'Kunjungan'}
                   </h2>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {formatBillDate(bill)}
                     {bill.queue?.doctor?.user?.name && ` · ${bill.queue.doctor.user.name}`}
                   </p>
                   <MetaBadges bill={bill} />
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-slate-500 uppercase dark:text-slate-400">
+                  <p className="text-xs text-slate-500 uppercase dark:text-slate-400">
                     {bill.paymentType === 'BPJS' ? 'Bagian pasien' : 'Total'}
                   </p>
-                  <p className="font-['Manrope'] text-xl font-extrabold text-zinc-900 dark:text-white">
+                  <p className="font-['Manrope'] text-xl text-zinc-900 dark:text-white">
                     {formatRupiah(getDisplayAmount(bill))}
                   </p>
                 </div>
@@ -389,7 +385,7 @@ export default function PatientBilling() {
                 <button
                   type="button"
                   onClick={() => void handleOpenDetail(bill.id)}
-                  className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs font-black text-teal-700 transition-colors hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400 dark:hover:bg-teal-500/20"
+                  className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs text-teal-700 transition-colors hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400 dark:hover:bg-teal-500/20"
                 >
                   Lihat Detail
                 </button>
@@ -397,7 +393,7 @@ export default function PatientBilling() {
                   <button
                     type="button"
                     onClick={() => navigate(`/portal/queues/${bill.queueId}`)}
-                    className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-black text-slate-600 transition-colors hover:bg-slate-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    className="rounded-xl border border-slate-200 px-4 py-2 text-xs text-slate-600 transition-colors hover:bg-slate-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                   >
                     Kunjungan
                   </button>

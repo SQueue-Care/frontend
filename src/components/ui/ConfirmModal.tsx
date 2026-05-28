@@ -93,7 +93,7 @@ export default function ConfirmModal({
             </svg>
           </div>
 
-          <h3 className="mb-2 font-['Manrope'] text-xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">
+          <h3 className="mb-2 font-['Manrope'] text-xl tracking-tight text-zinc-900 dark:text-zinc-100">
             {title}
           </h3>
           <p className="mb-8 text-sm leading-relaxed font-medium text-slate-500 dark:text-zinc-400">{message}</p>
@@ -102,7 +102,7 @@ export default function ConfirmModal({
             <button
               onClick={onConfirm}
               disabled={isLoading}
-              className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-[10px] font-black tracking-widest text-white uppercase shadow-lg transition-all outline-none active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 ${currentTheme.buttonBg}`}
+              className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-[10px] tracking-widest text-white uppercase shadow-lg transition-all outline-none active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 ${currentTheme.buttonBg}`}
             >
               {isLoading ? (
                 <>
@@ -128,7 +128,7 @@ export default function ConfirmModal({
             <button
               onClick={onCancel}
               disabled={isLoading}
-              className="w-full rounded-xl px-4 py-3.5 text-[10px] font-extrabold tracking-widest text-slate-500 uppercase transition-all outline-none hover:bg-slate-100 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className="w-full rounded-xl px-4 py-3.5 text-[10px] tracking-widest text-slate-500 uppercase transition-all outline-none hover:bg-slate-100 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800"
             >
               {cancelText}
             </button>

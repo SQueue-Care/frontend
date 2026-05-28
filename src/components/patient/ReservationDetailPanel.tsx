@@ -87,22 +87,18 @@ export default function ReservationDetailPanel({
   return (
     <>
       <div
-        className={`fixed inset-0 z-100 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${
-          isOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
-        }`}
+        className={`fixed inset-0 z-100 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${ isOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0' }`}
         onClick={onClose}
       />
 
       <div
-        className={`fixed inset-y-0 right-0 z-110 flex w-full flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-500 ease-in-out sm:max-w-md dark:border-zinc-800 dark:bg-[#1e1f20] ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed inset-y-0 right-0 z-110 flex w-full flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-500 ease-in-out sm:max-w-md dark:border-zinc-800 dark:bg-[#1e1f20] ${ isOpen ? 'translate-x-0' : 'translate-x-full' }`}
       >
         {appointment ? (
           <>
             <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b border-slate-100 bg-slate-50/50 p-6 transition-colors md:p-8 dark:border-zinc-800 dark:bg-[#131314]/50">
               <div>
-                <h3 className="font-['Manrope'] text-2xl font-extrabold tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
+                <h3 className="font-['Manrope'] text-2xl tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
                   Detail Reservasi
                 </h3>
                 <p className="mt-1 font-mono text-xs font-medium tracking-widest text-slate-500 uppercase transition-colors dark:text-zinc-400">
@@ -127,20 +123,20 @@ export default function ReservationDetailPanel({
             <div className="no-scrollbar flex-1 space-y-6 overflow-y-auto p-6 md:p-8">
               <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">
                 <div>
-                  <p className="mb-1 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                  <p className="mb-1 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                     Status Reservasi
                   </p>
                   <span
-                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] font-black tracking-widest uppercase transition-colors ${getAppointmentStatusStyle(appointment.status)}`}
+                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${getAppointmentStatusStyle(appointment.status)}`}
                   >
                     {getAppointmentStatusText(appointment.status)}
                   </span>
                 </div>
                 <div className="text-right">
-                  <p className="mb-1.5 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                  <p className="mb-1.5 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                     Tanggal Dibuat
                   </p>
-                  <span className="text-sm font-extrabold text-zinc-900 transition-colors dark:text-zinc-100">
+                  <span className="text-sm text-zinc-900 transition-colors dark:text-zinc-100">
                     {appointment.createdAt
                       ? new Date(appointment.createdAt).toLocaleDateString('id-ID', {
                           day: 'numeric',
@@ -154,7 +150,7 @@ export default function ReservationDetailPanel({
 
               <div className="space-y-6 rounded-3xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Identitas Pasien
                   </h4>
                   <div className="space-y-2.5">
@@ -162,7 +158,7 @@ export default function ReservationDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Nama Lengkap
                       </span>
-                      <span className="font-extrabold text-zinc-950 uppercase transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 uppercase transition-colors dark:text-zinc-100">
                         {patientProfile?.name || '-'}
                       </span>
                     </div>
@@ -170,7 +166,7 @@ export default function ReservationDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         NIK
                       </span>
-                      <span className="font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
                         {patientProfile?.nik || 'Belum diatur'}
                       </span>
                     </div>
@@ -178,7 +174,7 @@ export default function ReservationDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Alamat Domisili
                       </span>
-                      <span className="text-right leading-relaxed font-bold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-right leading-relaxed text-zinc-950 transition-colors dark:text-zinc-100">
                         {patientProfile?.address || 'Belum ada alamat terdaftar.'}
                       </span>
                     </div>
@@ -186,7 +182,7 @@ export default function ReservationDetailPanel({
                 </div>
 
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Unit Layanan Medis
                   </h4>
                   <div className="space-y-2.5">
@@ -194,7 +190,7 @@ export default function ReservationDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Layanan
                       </span>
-                      <span className="font-extrabold text-teal-700 transition-colors dark:text-teal-400">
+                      <span className="text-teal-700 transition-colors dark:text-teal-400">
                         {appointment?.department?.name || 'Poliklinik'}
                       </span>
                     </div>
@@ -202,7 +198,7 @@ export default function ReservationDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Dokter Praktik
                       </span>
-                      <span className="font-extrabold text-zinc-950 uppercase transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 uppercase transition-colors dark:text-zinc-100">
                         {appointment?.doctor?.user?.name || 'Belum ditentukan'}
                       </span>
                     </div>
@@ -210,7 +206,7 @@ export default function ReservationDetailPanel({
                 </div>
 
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Jadwal Kunjungan
                   </h4>
                   <div className="space-y-2.5">
@@ -218,7 +214,7 @@ export default function ReservationDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Tanggal Kunjungan
                       </span>
-                      <span className="font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
                         {new Date(appointment.scheduledAt).toLocaleDateString('id-ID', {
                           weekday: 'long',
                           day: 'numeric',
@@ -231,7 +227,7 @@ export default function ReservationDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Jam Sesi
                       </span>
-                      <span className="font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
                         {new Date(appointment.scheduledAt).toLocaleTimeString('id-ID', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -243,7 +239,7 @@ export default function ReservationDetailPanel({
                 </div>
 
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Catatan Keluhan Utuh
                   </h4>
                   <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
@@ -274,7 +270,7 @@ export default function ReservationDetailPanel({
                     />
                   </svg>
                   <div>
-                    <h5 className="mb-1 text-xs font-bold text-amber-800 transition-colors dark:text-amber-300">
+                    <h5 className="mb-1 text-xs text-amber-800 transition-colors dark:text-amber-300">
                       Pengingat Kehadiran
                     </h5>
                     <p className="text-xs leading-relaxed font-medium text-amber-700 transition-colors dark:text-amber-400/80">
@@ -293,7 +289,7 @@ export default function ReservationDetailPanel({
                   <button
                     onClick={handleCheckInClick}
                     disabled={isCheckingIn}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-4 text-sm font-black tracking-wide text-white uppercase shadow-lg shadow-teal-500/20 transition-all outline-none hover:bg-teal-700 focus:ring-4 focus:ring-teal-500/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-teal-700 dark:hover:bg-teal-600 dark:focus:ring-teal-700/30"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-4 text-sm tracking-wide text-white uppercase shadow-lg shadow-teal-500/20 transition-all outline-none hover:bg-teal-700 focus:ring-4 focus:ring-teal-500/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-teal-700 dark:hover:bg-teal-600 dark:focus:ring-teal-700/30"
                   >
                     {isCheckingIn ? (
                       <>
@@ -323,14 +319,14 @@ export default function ReservationDetailPanel({
                       'SAYA SUDAH DI KLINIK & AMBIL ANTREAN'
                     )}
                   </button>
-                  <p className="mt-3 text-center text-[10px] font-bold tracking-widest text-slate-500 uppercase transition-colors dark:text-zinc-500">
+                  <p className="mt-3 text-center text-[10px] tracking-widest text-slate-500 uppercase transition-colors dark:text-zinc-500">
                     Waktu check-in Anda telah tiba
                   </p>
                 </div>
               ) : (
                 <button
                   onClick={onClose}
-                  className="w-full rounded-xl border border-slate-200 bg-white py-4 font-extrabold text-slate-700 shadow-sm transition-all outline-none hover:bg-slate-50 focus:ring-4 focus:ring-slate-100 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800 dark:focus:ring-zinc-800"
+                  className="w-full rounded-xl border border-slate-200 bg-white py-4 text-slate-700 shadow-sm transition-all outline-none hover:bg-slate-50 focus:ring-4 focus:ring-slate-100 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800 dark:focus:ring-zinc-800"
                 >
                   Tutup Detail Reservasi
                 </button>

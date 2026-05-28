@@ -60,23 +60,19 @@ export default function QueueDetailPanel({
   return (
     <>
       <div
-        className={`fixed inset-0 z-100 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${
-          isOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
-        }`}
+        className={`fixed inset-0 z-100 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${ isOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0' }`}
         onClick={onClose}
       />
 
       <div
-        className={`fixed inset-y-0 right-0 z-110 flex w-full flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-500 ease-in-out sm:max-w-md dark:border-zinc-800 dark:bg-[#1e1f20] ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed inset-y-0 right-0 z-110 flex w-full flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-500 ease-in-out sm:max-w-md dark:border-zinc-800 dark:bg-[#1e1f20] ${ isOpen ? 'translate-x-0' : 'translate-x-full' }`}
       >
         {queue ? (
           <>
             {/* Header Panel */}
             <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b border-slate-100 bg-slate-50/50 p-6 transition-colors md:p-8 dark:border-zinc-800 dark:bg-[#131314]/50">
               <div>
-                <h3 className="font-['Manrope'] text-2xl font-extrabold tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
+                <h3 className="font-['Manrope'] text-2xl tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
                   Detail Kunjungan
                 </h3>
                 <p className="mt-1 font-mono text-xs font-medium tracking-widest text-slate-500 uppercase transition-colors dark:text-zinc-400">
@@ -103,19 +99,19 @@ export default function QueueDetailPanel({
               {/* Box Nomor Antrean & Status */}
               <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">
                 <div>
-                  <p className="mb-1 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                  <p className="mb-1 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                     Nomor Urut
                   </p>
-                  <span className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 font-mono text-xl font-black text-zinc-900 shadow-sm transition-colors dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-100">
+                  <span className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 font-mono text-xl text-zinc-900 shadow-sm transition-colors dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-100">
                     {queue.queueNumber}
                   </span>
                 </div>
                 <div className="text-right">
-                  <p className="mb-1.5 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                  <p className="mb-1.5 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                     Status Antrean
                   </p>
                   <span
-                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] font-black tracking-widest uppercase transition-colors ${getQueueStatusStyle(queue.status)}`}
+                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${getQueueStatusStyle(queue.status)}`}
                   >
                     {getQueueStatusText(queue.status)}
                   </span>
@@ -132,7 +128,7 @@ export default function QueueDetailPanel({
               <div className="space-y-6 rounded-3xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">
                 {/* Blok Informasi Pasien */}
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Identitas Pasien
                   </h4>
                   <div className="space-y-2.5">
@@ -140,7 +136,7 @@ export default function QueueDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Nama Lengkap
                       </span>
-                      <span className="font-extrabold text-zinc-950 uppercase transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 uppercase transition-colors dark:text-zinc-100">
                         {patientProfile?.name || '-'}
                       </span>
                     </div>
@@ -148,7 +144,7 @@ export default function QueueDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         NIK
                       </span>
-                      <span className="font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
                         {patientProfile?.nik || 'Belum diatur'}
                       </span>
                     </div>
@@ -156,7 +152,7 @@ export default function QueueDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Alamat Domisili
                       </span>
-                      <span className="text-right leading-relaxed font-bold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-right leading-relaxed text-zinc-950 transition-colors dark:text-zinc-100">
                         {patientProfile?.address || 'Belum ada alamat terdaftar.'}
                       </span>
                     </div>
@@ -165,7 +161,7 @@ export default function QueueDetailPanel({
 
                 {/* Blok Poliklinik & Dokter */}
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Unit Layanan Medis
                   </h4>
                   <div className="space-y-2.5">
@@ -173,7 +169,7 @@ export default function QueueDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Layanan
                       </span>
-                      <span className="font-extrabold text-teal-700 transition-colors dark:text-teal-400">
+                      <span className="text-teal-700 transition-colors dark:text-teal-400">
                         {queue?.department?.name || 'Poliklinik'}
                       </span>
                     </div>
@@ -181,7 +177,7 @@ export default function QueueDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Dokter Praktik
                       </span>
-                      <span className="font-extrabold text-zinc-950 uppercase transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 uppercase transition-colors dark:text-zinc-100">
                         {queue?.doctor?.user?.name || 'Belum ditentukan'}
                       </span>
                     </div>
@@ -190,7 +186,7 @@ export default function QueueDetailPanel({
 
                 {/* Blok Jadwal & Waktu */}
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Waktu Kunjungan
                   </h4>
                   <div className="space-y-2.5">
@@ -198,7 +194,7 @@ export default function QueueDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Tanggal Kunjungan
                       </span>
-                      <span className="font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
                         {new Date(queue.queueDate).toLocaleDateString('id-ID', {
                           weekday: 'long',
                           day: 'numeric',
@@ -211,7 +207,7 @@ export default function QueueDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Jam Sesi
                       </span>
-                      <span className="font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
                         {new Date(queue.queueDate).toLocaleTimeString('id-ID', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -223,7 +219,7 @@ export default function QueueDetailPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Tgl. Didaftarkan
                       </span>
-                      <span className="font-bold text-zinc-600 italic transition-colors dark:text-zinc-400">
+                      <span className="text-zinc-600 italic transition-colors dark:text-zinc-400">
                         {queue.createdAt
                           ? new Date(queue.createdAt).toLocaleDateString('id-ID')
                           : '-'}
@@ -234,7 +230,7 @@ export default function QueueDetailPanel({
 
                 {/* Blok Dinamis: Keluhan vs Catatan Dokter */}
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Catatan Keluhan Awal Pasien
                   </h4>
                   <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
@@ -258,7 +254,7 @@ export default function QueueDetailPanel({
             <div className="shrink-0 border-t border-slate-100 bg-white p-6 transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
               <button
                 onClick={onClose}
-                className="w-full rounded-xl border border-slate-200 bg-white py-4 font-extrabold text-slate-700 shadow-sm transition-all outline-none hover:bg-slate-50 focus:ring-4 focus:ring-slate-100 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800 dark:focus:ring-zinc-800"
+                className="w-full rounded-xl border border-slate-200 bg-white py-4 text-slate-700 shadow-sm transition-all outline-none hover:bg-slate-50 focus:ring-4 focus:ring-slate-100 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800 dark:focus:ring-zinc-800"
               >
                 Tutup Detail Kunjungan
               </button>

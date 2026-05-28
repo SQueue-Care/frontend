@@ -113,10 +113,10 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
               />
             </svg>
           </div>
-          <h3 className="mb-1.5 font-['Manrope'] text-lg font-extrabold tracking-tight text-teal-950 transition-colors md:text-xl dark:text-zinc-100">
+          <h3 className="mb-1.5 font-['Manrope'] text-lg tracking-tight text-teal-950 transition-colors md:text-xl dark:text-zinc-100">
             Belum Ada Antrean Aktif
           </h3>
-          <p className="mx-auto max-w-sm text-xs leading-relaxed font-semibold text-teal-800/80 transition-colors dark:text-zinc-400">
+          <p className="mx-auto max-w-sm text-xs leading-relaxed text-teal-800/80 transition-colors dark:text-zinc-400">
             Silakan pilih layanan poliklinik di bawah untuk mengambil nomor antrean Anda hari ini.
           </p>
         </div>
@@ -176,12 +176,12 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
           <div className="flex flex-1 flex-col justify-center">
             <div className="mb-3 flex items-center gap-3">
               <span
-                className={`inline-flex rounded-md border px-2.5 py-1 text-[9px] font-black tracking-widest uppercase shadow-sm transition-colors duration-500 ${getStatusStyle(activeQueueDetail.status)}`}
+                className={`inline-flex rounded-md border px-2.5 py-1 text-[9px] tracking-widest uppercase shadow-sm transition-colors duration-500 ${getStatusStyle(activeQueueDetail.status)}`}
               >
                 {getStatusText(activeQueueDetail.status)}
               </span>
               <span
-                className={`text-[10px] font-black tracking-widest uppercase transition-colors duration-500 ${themeParams.date}`}
+                className={`text-[10px] tracking-widest uppercase transition-colors duration-500 ${themeParams.date}`}
               >
                 {new Date(activeQueueDetail.queueDate).toLocaleDateString('id-ID', {
                   day: '2-digit',
@@ -196,7 +196,7 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
               {activeQueueDetail?.department?.name || 'Poliklinik'}
             </h2>
             <p
-              className={`text-xs font-bold tracking-wide uppercase transition-colors duration-500 ${themeParams.doctor}`}
+              className={`text-xs tracking-wide uppercase transition-colors duration-500 ${themeParams.doctor}`}
             >
               {activeQueueDetail?.doctor?.user?.name || 'Dokter belum ditentukan'}
             </p>
@@ -204,14 +204,14 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
               nextDestination.stage !== 'COMPLETE' &&
               nextDestination.stage !== 'TERMINAL' && (
                 <div className="mt-3 rounded-xl border border-teal-200/80 bg-white/70 px-3 py-2.5 dark:border-teal-900/40 dark:bg-[#131314]/60">
-                  <p className="text-[9px] font-black tracking-widest text-teal-700 uppercase dark:text-teal-400">
+                  <p className="text-[9px] tracking-widest text-teal-700 uppercase dark:text-teal-400">
                     Langkah berikutnya
                   </p>
-                  <p className="mt-0.5 text-xs font-extrabold text-teal-950 dark:text-teal-100">
+                  <p className="mt-0.5 text-xs text-teal-950 dark:text-teal-100">
                     {nextDestination.instruction}
                   </p>
                   {(nextDestination.roomName ?? nextDestination.locationName) && (
-                    <p className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-teal-800/80 dark:text-teal-300/70">
+                    <p className="mt-1 flex items-center gap-1 text-[10px] text-teal-800/80 dark:text-teal-300/70">
                       <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d={destinationIconPath(nextDestination.icon)} />
                       </svg>
@@ -225,12 +225,12 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
           <div className="flex items-center gap-6">
             <div className="text-center">
               <p
-                className={`mb-1 text-[9px] font-black tracking-widest uppercase transition-colors duration-500 ${themeParams.labelCurrent}`}
+                className={`mb-1 text-[9px] tracking-widest uppercase transition-colors duration-500 ${themeParams.labelCurrent}`}
               >
                 Antrean Ke-
               </p>
               <div
-                className={`font-mono text-4xl font-black tracking-tighter transition-colors duration-500 md:text-5xl ${themeParams.numCurrent}`}
+                className={`font-mono text-4xl tracking-tighter transition-colors duration-500 md:text-5xl ${themeParams.numCurrent}`}
               >
                 {activeQueueDetail.currentServingNumber ?? '-'}
               </div>
@@ -240,12 +240,12 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
             ></div>
             <div className="text-center">
               <p
-                className={`mb-1 text-[9px] font-black tracking-widest uppercase transition-colors duration-500 ${themeParams.labelYours}`}
+                className={`mb-1 text-[9px] tracking-widest uppercase transition-colors duration-500 ${themeParams.labelYours}`}
               >
                 Nomor Anda
               </p>
               <div
-                className={`font-mono text-4xl font-black tracking-tighter transition-colors duration-500 md:text-5xl ${themeParams.numYours}`}
+                className={`font-mono text-4xl tracking-tighter transition-colors duration-500 md:text-5xl ${themeParams.numYours}`}
               >
                 {activeQueueDetail.queueNumber}
               </div>
@@ -260,18 +260,14 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
             <button
               onClick={triggerCancel}
               disabled={isCancelling}
-              className="flex-1 rounded-lg border border-rose-200 bg-white px-3 py-2.5 text-center text-[9px] font-black tracking-widest whitespace-nowrap text-rose-600 uppercase shadow-sm transition-all duration-300 outline-none hover:bg-rose-50 disabled:opacity-50 md:flex-none md:px-5 md:text-[10px] dark:border-rose-900/50 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
+              className="flex-1 rounded-lg border border-rose-200 bg-white px-3 py-2.5 text-center text-[9px] tracking-widest whitespace-nowrap text-rose-600 uppercase shadow-sm transition-all duration-300 outline-none hover:bg-rose-50 disabled:opacity-50 md:flex-none md:px-5 md:text-[10px] dark:border-rose-900/50 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
             >
               {isCancelling ? 'Memproses...' : 'Batalkan Antrean'}
             </button>
           )}
           <button
             onClick={() => navigate(`/portal/queues/${queueId}`)}
-            className={`flex-1 rounded-lg px-3 py-2.5 text-center text-[9px] font-black tracking-widest whitespace-nowrap uppercase shadow-sm transition-all duration-300 outline-none md:flex-none md:px-6 md:text-[10px] ${
-              isInProgress
-                ? 'bg-amber-500 text-white shadow-amber-500/20 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-500'
-                : 'bg-teal-600 text-white shadow-teal-600/20 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-600'
-            }`}
+            className={`flex-1 rounded-lg px-3 py-2.5 text-center text-[9px] tracking-widest whitespace-nowrap uppercase shadow-sm transition-all duration-300 outline-none md:flex-none md:px-6 md:text-[10px] ${ isInProgress ? 'bg-amber-500 text-white shadow-amber-500/20 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-500' : 'bg-teal-600 text-white shadow-teal-600/20 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-600' }`}
           >
             {isInProgress ? 'Instruksi Pemanggilan' : isPostExam ? 'Lanjutkan Kunjungan' : 'Detail Kunjungan'}
           </button>

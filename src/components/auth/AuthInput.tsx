@@ -30,7 +30,7 @@ export default function AuthInput({ label, error, id, ...props }: AuthInputProps
     <div className="flex flex-col gap-2">
       {/* Menghubungkan label dengan input menggunakan htmlFor */}
       {label && (
-        <label htmlFor={inputId} className="text-sm font-semibold text-zinc-700">
+        <label htmlFor={inputId} className="text-sm text-zinc-700">
           {label}
         </label>
       )}
@@ -40,11 +40,7 @@ export default function AuthInput({ label, error, id, ...props }: AuthInputProps
         aria-invalid={!!error}
         // ARIA: Memaksa Screen Reader membacakan pesan eror setelah membacakan input
         aria-describedby={error ? errorId : undefined}
-        className={`w-full rounded-xl border bg-slate-50 px-4 py-3.5 text-sm text-zinc-900 transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none ${
-          error
-            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50'
-            : 'border-slate-200 focus:border-teal-500 focus:ring-teal-500/50'
-        }`}
+        className={`w-full rounded-xl border bg-slate-50 px-4 py-3.5 text-sm text-zinc-900 transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none ${ error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : 'border-slate-200 focus:border-teal-500 focus:ring-teal-500/50' }`}
         {...props}
       />
       {error && (

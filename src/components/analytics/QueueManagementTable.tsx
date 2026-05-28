@@ -21,7 +21,7 @@ const StatusBadge = ({ status }: { status: QueueStatus }) => {
   const style = statusStyles[status] || statusStyles.WAITING
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-bold ${style.bg} ${style.border} text-zinc-800 dark:text-zinc-200`}
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs ${style.bg} ${style.border} text-zinc-800 dark:text-zinc-200`}
     >
       {style.text}
     </span>
@@ -103,7 +103,7 @@ export default function QueueManagementTable() {
     return filteredQueues.map((item) => (
       <tr key={item.id} className="transition-colors hover:bg-slate-50/50 dark:hover:bg-[#131314]/50">
         <td className="p-4 pl-6">
-          <span className="inline-block rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono font-extrabold text-slate-700">
+          <span className="inline-block rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono text-slate-700">
             {item.department?.code || 'XX'}-{item.queueNumber}
           </span>
         </td>
@@ -123,7 +123,7 @@ export default function QueueManagementTable() {
       {/* HEADER & SEARCH BAR PREMIUM */}
       <div className="flex flex-col justify-between gap-4 border-b border-slate-100 dark:border-zinc-800 p-6 lg:flex-row lg:items-center">
         <div>
-          <h3 className="font-['Manrope'] text-lg font-extrabold text-zinc-950 dark:text-zinc-100">
+          <h3 className="font-['Manrope'] text-lg text-zinc-950 dark:text-zinc-100">
             Live Queue Control
           </h3>
           <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
@@ -147,7 +147,7 @@ export default function QueueManagementTable() {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-xs font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
+            <tr className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-xs tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
               <th className="p-4 pl-6">No. Antrean</th>
               <th className="p-4">Nama Pasien</th>
               <th className="p-4">Poliklinik</th>

@@ -117,7 +117,7 @@ export default function CustomAlert() {
         <div className="flex items-start gap-3.5 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-md dark:border-zinc-800 dark:bg-[#1e1f20]/95">
           <div className="mt-0.5 shrink-0">{config.icon}</div>
           <div className="min-w-0 flex-1">
-            <h4 className="text-sm font-extrabold tracking-tight text-zinc-950 dark:text-zinc-100">
+            <h4 className="text-sm tracking-tight text-zinc-950 dark:text-zinc-100">
               {config.title}
             </h4>
             <p className="mt-1 text-xs leading-relaxed font-medium wrap-break-word whitespace-pre-wrap text-slate-600 dark:text-zinc-400">

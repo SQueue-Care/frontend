@@ -30,10 +30,10 @@ export default function DoctorNotesDisplay({
         (section) =>
           section.value?.trim() && (
             <div key={section.label}>
-              <p className="mb-1 text-[10px] font-black tracking-widest text-amber-700 uppercase dark:text-amber-500">
+              <p className="mb-1 text-[10px] tracking-widest text-amber-700 uppercase dark:text-amber-500">
                 {section.label}
               </p>
-              <p className="text-sm leading-relaxed font-semibold whitespace-pre-wrap text-zinc-800 dark:text-amber-100">
+              <p className="text-sm leading-relaxed whitespace-pre-wrap text-zinc-800 dark:text-amber-100">
                 {section.value}
               </p>
             </div>
@@ -59,7 +59,7 @@ export function DoctorNotesSection({
 
   return (
     <div className={wrapperClass}>
-      <h4 className="mb-3 border-b border-amber-200 pb-2 text-[10px] font-black tracking-widest text-amber-600 uppercase transition-colors dark:border-amber-900/50 dark:text-amber-500">
+      <h4 className="mb-3 border-b border-amber-200 pb-2 text-[10px] tracking-widest text-amber-600 uppercase transition-colors dark:border-amber-900/50 dark:text-amber-500">
         Catatan Dokter & Pengingat Penyakit
       </h4>
       <div className={innerClass}>

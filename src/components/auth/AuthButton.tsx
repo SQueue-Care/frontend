@@ -32,7 +32,7 @@ export default function AuthButton({
       // ARIA: Menginformasikan status tombol secara eksplisit
       aria-disabled={isLoading || props.disabled}
       aria-busy={isLoading}
-      className={`flex w-full items-center justify-center rounded-xl bg-linear-to-r from-[#0d9488] to-[#2563eb] py-4 text-base font-bold text-white shadow-lg shadow-teal-700/20 transition-opacity hover:opacity-90 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70 ${className}`}
+      className={`flex w-full items-center justify-center rounded-xl bg-linear-to-r from-[#0d9488] to-[#2563eb] py-4 text-base text-white shadow-lg shadow-teal-700/20 transition-opacity hover:opacity-90 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70 ${className}`}
       {...props}
     >
       {isLoading ? (

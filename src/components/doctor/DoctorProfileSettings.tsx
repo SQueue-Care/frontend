@@ -76,24 +76,24 @@ export default function DoctorProfileSettings() {
       {/* KARTU KIRI: FORMULIR PROFIL */}
       <div className="flex w-full shrink-0 flex-col justify-between rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-8 shadow-sm lg:w-[460px]">
         {isLoadingProfile ? (
-          <div className="my-auto py-10 text-center font-medium text-slate-500 transition-colors dark:text-zinc-400 ">
+          <div className="my-auto py-10 text-center font-medium text-slate-500 transition-colors dark:text-zinc-400">
             Memuat data profil dokter...
           </div>
         ) : (
           <>
             <div className="mb-6 flex shrink-0 items-center justify-between border-b border-slate-100 transition-colors dark:border-zinc-800 pb-6">
               <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-100 transition-colors dark:bg-indigo-900/30 text-2xl font-bold text-indigo-700 transition-colors dark:text-indigo-400 ">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-100 transition-colors dark:bg-indigo-900/30 text-2xl text-indigo-700 transition-colors dark:text-indigo-400">
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
                 </div>
                 <div>
-                  <h2 className="text-lg leading-tight font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">
+                  <h2 className="text-lg leading-tight font-bold text-zinc-900 transition-colors dark:text-zinc-100">
                     {user?.name || 'Nama Dokter'}
                   </h2>
-                  <p className="mt-0.5 text-xs font-medium text-slate-500 transition-colors dark:text-zinc-400 ">
+                  <p className="mt-0.5 text-xs font-medium text-slate-500 transition-colors dark:text-zinc-400">
                     {profile?.department?.name || 'Departemen Belum Ditentukan'}
                   </p>
-                  <span className="mt-2 inline-block rounded bg-emerald-50 transition-colors dark:bg-emerald-500/10 px-2 py-0.5 text-[9px] font-black tracking-wider text-emerald-700 uppercase">
+                  <span className="mt-2 inline-block rounded bg-emerald-50 transition-colors dark:bg-emerald-500/10 px-2 py-0.5 text-[9px] tracking-wider text-emerald-700 uppercase">
                     SIP Aktif
                   </span>
                 </div>
@@ -129,7 +129,7 @@ export default function DoctorProfileSettings() {
                     onChange={(val) => setFormData({ ...formData, avgServiceMin: Number(val) })}
                     placeholder="Standar: 10 Menit"
                   />
-                  <p className="mt-1 text-[10px] font-medium text-slate-400 transition-colors dark:text-zinc-500 ">
+                  <p className="mt-1 text-[10px] font-medium text-slate-400 transition-colors dark:text-zinc-500">
                     *Digunakan oleh sistem AI untuk prediksi antrean.
                   </p>
                 </div>
@@ -141,14 +141,14 @@ export default function DoctorProfileSettings() {
                     <button
                       type="button"
                       onClick={() => setIsEditing(false)}
-                      className="rounded-xl bg-slate-100 transition-colors dark:bg-[#1e1f20] px-4 py-2 text-xs font-bold tracking-widest text-slate-600 transition-colors dark:text-zinc-300 uppercase transition-colors hover:bg-slate-200"
+                      className="rounded-xl bg-slate-100 transition-colors dark:bg-[#1e1f20] px-4 py-2 text-xs tracking-widest text-slate-600 transition-colors dark:text-zinc-300 uppercase transition-colors hover:bg-slate-200"
                     >
                       Batal
                     </button>
                     <button
                       type="submit"
                       disabled={isSaving}
-                      className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-black tracking-widest text-white uppercase shadow-lg shadow-indigo-600/10 transition-colors hover:bg-indigo-700"
+                      className="rounded-xl bg-indigo-600 px-4 py-2 text-xs tracking-widest text-white uppercase shadow-lg shadow-indigo-600/10 transition-colors hover:bg-indigo-700"
                     >
                       {isSaving ? 'Menyimpan...' : 'Simpan'}
                     </button>
@@ -157,7 +157,7 @@ export default function DoctorProfileSettings() {
                   <button
                     type="button"
                     onClick={handleStartEditing}
-                    className="rounded-xl bg-zinc-900 px-4 py-2 text-xs font-black tracking-widest text-white uppercase shadow-lg shadow-zinc-900/10 transition-colors hover:bg-zinc-800"
+                    className="rounded-xl bg-zinc-900 px-4 py-2 text-xs tracking-widest text-white uppercase shadow-lg shadow-zinc-900/10 transition-colors hover:bg-zinc-800"
                   >
                     Edit Kredensial
                   </button>
@@ -171,7 +171,7 @@ export default function DoctorProfileSettings() {
       {/* KARTU KANAN: JADWAL PRAKTIK */}
       <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-8 shadow-sm">
         <div className="mb-6 flex shrink-0 items-center justify-between border-b border-slate-100 transition-colors dark:border-zinc-800 pb-4">
-          <h3 className="text-lg font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Jadwal Praktik Rutin</h3>
+          <h3 className="text-lg text-zinc-900 transition-colors dark:text-zinc-100">Jadwal Praktik Rutin</h3>
         </div>
 
         <div className="no-scrollbar flex-1 scrollbar-none overflow-y-auto pr-1 pb-12 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -201,15 +201,15 @@ export default function DoctorProfileSettings() {
                     className="flex items-center justify-between rounded-xl border border-slate-100 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] p-4 transition-colors hover:border-indigo-200"
                   >
                     <div>
-                      <p className="text-sm font-bold text-slate-800">
+                      <p className="text-sm text-slate-800">
                         Hari {dayNames[sched.dayOfWeek] || sched.dayOfWeek}
                       </p>
-                      <p className="mt-1 text-xs font-semibold text-slate-500 transition-colors dark:text-zinc-400 ">
+                      <p className="mt-1 text-xs text-slate-500 transition-colors dark:text-zinc-400">
                         {sched.startTime} - {sched.endTime} WIB
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="inline-block rounded bg-indigo-100 transition-colors dark:bg-indigo-900/30 px-2.5 py-1 text-[10px] font-black tracking-wider text-indigo-700 transition-colors dark:text-indigo-400 uppercase">
+                      <span className="inline-block rounded bg-indigo-100 transition-colors dark:bg-indigo-900/30 px-2.5 py-1 text-[10px] tracking-wider text-indigo-700 transition-colors dark:text-indigo-400 uppercase">
                         Kapasitas: {sched.capacity}
                       </span>
                     </div>

@@ -45,7 +45,7 @@ export default function PatientReservations({ embedded = false }: { embedded?: b
         <div className="no-scrollbar overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/80 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
+              <tr className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                 <th className="p-6 pl-8">Layanan & Dokter</th>
                 <th className="p-6">Waktu Kunjungan</th>
                 <th className="p-6">Catatan Keluhan</th>
@@ -58,7 +58,7 @@ export default function PatientReservations({ embedded = false }: { embedded?: b
                 <tr>
                   <td
                     colSpan={5}
-                    className="animate-pulse p-16 text-center text-xs font-bold tracking-widest text-teal-700 uppercase dark:text-teal-500"
+                    className="animate-pulse p-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500"
                   >
                     Menyinkronkan reservasi...
                   </td>
@@ -80,15 +80,15 @@ export default function PatientReservations({ embedded = false }: { embedded?: b
                     onClick={() => openAppointmentDetail(apt)}
                   >
                     <td className="p-6 pl-8 align-top">
-                      <div className="mb-1 text-base font-extrabold text-zinc-900 dark:text-white">
+                      <div className="mb-1 text-base text-zinc-900 dark:text-white">
                         {apt?.department?.name ?? 'Poliklinik'}
                       </div>
-                      <div className="text-[11px] font-bold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+                      <div className="text-[11px] tracking-wide text-slate-500 uppercase dark:text-slate-400">
                         {apt?.doctor?.user?.name ?? 'Dokter belum ditentukan'}
                       </div>
                     </td>
                     <td className="p-6 align-top">
-                      <div className="mb-1 font-extrabold text-zinc-900 dark:text-white">
+                      <div className="mb-1 text-zinc-900 dark:text-white">
                         {new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
                           weekday: 'long',
                           day: 'numeric',
@@ -96,7 +96,7 @@ export default function PatientReservations({ embedded = false }: { embedded?: b
                           year: 'numeric',
                         })}
                       </div>
-                      <div className="inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-black tracking-widest text-slate-600 uppercase dark:bg-slate-900/50 dark:text-slate-400">
+                      <div className="inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] tracking-widest text-slate-600 uppercase dark:bg-slate-900/50 dark:text-slate-400">
                         Sesi:{' '}
                         {new Date(apt.scheduledAt).toLocaleTimeString('id-ID', {
                           hour: '2-digit',
@@ -118,13 +118,13 @@ export default function PatientReservations({ embedded = false }: { embedded?: b
                       </div>
                     </td>
                     <td className="p-6 align-top">
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
                         {apt.createdAt ? new Date(apt.createdAt).toLocaleDateString('id-ID') : '-'}
                       </span>
                     </td>
                     <td className="p-6 pr-8 text-right align-top">
                       <span
-                        className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] font-black tracking-widest uppercase transition-colors ${APPOINTMENT_STATUS_STYLES[apt.status] ?? 'border-slate-200 bg-slate-50 text-slate-500'}`}
+                        className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${APPOINTMENT_STATUS_STYLES[apt.status] ?? 'border-slate-200 bg-slate-50 text-slate-500'}`}
                       >
                         {APPOINTMENT_STATUS_LABELS[apt.status] ?? apt.status}
                       </span>

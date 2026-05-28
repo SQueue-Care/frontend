@@ -30,20 +30,20 @@ function VisitSummary({
           {visit.department?.name ?? 'Poliklinik'}
         </h2>
         {hasNotes && (
-          <span className="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-teal-700 uppercase dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400">
+          <span className="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-[10px] tracking-wider text-teal-700 uppercase dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400">
             Ada Catatan
           </span>
         )}
       </div>
-      <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+      <p className="text-sm text-slate-600 dark:text-slate-300">
         {visit.doctor?.user?.name ?? 'Dokter'}
       </p>
-      <p className="mt-1 text-xs font-bold text-slate-500 dark:text-slate-400">
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
         {formatVisitDate(visit.queueDate)}
       </p>
       {visit.doctorNotes?.diagnosis?.trim() && !expanded && (
         <p className="mt-2 line-clamp-1 text-sm text-slate-500 dark:text-slate-400">
-          <span className="font-bold text-slate-600 dark:text-slate-300">Diagnosis: </span>
+          <span className="text-slate-600 dark:text-slate-300">Diagnosis: </span>
           {visit.doctorNotes.diagnosis}
         </p>
       )}
@@ -66,9 +66,7 @@ function MedicalRecordCard({ visit }: { visit: Queue }) {
       >
         <VisitSummary visit={visit} hasNotes={hasNotes} expanded={expanded} />
         <span
-          className={`mt-1 shrink-0 text-slate-400 transition-transform duration-200 dark:text-zinc-500 ${
-            expanded ? 'rotate-180' : ''
-          }`}
+          className={`mt-1 shrink-0 text-slate-400 transition-transform duration-200 dark:text-zinc-500 ${ expanded ? 'rotate-180' : '' }`}
           aria-hidden
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -81,16 +79,16 @@ function MedicalRecordCard({ visit }: { visit: Queue }) {
         <div className="border-t border-slate-100 px-6 pt-4 pb-6 dark:border-zinc-800">
           <dl className="mb-4 grid gap-3 text-sm sm:grid-cols-2">
             <div>
-              <dt className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+              <dt className="text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
                 Nomor Antrean
               </dt>
-              <dd className="font-bold text-zinc-800 dark:text-zinc-200">#{visit.queueNumber}</dd>
+              <dd className="text-zinc-800 dark:text-zinc-200">#{visit.queueNumber}</dd>
             </div>
           </dl>
 
           {hasNotes ? (
             <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50/60 p-4 dark:border-amber-900/50 dark:bg-amber-900/10">
-              <p className="mb-3 text-[10px] font-black tracking-widest text-amber-700 uppercase dark:text-amber-500">
+              <p className="mb-3 text-[10px] tracking-widest text-amber-700 uppercase dark:text-amber-500">
                 Rekam Medis Kunjungan
               </p>
               <DoctorNotesDisplay doctorNotes={visit.doctorNotes} />
@@ -104,7 +102,7 @@ function MedicalRecordCard({ visit }: { visit: Queue }) {
           <button
             type="button"
             onClick={() => navigate(`/portal/queues/${visit.id}`)}
-            className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2.5 text-xs font-black text-teal-700 transition-colors hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400 dark:hover:bg-teal-500/20"
+            className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2.5 text-xs text-teal-700 transition-colors hover:bg-teal-100 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400 dark:hover:bg-teal-500/20"
           >
             Lihat Detail Kunjungan
           </button>
@@ -133,7 +131,7 @@ export default function PatientMedicalRecords() {
       </p>
 
       {isLoadingTable ? (
-        <div className="py-16 text-center text-xs font-bold tracking-widest text-teal-700 uppercase dark:text-teal-500">
+        <div className="py-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500">
           Memuat rekam medis...
         </div>
       ) : completedVisits.length === 0 ? (

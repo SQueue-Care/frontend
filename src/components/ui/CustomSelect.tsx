@@ -27,9 +27,9 @@ export default function CustomSelect({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-semibold text-zinc-900 shadow-sm transition-all outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-100 dark:focus:border-teal-600"
+          className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-zinc-900 shadow-sm transition-all outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-100 dark:focus:border-teal-600"
         >
-          <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+          <span className="text-sm text-zinc-900 dark:text-zinc-100">
             {selectedOpt ? selectedOpt.label : placeholder}
           </span>
           <svg
@@ -48,11 +48,7 @@ export default function CustomSelect({
         </button>
 
         <label
-          className={`pointer-events-none absolute left-3 z-10 rounded-sm px-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${
-            isFloating
-              ? 'top-0 -translate-y-1/2 bg-white text-teal-600 dark:bg-[#1e1f20] dark:text-teal-400'
-              : 'top-1/2 -translate-y-1/2 bg-transparent text-slate-500 dark:text-zinc-500'
-          }`}
+          className={`pointer-events-none absolute left-3 z-10 rounded-sm px-1.5 transition-all duration-200 ease-in-out ${ isFloating ? 'top-0 -translate-y-1/2 text-[10px] bg-white text-teal-600 dark:bg-[#1e1f20] dark:text-teal-400' : 'top-1/2 -translate-y-1/2 text-sm bg-transparent text-slate-500 dark:text-zinc-500' }`}
         >
           {label}
         </label>
@@ -70,11 +66,7 @@ export default function CustomSelect({
                   onChange(opt.value)
                   setIsOpen(false)
                 }}
-                className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors ${
-                  value === opt.value
-                    ? 'bg-teal-50 text-teal-700 dark:bg-[#131314] dark:text-teal-400'
-                    : 'text-zinc-900 hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-zinc-800/80'
-                }`}
+                className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${ value === opt.value ? 'bg-teal-50 text-teal-700 dark:bg-[#131314] dark:text-teal-400' : 'text-zinc-900 hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-zinc-800/80' }`}
               >
                 {opt.label}
               </button>

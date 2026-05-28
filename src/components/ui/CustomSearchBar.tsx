@@ -27,15 +27,11 @@ export default function CustomSearchBar({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={isFocused ? placeholder : ''}
-          className="relative z-10 w-full rounded-xl border border-slate-200 bg-white py-2.5 pr-14 pl-3 text-xs font-semibold text-zinc-900 shadow-sm transition-all outline-none placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-100 dark:placeholder:text-zinc-600 dark:focus:border-teal-600"
+          className="relative z-10 w-full rounded-xl border border-slate-200 bg-white py-3.5 pr-14 pl-4 text-sm text-zinc-900 shadow-sm transition-all outline-none placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-100 dark:placeholder:text-zinc-600 dark:focus:border-teal-600"
         />
 
         <label
-          className={`pointer-events-none absolute left-3 z-20 rounded-sm px-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${
-            isFloating
-              ? 'top-0 -translate-y-1/2 bg-white text-teal-600 dark:bg-[#1e1f20] dark:text-teal-400'
-              : 'top-1/2 -translate-y-1/2 bg-transparent text-slate-500 dark:text-zinc-500'
-          }`}
+          className={`pointer-events-none absolute left-3 z-20 rounded-sm px-1.5 transition-all duration-200 ease-in-out ${ isFloating ? 'top-0 -translate-y-1/2 text-[10px] bg-white text-teal-600 dark:bg-[#1e1f20] dark:text-teal-400' : 'top-1/2 -translate-y-1/2 text-sm bg-transparent text-slate-500 dark:text-zinc-500' }`}
         >
           {label}
         </label>

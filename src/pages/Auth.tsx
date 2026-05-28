@@ -204,9 +204,7 @@ export default function Auth() {
 
       {/* KARTU UTAMA DENGAN ANIMASI PARITAS DASHBOARD */}
       <div 
-        className={`relative z-10 w-full max-w-md bg-white/90 dark:bg-[#1e1f20]/90 backdrop-blur-xl border border-slate-200/50 dark:border-zinc-800/50 rounded-3xl shadow-2xl p-8 sm:p-10 transition-all duration-700 ease-out ${
-          isMounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
+        className={`relative z-10 w-full max-w-md bg-white/90 dark:bg-[#1e1f20]/90 backdrop-blur-xl border border-slate-200/50 dark:border-zinc-800/50 rounded-3xl shadow-2xl p-8 sm:p-10 transition-all duration-700 ease-out ${ isMounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0' }`}
       >
         
         {/* KONTEN KARTU (Dibungkus agar bisa transisi saat ganti tab) */}
@@ -225,18 +223,14 @@ export default function Auth() {
             <button
               type="button"
               onClick={() => toggleMode('login')}
-              className={`w-1/2 pb-3.5 text-sm font-medium transition-all outline-none ${
-                mode === 'login' ? 'border-b-2 border-teal-600 text-teal-600 dark:border-teal-400 dark:text-teal-400' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300'
-              }`}
+              className={`w-1/2 pb-3.5 text-sm font-medium transition-all outline-none ${ mode === 'login' ? 'border-b-2 border-teal-600 text-teal-600 dark:border-teal-400 dark:text-teal-400' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300' }`}
             >
               Masuk
             </button>
             <button
               type="button"
               onClick={() => toggleMode('register')}
-              className={`w-1/2 pb-3.5 text-sm font-medium transition-all outline-none ${
-                mode === 'register' ? 'border-b-2 border-teal-600 text-teal-600 dark:border-teal-400 dark:text-teal-400' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300'
-              }`}
+              className={`w-1/2 pb-3.5 text-sm font-medium transition-all outline-none ${ mode === 'register' ? 'border-b-2 border-teal-600 text-teal-600 dark:border-teal-400 dark:text-teal-400' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300' }`}
             >
               Daftar
             </button>
@@ -308,13 +302,7 @@ export default function Auth() {
                   {[1, 2, 3, 4].map((level) => (
                     <div
                       key={level}
-                      className={`h-1.5 w-1/4 rounded-full transition-all duration-300 ${
-                        passwordStrength >= level
-                          ? passwordStrength <= 2
-                            ? 'bg-amber-500 dark:bg-amber-400'
-                            : 'bg-teal-500 dark:bg-teal-400'
-                          : 'bg-slate-200 dark:bg-zinc-800'
-                      }`}
+                      className={`h-1.5 w-1/4 rounded-full transition-all duration-300 ${ passwordStrength >= level ? passwordStrength <= 2 ? 'bg-amber-500 dark:bg-amber-400' : 'bg-teal-500 dark:bg-teal-400' : 'bg-slate-200 dark:bg-zinc-800' }`}
                     />
                   ))}
                 </div>

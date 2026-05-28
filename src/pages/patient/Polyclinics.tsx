@@ -44,7 +44,7 @@ export default function PatientPolyclinics() {
     <div className="animate-in fade-in slide-in-from-bottom-4 space-y-8 duration-500">
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div className="max-w-2xl">
-          <p className="mb-2 text-sm font-bold text-teal-700 dark:text-teal-400">
+          <p className="mb-2 text-sm text-teal-700 dark:text-teal-400">
             Informasi layanan
           </p>
           <p className="text-base leading-relaxed text-slate-600 dark:text-slate-400">
@@ -63,7 +63,7 @@ export default function PatientPolyclinics() {
       </div>
 
       {isLoading ? (
-        <div className="py-16 text-center font-bold text-slate-500 dark:text-slate-400">
+        <div className="py-16 text-center text-slate-500 dark:text-slate-400">
           Memuat data poliklinik...
         </div>
       ) : polyclinics.length === 0 ? (
@@ -84,7 +84,7 @@ export default function PatientPolyclinics() {
                   <h2 className="font-['Manrope'] text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
                     {poli.name}
                   </h2>
-                  <span className="shrink-0 rounded-lg bg-slate-100 px-2.5 py-1 font-mono text-[10px] font-black tracking-widest text-slate-600 uppercase dark:bg-zinc-900 dark:text-zinc-400">
+                  <span className="shrink-0 rounded-lg bg-slate-100 px-2.5 py-1 font-mono text-[10px] tracking-widest text-slate-600 uppercase dark:bg-zinc-900 dark:text-zinc-400">
                     {poli.code}
                   </span>
                 </div>
@@ -94,23 +94,23 @@ export default function PatientPolyclinics() {
               </div>
               <div className="grid gap-4 p-6 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 dark:border-zinc-800 dark:bg-[#131314]/50">
-                  <p className="mb-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+                  <p className="mb-1 text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
                     Jam Operasional
                   </p>
-                  <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{poli.hours}</p>
+                  <p className="text-sm text-zinc-900 dark:text-zinc-100">{poli.hours}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 dark:border-zinc-800 dark:bg-[#131314]/50">
-                  <p className="mb-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+                  <p className="mb-1 text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
                     Status Antrean
                   </p>
-                  <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{poli.status}</p>
+                  <p className="text-sm text-zinc-900 dark:text-zinc-100">{poli.status}</p>
                 </div>
               </div>
               <div className="border-t border-slate-100 p-6 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => openBooking(poli.id, poli.name)}
-                  className="w-full rounded-xl bg-teal-600 px-4 py-3.5 text-sm font-black text-white shadow-lg shadow-teal-500/20 transition-all hover:bg-teal-700 active:scale-[0.98]"
+                  className="w-full rounded-xl bg-teal-600 px-4 py-3.5 text-sm text-white shadow-lg shadow-teal-500/20 transition-all hover:bg-teal-700 active:scale-[0.98]"
                 >
                   Ambil Antrean / Reservasi
                 </button>

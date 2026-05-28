@@ -68,7 +68,7 @@ export default function PolyclinicCard({
             />
           </svg>
         </div>
-        <h3 className="pt-1 font-['Manrope'] text-xl font-extrabold tracking-tight text-zinc-950 md:text-2xl dark:text-zinc-100">
+        <h3 className="pt-1 font-['Manrope'] text-xl tracking-tight text-zinc-950 md:text-2xl dark:text-zinc-100">
           {name}
         </h3>
       </div>
@@ -82,13 +82,13 @@ export default function PolyclinicCard({
       >
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-[9px] font-black tracking-widest text-slate-500 uppercase dark:text-zinc-400">
+            <span className="text-[9px] tracking-widest text-slate-500 uppercase dark:text-zinc-400">
               Kapasitas Poli
             </span>
           </div>
           <div className="flex items-center gap-1.5 rounded-md border border-white/50 bg-white px-2 py-1 shadow-sm dark:border-zinc-800 dark:bg-[#131314]">
             <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${colors.indicator}`}></span>
-            <span className={`text-[9px] font-black tracking-wider uppercase ${colors.text}`}>
+            <span className={`text-[9px] tracking-wider uppercase ${colors.text}`}>
               {status}
             </span>
           </div>
@@ -103,11 +103,11 @@ export default function PolyclinicCard({
       </div>
 
       <div className="flex items-center justify-between border-t border-slate-100 pt-5 transition-colors duration-300 group-hover:border-teal-100 dark:border-zinc-800 dark:group-hover:border-teal-900/50">
-        <span className="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-[10px] font-extrabold tracking-widest text-emerald-700 uppercase dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+        <span className="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-[10px] tracking-widest text-emerald-700 uppercase dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
           Buka Hari Ini
         </span>
 
-        <div className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-4 py-2 text-[10px] font-black tracking-widest text-slate-400 uppercase shadow-sm transition-all duration-300 group-hover:border-teal-600 group-hover:bg-teal-600 group-hover:text-white dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
+        <div className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-4 py-2 text-[10px] tracking-widest text-slate-400 uppercase shadow-sm transition-all duration-300 group-hover:border-teal-600 group-hover:bg-teal-600 group-hover:text-white dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
           <span>Ambil Antrean</span>
           <svg
             className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"

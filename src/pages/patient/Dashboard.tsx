@@ -164,7 +164,7 @@ export default function PatientDashboard() {
 
         <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
-            <p className="mb-1 text-xs font-bold tracking-widest text-teal-700 uppercase dark:text-teal-400">
+            <p className="mb-1 text-xs tracking-widest text-teal-700 uppercase dark:text-teal-400">
               {formattedDate}
             </p>
             <h1 className="mb-2 font-['Manrope'] text-2xl font-extrabold tracking-tight text-zinc-950 md:text-3xl dark:text-white">
@@ -179,7 +179,7 @@ export default function PatientDashboard() {
             <button
               type="button"
               onClick={() => navigate('/portal/polyclinics')}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-teal-600/25 transition-all hover:bg-teal-700 active:scale-[0.98] dark:bg-teal-700 dark:hover:bg-teal-600"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-3.5 text-sm text-white shadow-lg shadow-teal-600/25 transition-all hover:bg-teal-700 active:scale-[0.98] dark:bg-teal-700 dark:hover:bg-teal-600"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -190,7 +190,7 @@ export default function PatientDashboard() {
               <button
                 type="button"
                 onClick={() => openAppointmentDetail(checkInReady)}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-teal-200 bg-white px-5 py-3.5 text-sm font-black text-teal-800 shadow-sm transition-all hover:bg-teal-50 active:scale-[0.98] dark:border-teal-800 dark:bg-[#131314] dark:text-teal-300 dark:hover:bg-teal-950/50"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-teal-200 bg-white px-5 py-3.5 text-sm text-teal-800 shadow-sm transition-all hover:bg-teal-50 active:scale-[0.98] dark:border-teal-800 dark:bg-[#131314] dark:text-teal-300 dark:hover:bg-teal-950/50"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -201,7 +201,7 @@ export default function PatientDashboard() {
               <button
                 type="button"
                 onClick={() => navigate('/portal/visits?tab=reservations')}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white/90 px-5 py-3.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-teal-200 hover:text-teal-800 active:scale-[0.98] dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-300 dark:hover:border-teal-800"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white/90 px-5 py-3.5 text-sm text-slate-700 shadow-sm transition-all hover:border-teal-200 hover:text-teal-800 active:scale-[0.98] dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-300 dark:hover:border-teal-800"
               >
                 Lihat Reservasi
               </button>
@@ -237,7 +237,7 @@ export default function PatientDashboard() {
                   {action.icon}
                 </div>
                 <div>
-                  <p className="font-extrabold text-zinc-900 dark:text-white">{action.label}</p>
+                  <p className="text-zinc-900 dark:text-white">{action.label}</p>
                   <p className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">{action.description}</p>
                 </div>
               </Link>
@@ -253,7 +253,7 @@ export default function PatientDashboard() {
                 Notifikasi
               </h2>
               {unreadCount > 0 && (
-                <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">
+                <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] text-white">
                   {unreadCount > 99 ? '99+' : unreadCount} baru
                 </span>
               )}
@@ -263,13 +263,9 @@ export default function PatientDashboard() {
                 <button
                   type="button"
                   onClick={() => navigate(latestUnread.link ?? '/portal/notifications')}
-                  className={`w-full rounded-xl border px-3 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800/50 ${
-                    !latestUnread.isRead
-                      ? 'border-teal-100 bg-teal-50/50 dark:border-teal-500/20 dark:bg-teal-500/5'
-                      : 'border-transparent'
-                  }`}
+                  className={`w-full rounded-xl border px-3 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800/50 ${ !latestUnread.isRead ? 'border-teal-100 bg-teal-50/50 dark:border-teal-500/20 dark:bg-teal-500/5' : 'border-transparent' }`}
                 >
-                  <p className="text-sm font-extrabold text-zinc-900 dark:text-white">
+                  <p className="text-sm text-zinc-900 dark:text-white">
                     {latestUnread.title}
                   </p>
                   <p className="mt-1 line-clamp-2 text-xs text-slate-600 dark:text-zinc-400">
@@ -283,7 +279,7 @@ export default function PatientDashboard() {
               )}
               <Link
                 to="/portal/notifications"
-                className="mt-3 block text-center text-xs font-black tracking-wide text-teal-600 uppercase dark:text-teal-400"
+                className="mt-3 block text-center text-xs tracking-wide text-teal-600 uppercase dark:text-teal-400"
               >
                 {unreadCount > 0 ? `Lihat ${unreadCount} belum dibaca` : 'Buka semua notifikasi'}
               </Link>
@@ -298,7 +294,7 @@ export default function PatientDashboard() {
             </div>
             <div className="divide-y divide-slate-100 dark:divide-zinc-800">
               {isLoadingAppointments ? (
-                <p className="animate-pulse p-6 text-center text-xs font-bold text-teal-700 uppercase dark:text-teal-500">
+                <p className="animate-pulse p-6 text-center text-xs text-teal-700 uppercase dark:text-teal-500">
                   Memuat jadwal...
                 </p>
               ) : todayAppointments.length === 0 ? (
@@ -314,8 +310,8 @@ export default function PatientDashboard() {
                     className="flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800/40"
                   >
                     <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400">
-                      <span className="text-[9px] font-black uppercase">Jam</span>
-                      <span className="text-xs font-black tabular-nums">
+                      <span className="text-[9px] uppercase">Jam</span>
+                      <span className="text-xs tabular-nums">
                         {new Date(apt.scheduledAt).toLocaleTimeString('id-ID', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -324,13 +320,13 @@ export default function PatientDashboard() {
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-extrabold text-zinc-900 dark:text-white">
+                      <p className="truncate text-sm text-zinc-900 dark:text-white">
                         {apt.department?.name ?? 'Poliklinik'}
                       </p>
                       <p className="truncate text-xs text-slate-500 dark:text-zinc-400">
                         {apt.doctor?.user?.name ?? 'Dokter belum ditentukan'}
                       </p>
-                      <p className="mt-1 text-[10px] font-bold text-teal-700 dark:text-teal-400">
+                      <p className="mt-1 text-[10px] text-teal-700 dark:text-teal-400">
                         {APPOINTMENT_STATUS_LABELS[apt.status] ?? apt.status}
                         {canCheckIn(apt) ? ' · Siap check-in' : ''}
                       </p>
@@ -343,7 +339,7 @@ export default function PatientDashboard() {
               <div className="border-t border-slate-100 p-2 dark:border-zinc-800">
                 <Link
                   to="/portal/visits?tab=reservations"
-                  className="block rounded-lg py-2 text-center text-xs font-bold text-teal-600 dark:text-teal-400"
+                  className="block rounded-lg py-2 text-center text-xs text-teal-600 dark:text-teal-400"
                 >
                   Lihat semua reservasi
                 </Link>
@@ -366,7 +362,7 @@ export default function PatientDashboard() {
           </div>
           <Link
             to="/portal/polyclinics"
-            className="text-sm font-bold text-teal-600 hover:text-teal-700 dark:text-teal-400"
+            className="text-sm text-teal-600 hover:text-teal-700 dark:text-teal-400"
           >
             Lihat semua →
           </Link>
@@ -374,7 +370,7 @@ export default function PatientDashboard() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {isDeptLoading ? (
-            <div className="col-span-full py-10 text-center font-bold text-slate-500 dark:text-slate-400">
+            <div className="col-span-full py-10 text-center text-slate-500 dark:text-slate-400">
               Memuat layanan poliklinik...
             </div>
           ) : featuredPolyclinics.length > 0 ? (

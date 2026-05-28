@@ -38,9 +38,9 @@ function formatRelativeTime(iso: string): string {
 function NotificationItemHeader({ item }: { item: AppNotification }) {
   return (
     <div className="flex items-start justify-between gap-2">
-      <p className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">{item.title}</p>
+      <p className="text-sm text-zinc-900 dark:text-zinc-100">{item.title}</p>
       <span
-        className={`shrink-0 rounded-md border px-1.5 py-0.5 text-[9px] font-black tracking-wider uppercase ${TYPE_COLORS[item.type] ?? TYPE_COLORS.SYSTEM}`}
+        className={`shrink-0 rounded-md border px-1.5 py-0.5 text-[9px] tracking-wider uppercase ${TYPE_COLORS[item.type] ?? TYPE_COLORS.SYSTEM}`}
       >
         {TYPE_LABELS[item.type] ?? item.type}
       </span>
@@ -59,17 +59,13 @@ function NotificationItem({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full rounded-xl border px-3 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800/50 ${
-        item.isRead
-          ? 'border-transparent bg-transparent'
-          : 'border-teal-100 bg-teal-50/50 dark:border-teal-500/20 dark:bg-teal-500/5'
-      }`}
+      className={`w-full rounded-xl border px-3 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800/50 ${ item.isRead ? 'border-transparent bg-transparent' : 'border-teal-100 bg-teal-50/50 dark:border-teal-500/20 dark:bg-teal-500/5' }`}
     >
       <NotificationItemHeader item={item} />
       <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
         {item.message}
       </p>
-      <p className="mt-1.5 text-[10px] font-bold text-slate-400 dark:text-zinc-500">
+      <p className="mt-1.5 text-[10px] text-slate-400 dark:text-zinc-500">
         {formatRelativeTime(item.createdAt)}
       </p>
     </button>
@@ -133,7 +129,7 @@ export default function NotificationBell({ pollIntervalMs = 30_000 }: Notificati
           />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white shadow-sm">
+          <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] text-white shadow-sm">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -142,14 +138,14 @@ export default function NotificationBell({ pollIntervalMs = 30_000 }: Notificati
       {isOpen && (
         <div className="animate-in fade-in zoom-in-95 absolute top-full right-0 z-50 mt-2 w-80 origin-top-right overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-[#1e1f20] sm:w-96">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-zinc-800">
-            <h3 className="font-['Manrope'] text-sm font-extrabold text-zinc-900 dark:text-white">
+            <h3 className="font-['Manrope'] text-sm text-zinc-900 dark:text-white">
               Notifikasi
             </h3>
             {unreadCount > 0 && (
               <button
                 type="button"
                 onClick={() => void markAllRead()}
-                className="text-xs font-bold text-teal-600 hover:text-teal-700 dark:text-teal-400"
+                className="text-xs text-teal-600 hover:text-teal-700 dark:text-teal-400"
               >
                 Tandai semua dibaca
               </button>
@@ -181,7 +177,7 @@ export default function NotificationBell({ pollIntervalMs = 30_000 }: Notificati
                 setIsOpen(false)
                 navigate(fullPagePath)
               }}
-              className="w-full rounded-xl py-2.5 text-center text-xs font-black tracking-wide text-teal-600 uppercase transition-colors hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-teal-500/10"
+              className="w-full rounded-xl py-2.5 text-center text-xs tracking-wide text-teal-600 uppercase transition-colors hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-teal-500/10"
             >
               Lihat Semua
             </button>

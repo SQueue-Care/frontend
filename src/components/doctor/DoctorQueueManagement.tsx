@@ -150,10 +150,10 @@ export default function DoctorQueueManagement() {
   return (
     <div className="animate-in fade-in space-y-6 duration-500">
       <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100 ">
+        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
           Terima Pasien
         </h1>
-        <p className="text-slate-600 transition-colors dark:text-zinc-300 ">
+        <p className="text-slate-600 transition-colors dark:text-zinc-300">
           Selamat datang, {user?.name}. Kelola pemeriksaan pasien dan lihat riwayat medis.
         </p>
       </div>
@@ -169,7 +169,7 @@ export default function DoctorQueueManagement() {
         />
       ) : (
         <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-10 text-center shadow-sm">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 transition-colors dark:bg-indigo-900/20 text-indigo-600 transition-colors dark:text-indigo-400 ">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 transition-colors dark:bg-indigo-900/20 text-indigo-600 transition-colors dark:text-indigo-400">
             <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -179,8 +179,8 @@ export default function DoctorQueueManagement() {
               />
             </svg>
           </div>
-          <h2 className="font-['Manrope'] text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Belum ada pasien aktif</h2>
-          <p className="mt-2 max-w-md text-sm text-slate-500 transition-colors dark:text-zinc-400 ">
+          <h2 className="font-['Manrope'] text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100">Belum ada pasien aktif</h2>
+          <p className="mt-2 max-w-md text-sm text-slate-500 transition-colors dark:text-zinc-400">
             Panggil pasien dari daftar antrean di bawah untuk memulai pemeriksaan.
           </p>
         </div>
@@ -189,12 +189,12 @@ export default function DoctorQueueManagement() {
       <div className="rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
-            <h3 className="font-['Manrope'] text-lg font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">Daftar Antrean</h3>
-            <p className="text-sm text-slate-500 transition-colors dark:text-zinc-400 ">
+            <h3 className="font-['Manrope'] text-lg text-zinc-900 transition-colors dark:text-zinc-100">Daftar Antrean</h3>
+            <p className="text-sm text-slate-500 transition-colors dark:text-zinc-400">
               Pasien menunggu di poli {profile?.department?.name || 'Anda'}
             </p>
           </div>
-          <span className="inline-flex items-center rounded-full border border-indigo-100 transition-colors dark:border-indigo-800/50 bg-indigo-50 transition-colors dark:bg-indigo-900/20 px-3 py-1 text-xs font-bold text-indigo-700 transition-colors dark:text-indigo-400 ">
+          <span className="inline-flex items-center rounded-full border border-indigo-100 transition-colors dark:border-indigo-800/50 bg-indigo-50 transition-colors dark:bg-indigo-900/20 px-3 py-1 text-xs text-indigo-700 transition-colors dark:text-indigo-400">
             {activeCount} aktif
           </span>
         </div>
@@ -204,7 +204,7 @@ export default function DoctorQueueManagement() {
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600" />
           </div>
         ) : errorTable ? (
-          <div className="py-8 text-center text-sm font-medium text-rose-600 transition-colors dark:text-rose-400 ">{errorTable}</div>
+          <div className="py-8 text-center text-sm font-medium text-rose-600 transition-colors dark:text-rose-400">{errorTable}</div>
         ) : departmentQueues.length === 0 ? (
           <div className="py-8 text-center text-sm text-slate-500 transition-colors dark:text-zinc-400 italic">
             Belum ada antrean untuk departemen Anda hari ini.
@@ -213,14 +213,14 @@ export default function DoctorQueueManagement() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="border-b border-slate-100 transition-colors dark:border-zinc-800 text-xs font-bold tracking-wider text-slate-500 transition-colors dark:text-zinc-400 uppercase">
+                <tr className="border-b border-slate-100 transition-colors dark:border-zinc-800 text-xs tracking-wider text-slate-500 transition-colors dark:text-zinc-400 uppercase">
                   <th className="p-3 pl-0">No. Antrean</th>
                   <th className="p-3">Nama Pasien</th>
                   <th className="p-3">Status</th>
                   <th className="p-3 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 transition-colors dark:divide-zinc-800 text-sm font-medium text-zinc-900 transition-colors dark:text-zinc-100 ">
+              <tbody className="divide-y divide-slate-100 transition-colors dark:divide-zinc-800 text-sm font-medium text-zinc-900 transition-colors dark:text-zinc-100">
                 {departmentQueues.map((queue) => {
                   const isCurrent = queue.id === activePatientQueue?.id
                   const isBlocked =
@@ -233,16 +233,12 @@ export default function DoctorQueueManagement() {
                   return (
                     <tr
                       key={queue.id}
-                      className={`transition-colors ${
-                        isCurrent
-                          ? 'bg-indigo-50/80 ring-1 ring-inset ring-indigo-100'
-                          : 'hover:bg-slate-50/70'
-                      }`}
+                      className={`transition-colors ${ isCurrent ? 'bg-indigo-50/80 ring-1 ring-inset ring-indigo-100' : 'hover:bg-slate-50/70' }`}
                     >
-                      <td className="p-3 pl-0 font-mono font-bold text-zinc-900 transition-colors dark:text-zinc-100 ">
+                      <td className="p-3 pl-0 font-mono text-zinc-900 transition-colors dark:text-zinc-100">
                         {queue.department?.code || 'XX'}-{queue.queueNumber}
                         {isCurrent && (
-                          <span className="ml-2 rounded bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                          <span className="ml-2 rounded bg-indigo-600 px-1.5 py-0.5 text-[10px] text-white">
                             AKTIF
                           </span>
                         )}
@@ -250,7 +246,7 @@ export default function DoctorQueueManagement() {
                       <td className="p-3">{queue.patient?.user?.name || '-'}</td>
                       <td className="p-3">
                         <span
-                          className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-bold ${STATUS_CLASSES[queue.status]}`}
+                          className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs ${STATUS_CLASSES[queue.status]}`}
                         >
                           {STATUS_LABEL[queue.status]}
                         </span>
@@ -261,7 +257,7 @@ export default function DoctorQueueManagement() {
                             <button
                               type="button"
                               onClick={() => setCdssQueue(queue)}
-                              className="rounded-lg border border-violet-200 bg-violet-50 transition-colors dark:bg-violet-900/20 px-3 py-1.5 text-[11px] font-bold text-violet-600 transition-colors dark:text-violet-400 transition-colors hover:bg-violet-100"
+                              className="rounded-lg border border-violet-200 bg-violet-50 transition-colors dark:bg-violet-900/20 px-3 py-1.5 text-[11px] text-violet-600 transition-colors dark:text-violet-400 transition-colors hover:bg-violet-100"
                             >
                               CDSS
                             </button>
@@ -277,7 +273,7 @@ export default function DoctorQueueManagement() {
                             <button
                               type="button"
                               onClick={() => setNotesQueue(queue)}
-                              className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-3 py-1.5 text-[11px] font-bold text-amber-700 transition-colors dark:text-amber-400 transition-colors hover:bg-amber-100"
+                              className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-3 py-1.5 text-[11px] text-amber-700 transition-colors dark:text-amber-400 transition-colors hover:bg-amber-100"
                             >
                               Catatan
                             </button>
@@ -347,9 +343,9 @@ export default function DoctorQueueManagement() {
         )}
 
         {waitingQueues.length > 0 && !activePatientQueue && (
-          <p className="mt-4 text-xs text-slate-500 transition-colors dark:text-zinc-400 ">
+          <p className="mt-4 text-xs text-slate-500 transition-colors dark:text-zinc-400">
             {waitingQueues.length} pasien menunggu · Panggil nomor{' '}
-            <span className="font-bold text-indigo-700 transition-colors dark:text-indigo-400 ">
+            <span className="text-indigo-700 transition-colors dark:text-indigo-400">
               {waitingQueues[0]?.department?.code}-{waitingQueues[0]?.queueNumber}
             </span>{' '}
             untuk memulai

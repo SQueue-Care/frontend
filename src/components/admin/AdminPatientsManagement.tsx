@@ -57,14 +57,12 @@ export default function AdminPatientsManagement() {
                     <button
                       type="button"
                       onClick={() => handleSelect(p.id)}
-                      className={`w-full px-5 py-4 text-left transition-colors hover:bg-teal-50/50 ${
-                        selectedId === p.id ? 'bg-teal-50 dark:bg-teal-500/10' : ''
-                      }`}
+                      className={`w-full px-5 py-4 text-left transition-colors hover:bg-teal-50/50 ${ selectedId === p.id ? 'bg-teal-50 dark:bg-teal-500/10' : '' }`}
                     >
-                      <p className="font-bold text-zinc-900 dark:text-zinc-100">{p.user.name}</p>
+                      <p className="text-zinc-900 dark:text-zinc-100">{p.user.name}</p>
                       <p className="text-xs text-slate-500 dark:text-zinc-400">{p.user.email}</p>
                       {p.bpjsNumber && (
-                        <span className="mt-1 inline-block rounded bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">
+                        <span className="mt-1 inline-block rounded bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-[10px] text-blue-700 dark:text-blue-400">
                           BPJS
                         </span>
                       )}
@@ -79,7 +77,7 @@ export default function AdminPatientsManagement() {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="rounded-lg border px-3 py-1.5 text-xs font-bold disabled:opacity-40"
+                className="rounded-lg border px-3 py-1.5 text-xs disabled:opacity-40"
               >
                 Prev
               </button>
@@ -89,7 +87,7 @@ export default function AdminPatientsManagement() {
               <button
                 disabled={page >= pagination.totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="rounded-lg border px-3 py-1.5 text-xs font-bold disabled:opacity-40"
+                className="rounded-lg border px-3 py-1.5 text-xs disabled:opacity-40"
               >
                 Next
               </button>
@@ -139,7 +137,7 @@ export default function AdminPatientsManagement() {
               </div>
 
               <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-                <h3 className="mb-4 font-bold text-zinc-900 dark:text-zinc-100">Riwayat Kunjungan Selesai</h3>
+                <h3 className="mb-4 text-zinc-900 dark:text-zinc-100">Riwayat Kunjungan Selesai</h3>
                 {!medicalProfile?.medicalHistory?.length ? (
                   <p className="text-sm text-slate-500 dark:text-zinc-400 italic">Belum ada kunjungan selesai.</p>
                 ) : (
@@ -148,13 +146,13 @@ export default function AdminPatientsManagement() {
                       <li key={visit.id} className="rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
                         <div className="mb-2 flex justify-between gap-2">
                           <div>
-                            <p className="text-sm font-bold text-teal-700 dark:text-teal-400">{visit.department?.name}</p>
+                            <p className="text-sm text-teal-700 dark:text-teal-400">{visit.department?.name}</p>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
                               {new Date(visit.queueDate).toLocaleDateString('id-ID')} · #{visit.queueNumber}
                             </p>
                           </div>
                           {visit.doctor?.user?.name && (
-                            <span className="text-xs font-semibold text-slate-600 dark:text-zinc-400">{visit.doctor.user.name}</span>
+                            <span className="text-xs text-slate-600 dark:text-zinc-400">{visit.doctor.user.name}</span>
                           )}
                         </div>
                         <DoctorNotesDisplay doctorNotes={visit.doctorNotes} />

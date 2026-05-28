@@ -160,7 +160,7 @@ export default function AdminAppointmentManagement() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-[10px] font-black tracking-widest text-slate-500 dark:text-zinc-400 uppercase">
+              <thead className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-[10px] tracking-widest text-slate-500 dark:text-zinc-400 uppercase">
                 <tr>
                   <th className="p-5 pl-8">Nama Pasien</th>
                   <th className="p-5">Dokter</th>
@@ -197,17 +197,17 @@ export default function AdminAppointmentManagement() {
                       className="group cursor-pointer transition-colors hover:bg-slate-50/50 dark:hover:bg-[#131314]/50"
                     >
                       <td className="p-5 pl-8">
-                        <div className="font-extrabold text-zinc-950 dark:text-zinc-100 uppercase transition-colors group-hover:text-teal-600">
+                        <div className="text-zinc-950 dark:text-zinc-100 uppercase transition-colors group-hover:text-teal-600">
                           {apt.patient?.user?.name || '-'}
                         </div>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700 dark:text-slate-300">
+                        <div className="text-slate-700 dark:text-slate-300">
                           {apt.doctor?.user?.name || '-'}
                         </div>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700 dark:text-slate-300">
+                        <div className="text-slate-700 dark:text-slate-300">
                           {new Date(apt.scheduledAt).toLocaleDateString('id-ID', {
                             year: 'numeric',
                             month: 'short',
@@ -216,7 +216,7 @@ export default function AdminAppointmentManagement() {
                         </div>
                       </td>
                       <td className="p-5">
-                        <span className="rounded-md border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-2 py-1 font-mono text-[11px] font-black tracking-widest text-slate-600 dark:text-zinc-400">
+                        <span className="rounded-md border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-2 py-1 font-mono text-[11px] tracking-widest text-slate-600 dark:text-zinc-400">
                           {new Date(apt.scheduledAt).toLocaleTimeString('id-ID', {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -224,18 +224,18 @@ export default function AdminAppointmentManagement() {
                         </span>
                       </td>
                       <td className="p-5">
-                        <div className="font-mono text-xs font-bold text-slate-400 dark:text-zinc-500">
+                        <div className="font-mono text-xs text-slate-400 dark:text-zinc-500">
                           {apt.patient?.nik || '-'}
                         </div>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700 dark:text-slate-300">
+                        <div className="text-slate-700 dark:text-slate-300">
                           {apt.department?.name || '-'}
                         </div>
                       </td>
                       <td className="p-5">
                         <span
-                          className={`rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase ${statusClasses[apt.status] || 'border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-slate-600 dark:text-zinc-400'}`}
+                          className={`rounded-lg border px-3 py-1 text-[10px] tracking-widest uppercase ${statusClasses[apt.status] || 'border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-slate-600 dark:text-zinc-400'}`}
                         >
                           {statusLabel[apt.status] || apt.status}
                         </span>
@@ -301,10 +301,10 @@ export default function AdminAppointmentManagement() {
           <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-[#131314]/50 p-6">
               <div>
-                <h3 className="text-lg font-black tracking-tighter text-zinc-900 dark:text-zinc-100 uppercase">
+                <h3 className="text-lg tracking-tighter text-zinc-900 dark:text-zinc-100 uppercase">
                   Detail Reservasi
                 </h3>
-                <p className="mt-0.5 font-mono text-xs font-bold text-teal-600">
+                <p className="mt-0.5 font-mono text-xs text-teal-600">
                   ID: {selectedAptDetail.id?.toUpperCase()}
                 </p>
               </div>
@@ -330,22 +330,22 @@ export default function AdminAppointmentManagement() {
             <div className="max-h-[70vh] space-y-4 overflow-y-auto p-6">
               {/* Informasi Pasien */}
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
+                <p className="text-[10px] tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                   Informasi Pasien
                 </p>
                 <div className="rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
-                  <div className="text-base font-extrabold text-zinc-950 dark:text-zinc-100 uppercase">
+                  <div className="text-base text-zinc-950 dark:text-zinc-100 uppercase">
                     {selectedAptDetail.patient?.user?.name || '-'}
                   </div>
                   <div className="mt-1 text-xs font-medium text-slate-500 dark:text-zinc-400">
                     NIK:{' '}
-                    <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
                       {selectedAptDetail.patient?.nik || '-'}
                     </span>
                   </div>
                   <div className="text-xs font-medium text-slate-500 dark:text-zinc-400">
                     BPJS:{' '}
-                    <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
                       {selectedAptDetail.patient?.bpjsNumber || 'Tidak Ada (Mandiri)'}
                     </span>
                   </div>
@@ -354,23 +354,23 @@ export default function AdminAppointmentManagement() {
 
               {/* Detail Sesi Medis */}
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
+                <p className="text-[10px] tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                   Alokasi Medis
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-3">
-                    <span className="mb-1 block text-[9px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
+                    <span className="mb-1 block text-[9px] tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                       Dokter Spesialis
                     </span>
-                    <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                    <span className="text-xs text-zinc-900 dark:text-zinc-100">
                       {selectedAptDetail.doctor?.user?.name || '-'}
                     </span>
                   </div>
                   <div className="rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-3">
-                    <span className="mb-1 block text-[9px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
+                    <span className="mb-1 block text-[9px] tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                       Poliklinik
                     </span>
-                    <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                    <span className="text-xs text-zinc-900 dark:text-zinc-100">
                       {selectedAptDetail.department?.name || '-'}
                     </span>
                   </div>
@@ -379,15 +379,15 @@ export default function AdminAppointmentManagement() {
 
               {/* Waktu Kunjungan */}
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
+                <p className="text-[10px] tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                   Waktu Kunjungan
                 </p>
                 <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] p-4">
                   <div>
-                    <span className="mb-0.5 block text-[9px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
+                    <span className="mb-0.5 block text-[9px] tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                       Tanggal
                     </span>
-                    <span className="text-xs font-bold text-zinc-950 dark:text-zinc-100">
+                    <span className="text-xs text-zinc-950 dark:text-zinc-100">
                       {new Date(selectedAptDetail.scheduledAt).toLocaleDateString('id-ID', {
                         weekday: 'long',
                         year: 'numeric',
@@ -397,10 +397,10 @@ export default function AdminAppointmentManagement() {
                     </span>
                   </div>
                   <div>
-                    <span className="mb-0.5 block text-[9px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
+                    <span className="mb-0.5 block text-[9px] tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                       Jam Sesi
                     </span>
-                    <span className="font-mono text-xs font-bold tracking-wider text-teal-600">
+                    <span className="font-mono text-xs tracking-wider text-teal-600">
                       {new Date(selectedAptDetail.scheduledAt).toLocaleTimeString('id-ID', {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -413,26 +413,22 @@ export default function AdminAppointmentManagement() {
 
               {/* Otorisasi Konfirmasi & Pembatalan */}
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
+                <p className="text-[10px] tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
                   Otorisasi Konfirmasi
                 </p>
                 {['CONFIRMED', 'COMPLETED'].includes(selectedAptDetail.status) ? (
                   <div className="rounded-xl border border-teal-100 dark:border-teal-500/20 bg-teal-50/50 dark:bg-teal-500/5 p-4">
-                    <span className="mb-1 block text-[9px] font-black tracking-wider text-teal-600/70 dark:text-teal-400/70 uppercase">
+                    <span className="mb-1 block text-[9px] tracking-wider text-teal-600/70 dark:text-teal-400/70 uppercase">
                       Dikonfirmasi Oleh
                     </span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-zinc-950 dark:text-zinc-100 uppercase">
+                      <span className="text-xs text-zinc-950 dark:text-zinc-100 uppercase">
                         {selectedAptDetail.confirmedBy?.name ||
                           selectedAptDetail.doctor?.user?.name ||
                           'Administrator'}
                       </span>
                       <span
-                        className={`rounded px-2 py-0.5 font-mono text-[9px] font-black tracking-widest text-white uppercase ${
-                          (selectedAptDetail.confirmedBy?.role || 'DOCTOR') === 'DOCTOR'
-                            ? 'bg-purple-600'
-                            : 'bg-teal-600'
-                        }`}
+                        className={`rounded px-2 py-0.5 font-mono text-[9px] tracking-widest text-white uppercase ${ (selectedAptDetail.confirmedBy?.role || 'DOCTOR') === 'DOCTOR' ? 'bg-purple-600' : 'bg-teal-600' }`}
                       >
                         {selectedAptDetail.confirmedBy?.role || 'DOCTOR'}
                       </span>
@@ -441,16 +437,16 @@ export default function AdminAppointmentManagement() {
                 ) : selectedAptDetail.status === 'CANCELLED' ? (
                   <div className="space-y-2 rounded-xl border border-rose-100 dark:border-rose-500/20 bg-rose-50/50 p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold tracking-tight text-rose-600 dark:text-rose-400 uppercase">
+                      <span className="text-xs tracking-tight text-rose-600 dark:text-rose-400 uppercase">
                         Reservasi Dibatalkan
                       </span>
-                      <span className="rounded bg-rose-600 px-2 py-0.5 font-mono text-[9px] font-black tracking-widest text-white uppercase">
+                      <span className="rounded bg-rose-600 px-2 py-0.5 font-mono text-[9px] tracking-widest text-white uppercase">
                         {selectedAptDetail.cancelledBy?.role || 'SYSTEM/ADMIN'}
                       </span>
                     </div>
                     {selectedAptDetail.cancellationReason ? (
                       <div className="rounded-lg border-t border-rose-200/40 dark:border-rose-500/20 bg-white/50 dark:bg-[#131314]/50 p-2 pt-2 text-xs font-medium text-rose-700 dark:text-rose-400">
-                        <span className="mb-1 block text-[9px] font-black tracking-wider text-rose-500/80 uppercase">
+                        <span className="mb-1 block text-[9px] tracking-wider text-rose-500/80 uppercase">
                           Alasan Pembatalan:
                         </span>
                         "{selectedAptDetail.cancellationReason}"
@@ -463,7 +459,7 @@ export default function AdminAppointmentManagement() {
                   </div>
                 ) : (
                   <div className="rounded-xl border border-amber-100 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/5 p-4">
-                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                    <span className="text-xs text-amber-600 dark:text-amber-400">
                       Menunggu tindakan konfirmasi berkas oleh Admin atau Dokter terkait.
                     </span>
                   </div>
@@ -477,7 +473,7 @@ export default function AdminAppointmentManagement() {
                   setIsAptDetailModalOpen(false)
                   setSelectedAptDetail(null)
                 }}
-                className="rounded-xl bg-zinc-900 px-5 py-2.5 text-xs font-black tracking-widest text-white uppercase transition-all hover:bg-zinc-800"
+                className="rounded-xl bg-zinc-900 px-5 py-2.5 text-xs tracking-widest text-white uppercase transition-all hover:bg-zinc-800"
               >
                 Tutup Detail
               </button>

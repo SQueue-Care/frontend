@@ -61,24 +61,18 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
     <>
       {/* Overlay Background */}
       <div
-        className={`fixed inset-0 z-100 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${
-          isOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
-        }`}
+        className={`fixed inset-0 z-100 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${ isOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0' }`}
         onClick={onClose}
       />
 
       {/* Kontainer Modal */}
       <div
-        className={`fixed top-[55%] left-1/2 z-110 flex max-h-[80vh] w-[90%] max-w-md origin-center flex-col overflow-hidden rounded-3xl bg-white shadow-2xl transition-all duration-500 ease-out dark:bg-[#1e1f20] ${
-          isOpen
-            ? 'visible -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100'
-            : 'pointer-events-none invisible -translate-x-1/2 translate-y-[-70%] scale-95 opacity-0'
-        }`}
+        className={`fixed top-[55%] left-1/2 z-110 flex max-h-[80vh] w-[90%] max-w-md origin-center flex-col overflow-hidden rounded-3xl bg-white shadow-2xl transition-all duration-500 ease-out dark:bg-[#1e1f20] ${ isOpen ? 'visible -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100' : 'pointer-events-none invisible -translate-x-1/2 translate-y-[-70%] scale-95 opacity-0' }`}
       >
         {/* Header Modal - Desain Lebih Bersih */}
         <div className="flex items-center justify-between p-6 pb-4 transition-colors md:p-8">
           <div>
-            <h3 className="font-['Manrope'] text-2xl font-extrabold tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
+            <h3 className="font-['Manrope'] text-2xl tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
               Detail Antrean
             </h3>
             <p className="mt-1 text-sm font-medium text-slate-500 transition-colors dark:text-zinc-400">
@@ -104,7 +98,7 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
           {/* Badge Indikator Status Utama */}
           <div className="mb-8">
             <span
-              className={`inline-flex items-center rounded-lg border px-3.5 py-1.5 text-[11px] font-black tracking-widest uppercase transition-colors ${meta.tone}`}
+              className={`inline-flex items-center rounded-lg border px-3.5 py-1.5 text-[11px] tracking-widest uppercase transition-colors ${meta.tone}`}
             >
               {meta.title}
             </span>
@@ -118,7 +112,7 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
             {/* Tahap 1: Tiket Diterbitkan (Selalu Abu-abu/Masa Lalu) */}
             <div className="relative pl-8">
               <div className="absolute top-1 left-[-9px] h-4 w-4 rounded-full bg-slate-300 ring-4 ring-white transition-colors dark:bg-zinc-600 dark:ring-[#1e1f20]" />
-              <h4 className="text-sm font-extrabold text-zinc-900 transition-colors dark:text-zinc-100">
+              <h4 className="text-sm text-zinc-900 transition-colors dark:text-zinc-100">
                 Tiket Diterbitkan
               </h4>
               <p className="mt-1 text-xs text-slate-500 transition-colors dark:text-zinc-400">
@@ -129,16 +123,10 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
             {/* Tahap 2: Menunggu Giliran */}
             <div className="relative pl-8">
               <div
-                className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${
-                  isWaiting
-                    ? 'animate-pulse bg-emerald-500 ring-emerald-50 dark:ring-emerald-900/30' // Sedang Terjadi (Hijau)
-                    : isFinal || isExamining
-                      ? 'bg-slate-300 ring-white dark:bg-zinc-600 dark:ring-[#1e1f20]' // Sudah Lewat (Abu-abu)
-                      : 'border-2 border-slate-300 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' // Belum Terjadi (Kosong)
-                }`}
+                className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${ isWaiting ? 'animate-pulse bg-emerald-500 ring-emerald-50 dark:ring-emerald-900/30' // Sedang Terjadi (Hijau) : isFinal || isExamining ? 'bg-slate-300 ring-white dark:bg-zinc-600 dark:ring-[#1e1f20]' // Sudah Lewat (Abu-abu) : 'border-2 border-slate-300 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' // Belum Terjadi (Kosong) }`}
               />
               <h4
-                className={`text-sm font-extrabold transition-colors ${isWaiting ? 'text-emerald-700 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}
+                className={`text-sm transition-colors ${isWaiting ? 'text-emerald-700 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}
               >
                 Menunggu Giliran
               </h4>
@@ -150,16 +138,10 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
             {/* Tahap 3: Pemeriksaan Dokter */}
             <div className="relative pl-8">
               <div
-                className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${
-                  isExamining
-                    ? 'animate-pulse bg-amber-500 ring-amber-50 dark:ring-amber-900/30' // Sedang Terjadi (Kuning)
-                    : isDone
-                      ? 'bg-slate-300 ring-white dark:bg-zinc-600 dark:ring-[#1e1f20]' // Sudah Lewat (Abu-abu)
-                      : 'border-2 border-slate-200 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' // Belum Terjadi (Kosong)
-                }`}
+                className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${ isExamining ? 'animate-pulse bg-amber-500 ring-amber-50 dark:ring-amber-900/30' // Sedang Terjadi (Kuning) : isDone ? 'bg-slate-300 ring-white dark:bg-zinc-600 dark:ring-[#1e1f20]' // Sudah Lewat (Abu-abu) : 'border-2 border-slate-200 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' // Belum Terjadi (Kosong) }`}
               />
               <h4
-                className={`text-sm font-extrabold transition-colors ${isExamining ? 'text-amber-700 dark:text-amber-400' : isDone ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-400 dark:text-zinc-600'}`}
+                className={`text-sm transition-colors ${isExamining ? 'text-amber-700 dark:text-amber-400' : isDone ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-400 dark:text-zinc-600'}`}
               >
                 Pemeriksaan Dokter
               </h4>
@@ -175,16 +157,10 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
             {/* Tahap 4: Status Akhir */}
             <div className="relative pl-8">
               <div
-                className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${
-                  isFinal
-                    ? 'bg-slate-600 ring-slate-50 dark:bg-zinc-500 dark:ring-zinc-800' // Sedang Terjadi/Final (Abu Gelap)
-                    : 'border-2 border-slate-200 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' // Belum Terjadi (Kosong)
-                }`}
+                className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${ isFinal ? 'bg-slate-600 ring-slate-50 dark:bg-zinc-500 dark:ring-zinc-800' // Sedang Terjadi/Final (Abu Gelap) : 'border-2 border-slate-200 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' // Belum Terjadi (Kosong) }`}
               />
               <h4
-                className={`text-sm font-extrabold transition-colors ${
-                  isFinal ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-400 dark:text-zinc-600'
-                }`}
+                className={`text-sm transition-colors ${ isFinal ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-400 dark:text-zinc-600' }`}
               >
                 Status Akhir
               </h4>
@@ -205,7 +181,7 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
         <div className="border-t border-slate-100 bg-slate-50/50 p-6 transition-colors dark:border-zinc-800 dark:bg-[#131314]/50">
           <button
             onClick={onClose}
-            className="w-full rounded-xl border border-slate-200 bg-white py-3.5 font-extrabold text-slate-700 shadow-sm transition-all outline-none hover:bg-slate-50 focus:ring-4 focus:ring-slate-100 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800 dark:focus:ring-zinc-800"
+            className="w-full rounded-xl border border-slate-200 bg-white py-3.5 text-slate-700 shadow-sm transition-all outline-none hover:bg-slate-50 focus:ring-4 focus:ring-slate-100 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800 dark:focus:ring-zinc-800"
           >
             Tutup Detail
           </button>

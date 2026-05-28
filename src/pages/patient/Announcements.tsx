@@ -46,11 +46,11 @@ export default function PatientAnnouncements() {
             >
               <div className="mb-3 flex flex-wrap items-center gap-3">
                 <span
-                  className={`inline-flex rounded-lg border px-2.5 py-1 text-[10px] font-black tracking-widest uppercase ${CATEGORY_STYLES[item.category] ?? CATEGORY_STYLES.info}`}
+                  className={`inline-flex rounded-lg border px-2.5 py-1 text-[10px] tracking-widest uppercase ${CATEGORY_STYLES[item.category] ?? CATEGORY_STYLES.info}`}
                 >
                   {CATEGORY_LABELS[item.category] ?? item.category}
                 </span>
-                <time className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                <time className="text-xs text-slate-500 dark:text-slate-400">
                   {new Date(item.activeFrom).toLocaleDateString('id-ID', {
                     day: 'numeric',
                     month: 'long',

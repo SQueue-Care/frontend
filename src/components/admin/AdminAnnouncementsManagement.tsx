@@ -129,11 +129,7 @@ export default function AdminAnnouncementsManagement() {
               key={f}
               type="button"
               onClick={() => setFilter(f)}
-              className={`rounded-xl px-4 py-2 text-xs font-black tracking-wide uppercase transition-colors ${
-                filter === f
-                  ? 'bg-teal-600 text-white shadow-sm'
-                  : 'border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-400'
-              }`}
+              className={`rounded-xl px-4 py-2 text-xs tracking-wide uppercase transition-colors ${ filter === f ? 'bg-teal-600 text-white shadow-sm' : 'border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-400' }`}
             >
               {f === 'active' ? 'Aktif' : 'Semua'}
             </button>
@@ -142,7 +138,7 @@ export default function AdminAnnouncementsManagement() {
         <button
           type="button"
           onClick={openCreate}
-          className="rounded-xl bg-teal-600 px-5 py-2.5 text-xs font-black tracking-wide text-white uppercase shadow-sm transition-colors hover:bg-teal-700"
+          className="rounded-xl bg-teal-600 px-5 py-2.5 text-xs tracking-wide text-white uppercase shadow-sm transition-colors hover:bg-teal-700"
         >
           + Buat Pengumuman
         </button>
@@ -153,7 +149,7 @@ export default function AdminAnnouncementsManagement() {
           onSubmit={(e) => void handleSubmit(e)}
           className="rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]"
         >
-          <h3 className="mb-4 font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-zinc-100 dark:text-white">
+          <h3 className="mb-4 font-['Manrope'] text-lg text-zinc-900 dark:text-zinc-100 dark:text-white">
             {editing ? 'Edit Pengumuman' : 'Pengumuman Baru'}
           </h3>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -211,7 +207,7 @@ export default function AdminAnnouncementsManagement() {
               />
             </div>
             <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Aktif Dari</span>
+              <span className="mb-1 block text-xs text-slate-500 dark:text-zinc-400">Aktif Dari</span>
               <input
                 type="datetime-local"
                 value={form.activeFrom}
@@ -220,7 +216,7 @@ export default function AdminAnnouncementsManagement() {
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-500 dark:text-zinc-400">Aktif Hingga (opsional)</span>
+              <span className="mb-1 block text-xs text-slate-500 dark:text-zinc-400">Aktif Hingga (opsional)</span>
               <input
                 type="datetime-local"
                 value={form.activeTo}
@@ -254,14 +250,14 @@ export default function AdminAnnouncementsManagement() {
           <div className="mt-5 flex gap-3">
             <button
               type="submit"
-              className="rounded-xl bg-teal-600 px-5 py-2.5 text-xs font-black tracking-wide text-white uppercase hover:bg-teal-700"
+              className="rounded-xl bg-teal-600 px-5 py-2.5 text-xs tracking-wide text-white uppercase hover:bg-teal-700"
             >
               Simpan
             </button>
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="rounded-xl border border-slate-200 dark:border-zinc-800 px-5 py-2.5 text-xs font-black tracking-wide text-slate-600 dark:text-zinc-400 uppercase dark:border-zinc-700 dark:text-zinc-400"
+              className="rounded-xl border border-slate-200 dark:border-zinc-800 px-5 py-2.5 text-xs tracking-wide text-slate-600 dark:text-zinc-400 uppercase dark:border-zinc-700 dark:text-zinc-400"
             >
               Batal
             </button>
@@ -282,19 +278,19 @@ export default function AdminAnnouncementsManagement() {
             >
               <div className="mb-3 flex flex-wrap items-center gap-3">
                 <span
-                  className={`inline-flex rounded-lg border px-2.5 py-1 text-[10px] font-black tracking-widest uppercase ${CATEGORY_STYLES[item.category] ?? CATEGORY_STYLES.info}`}
+                  className={`inline-flex rounded-lg border px-2.5 py-1 text-[10px] tracking-widest uppercase ${CATEGORY_STYLES[item.category] ?? CATEGORY_STYLES.info}`}
                 >
                   {CATEGORY_LABELS[item.category] ?? item.category}
                 </span>
-                <span className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-2.5 py-1 text-[10px] font-black tracking-widest text-slate-500 dark:text-zinc-400 uppercase dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                <span className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] px-2.5 py-1 text-[10px] tracking-widest text-slate-500 dark:text-zinc-400 uppercase dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
                   {TARGET_LABELS[item.targetRole]}
                 </span>
                 {!item.isActive && (
-                  <span className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-2.5 py-1 text-[10px] font-black text-slate-500 dark:text-zinc-400 uppercase">
+                  <span className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-2.5 py-1 text-[10px] text-slate-500 dark:text-zinc-400 uppercase">
                     Nonaktif
                   </span>
                 )}
-                <time className="ml-auto text-xs font-bold text-slate-500 dark:text-zinc-400 dark:text-slate-400">
+                <time className="ml-auto text-xs text-slate-500 dark:text-zinc-400 dark:text-slate-400">
                   {new Date(item.activeFrom).toLocaleDateString('id-ID', {
                     day: 'numeric',
                     month: 'long',
@@ -310,14 +306,14 @@ export default function AdminAnnouncementsManagement() {
                 <button
                   type="button"
                   onClick={() => openEdit(item)}
-                  className="rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2 text-xs font-black tracking-wide text-slate-600 dark:text-zinc-400 uppercase hover:bg-slate-50 dark:hover:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  className="rounded-xl border border-slate-200 dark:border-zinc-800 px-4 py-2 text-xs tracking-wide text-slate-600 dark:text-zinc-400 uppercase hover:bg-slate-50 dark:hover:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
                 >
                   Edit
                 </button>
                 <button
                   type="button"
                   onClick={() => void handleDelete(item.id)}
-                  className="rounded-xl border border-rose-200 dark:border-rose-500/20 px-4 py-2 text-xs font-black tracking-wide text-rose-600 dark:text-rose-400 uppercase hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-400"
+                  className="rounded-xl border border-rose-200 dark:border-rose-500/20 px-4 py-2 text-xs tracking-wide text-rose-600 dark:text-rose-400 uppercase hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-400"
                 >
                   Hapus
                 </button>

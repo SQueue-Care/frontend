@@ -31,28 +31,28 @@ export default function PatientHelp() {
           </h2>
           <dl className="space-y-4 text-sm">
             <div>
-              <dt className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+              <dt className="text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
                 Call center
               </dt>
-              <dd className="font-bold text-zinc-900 dark:text-zinc-100">(021) 1500-XXX</dd>
+              <dd className="text-zinc-900 dark:text-zinc-100">(021) 1500-XXX</dd>
             </div>
             <div>
-              <dt className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+              <dt className="text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
                 WhatsApp informasi
               </dt>
-              <dd className="font-bold text-zinc-900 dark:text-zinc-100">0812-0000-0000</dd>
+              <dd className="text-zinc-900 dark:text-zinc-100">0812-0000-0000</dd>
             </div>
             <div>
-              <dt className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+              <dt className="text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
                 Email
               </dt>
-              <dd className="font-bold text-zinc-900 dark:text-zinc-100">bantuan@rscontoh.go.id</dd>
+              <dd className="text-zinc-900 dark:text-zinc-100">bantuan@rscontoh.go.id</dd>
             </div>
             <div>
-              <dt className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+              <dt className="text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
                 Jam layanan informasi
               </dt>
-              <dd className="font-bold text-zinc-900 dark:text-zinc-100">Senin–Sabtu, 07.00–20.00 WIB</dd>
+              <dd className="text-zinc-900 dark:text-zinc-100">Senin–Sabtu, 07.00–20.00 WIB</dd>
             </div>
           </dl>
         </section>
@@ -85,7 +85,7 @@ export default function PatientHelp() {
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
                 >
-                  <span className="text-sm font-bold text-zinc-900 dark:text-white">{item.q}</span>
+                  <span className="text-sm text-zinc-900 dark:text-white">{item.q}</span>
                   <svg
                     className={`h-5 w-5 shrink-0 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                     fill="none"

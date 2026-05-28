@@ -165,7 +165,7 @@ export default function BookingPanel({
             <h2 className="font-['Manrope'] text-2xl font-extrabold tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
               Reservasi Antrean
             </h2>
-            <p className="mt-0.5 text-sm font-bold text-teal-600 transition-colors dark:text-teal-400">
+            <p className="mt-0.5 text-sm text-teal-600 transition-colors dark:text-teal-400">
               {selectedDept?.name || 'Poliklinik'}
             </p>
           </div>
@@ -188,7 +188,7 @@ export default function BookingPanel({
 
         {/* Progress Indicator */}
         {step < 3 && (
-          <div className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-white px-8 py-4 text-[10px] font-black tracking-widest uppercase transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
+          <div className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-white px-8 py-4 text-[10px] tracking-widest uppercase transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
             <div className="flex items-center gap-2.5">
               <div
                 className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${step >= 1 ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400 dark:bg-[#131314] dark:text-zinc-600'}`}
@@ -222,11 +222,11 @@ export default function BookingPanel({
           {step === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 space-y-8 duration-300">
               <section>
-                <label className="mb-3 block text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                <label className="mb-3 block text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                   Pilih Dokter Spesialis
                 </label>
                 {isLoadingDoctors ? (
-                  <div className="animate-pulse rounded-2xl border-2 border-dashed border-slate-200 p-4 text-center text-sm font-semibold text-slate-400 transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <div className="animate-pulse rounded-2xl border-2 border-dashed border-slate-200 p-4 text-center text-sm text-slate-400 transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Memuat daftar dokter...
                   </div>
                 ) : departmentDoctors.length === 0 ? (
@@ -250,13 +250,13 @@ export default function BookingPanel({
                             <div className="animate-in slide-in-from-left-1 absolute top-0 left-0 h-full w-1.5 bg-teal-500" />
                           )}
                           <div
-                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-bold transition-colors ${isSelected ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-600 dark:bg-[#1e1f20] dark:text-zinc-500 dark:group-hover:bg-teal-900/40 dark:group-hover:text-teal-400'}`}
+                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg transition-colors ${isSelected ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-600 dark:bg-[#1e1f20] dark:text-zinc-500 dark:group-hover:bg-teal-900/40 dark:group-hover:text-teal-400'}`}
                           >
                             {doc.user.name.charAt(0)}
                           </div>
                           <div>
                             <div
-                              className={`text-sm font-extrabold uppercase transition-colors ${isSelected ? 'text-teal-800 dark:text-teal-400' : 'text-zinc-900 dark:text-zinc-100'}`}
+                              className={`text-sm uppercase transition-colors ${isSelected ? 'text-teal-800 dark:text-teal-400' : 'text-zinc-900 dark:text-zinc-100'}`}
                             >
                               {doc.user.name}
                             </div>
@@ -273,7 +273,7 @@ export default function BookingPanel({
 
               {selectedDoctorId && (
                 <section className="animate-in fade-in slide-in-from-bottom-4">
-                  <label className="mb-3 block text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                  <label className="mb-3 block text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                     Pilih Tanggal Kunjungan
                   </label>
                   <div className="flex snap-x scrollbar-none gap-3 overflow-x-auto px-1 pt-1 pb-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -296,17 +296,17 @@ export default function BookingPanel({
                           className={`flex w-20 shrink-0 snap-center flex-col items-center justify-center gap-1 rounded-2xl border-2 py-3 transition-all duration-300 outline-none ${isSelected ? 'scale-105 border-teal-500 bg-teal-500 text-white shadow-lg shadow-teal-500/30' : 'border-slate-100 bg-white text-zinc-600 hover:border-teal-200 hover:bg-teal-50 dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-400 dark:hover:border-teal-900/50 dark:hover:bg-teal-900/20'}`}
                         >
                           <span
-                            className={`text-[10px] font-bold tracking-wider uppercase transition-colors ${isSelected ? 'text-teal-100' : 'text-slate-400 dark:text-zinc-500'}`}
+                            className={`text-[10px] tracking-wider uppercase transition-colors ${isSelected ? 'text-teal-100' : 'text-slate-400 dark:text-zinc-500'}`}
                           >
                             {dayName}
                           </span>
                           <span
-                            className={`text-2xl font-black transition-colors ${isSelected ? 'text-white' : 'text-zinc-900 dark:text-zinc-100'}`}
+                            className={`text-2xl transition-colors ${isSelected ? 'text-white' : 'text-zinc-900 dark:text-zinc-100'}`}
                           >
                             {dateNum}
                           </span>
                           <span
-                            className={`text-[10px] font-bold uppercase transition-colors ${isSelected ? 'text-teal-100' : 'text-slate-400 dark:text-zinc-500'}`}
+                            className={`text-[10px] uppercase transition-colors ${isSelected ? 'text-teal-100' : 'text-slate-400 dark:text-zinc-500'}`}
                           >
                             {monthName}
                           </span>
@@ -321,21 +321,17 @@ export default function BookingPanel({
                 <section className="animate-in fade-in slide-in-from-bottom-4">
                   {departmentAvailability && (
                     <div
-                      className={`mb-4 rounded-2xl border p-3 text-center text-xs font-bold ${
-                        departmentAvailability.quota.isFull
-                          ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400'
-                          : 'border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/20 dark:text-teal-400'
-                      }`}
+                      className={`mb-4 rounded-2xl border p-3 text-center text-xs ${ departmentAvailability.quota.isFull ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400' : 'border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/20 dark:text-teal-400' }`}
                     >
                       Kuota poli hari ini: {departmentAvailability.quota.remaining}/
                       {departmentAvailability.quota.total} tersisa
                     </div>
                   )}
-                  <label className="mb-3 block text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                  <label className="mb-3 block text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                     Pilih Sesi Waktu
                   </label>
                   {isLoadingSchedules ? (
-                    <div className="animate-pulse rounded-2xl border-2 border-dashed border-slate-200 p-4 text-center text-sm font-semibold text-slate-400 transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                    <div className="animate-pulse rounded-2xl border-2 border-dashed border-slate-200 p-4 text-center text-sm text-slate-400 transition-colors dark:border-zinc-800 dark:text-zinc-500">
                       Sinkronisasi jadwal...
                     </div>
                   ) : doctorSchedules.length === 0 ? (
@@ -368,32 +364,20 @@ export default function BookingPanel({
                             type="button"
                             disabled={isFull}
                             onClick={() => !isFull && setSelectedScheduleId(sched.id)}
-                            className={`relative flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-4 transition-all duration-300 outline-none ${
-                              isFull
-                                ? 'cursor-not-allowed border-slate-100 bg-slate-50 opacity-60 dark:border-zinc-800 dark:bg-[#131314]'
-                                : isSelected
-                                  ? 'scale-[1.02] border-teal-500 bg-teal-50/50 shadow-sm dark:bg-teal-900/20'
-                                  : 'border-slate-100 bg-white hover:border-teal-200 hover:bg-slate-50 dark:border-zinc-800 dark:bg-[#131314] dark:hover:border-teal-900/50 dark:hover:bg-zinc-800/80'
-                            }`}
+                            className={`relative flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-4 transition-all duration-300 outline-none ${ isFull ? 'cursor-not-allowed border-slate-100 bg-slate-50 opacity-60 dark:border-zinc-800 dark:bg-[#131314]' : isSelected ? 'scale-[1.02] border-teal-500 bg-teal-50/50 shadow-sm dark:bg-teal-900/20' : 'border-slate-100 bg-white hover:border-teal-200 hover:bg-slate-50 dark:border-zinc-800 dark:bg-[#131314] dark:hover:border-teal-900/50 dark:hover:bg-zinc-800/80' }`}
                           >
                             <span
-                              className={`text-[10px] font-black tracking-wider uppercase transition-colors ${isSelected ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-zinc-500'}`}
+                              className={`text-[10px] tracking-wider uppercase transition-colors ${isSelected ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-zinc-500'}`}
                             >
                               {dayNameIndo}
                             </span>
                             <span
-                              className={`text-base font-black transition-colors ${isSelected ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-700 dark:text-zinc-300'}`}
+                              className={`text-base transition-colors ${isSelected ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-700 dark:text-zinc-300'}`}
                             >
                               {sched.startTime} - {sched.endTime}
                             </span>
                             <div
-                              className={`mt-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition-colors ${
-                                isFull
-                                  ? 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-800/50 dark:bg-rose-900/30 dark:text-rose-400'
-                                  : isSelected
-                                    ? 'border-teal-200 bg-teal-100 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/40 dark:text-teal-400'
-                                    : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-400'
-                              }`}
+                              className={`mt-1 rounded-full border px-2.5 py-0.5 text-[10px] transition-colors ${ isFull ? 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-800/50 dark:bg-rose-900/30 dark:text-rose-400' : isSelected ? 'border-teal-200 bg-teal-100 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/40 dark:text-teal-400' : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-400' }`}
                             >
                               {isFull ? 'Penuh' : `Tersisa: ${remaining}/${sched.capacity}`}
                             </div>
@@ -407,7 +391,7 @@ export default function BookingPanel({
 
               {selectedScheduleId && (
                 <section className="animate-in fade-in slide-in-from-bottom-4">
-                  <label className="mb-3 block text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                  <label className="mb-3 block text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                     Keluhan atau Catatan Medis
                   </label>
                   <textarea
@@ -427,7 +411,7 @@ export default function BookingPanel({
             <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
               <div className="space-y-6 rounded-3xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Informasi Pasien
                   </h4>
                   <div className="space-y-2.5">
@@ -435,7 +419,7 @@ export default function BookingPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Nama
                       </span>
-                      <span className="font-extrabold text-zinc-950 uppercase transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 uppercase transition-colors dark:text-zinc-100">
                         {patientProfile?.name || '-'}
                       </span>
                     </div>
@@ -443,7 +427,7 @@ export default function BookingPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         NIK
                       </span>
-                      <span className="font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
                         {patientProfile?.nik || 'Belum diatur'}
                       </span>
                     </div>
@@ -451,7 +435,7 @@ export default function BookingPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Tgl Lahir
                       </span>
-                      <span className="font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
                         {patientProfile?.birthDate
                           ? new Date(patientProfile.birthDate).toLocaleDateString('id-ID')
                           : '-'}
@@ -461,7 +445,7 @@ export default function BookingPanel({
                 </div>
 
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Detail Kunjungan
                   </h4>
                   <div className="space-y-2.5">
@@ -469,7 +453,7 @@ export default function BookingPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Layanan
                       </span>
-                      <span className="font-extrabold text-teal-700 transition-colors dark:text-teal-400">
+                      <span className="text-teal-700 transition-colors dark:text-teal-400">
                         {selectedDept?.name}
                       </span>
                     </div>
@@ -477,7 +461,7 @@ export default function BookingPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Dokter
                       </span>
-                      <span className="font-extrabold text-zinc-950 uppercase transition-colors dark:text-zinc-100">
+                      <span className="text-zinc-950 uppercase transition-colors dark:text-zinc-100">
                         {getSelectedDoctorName()}
                       </span>
                     </div>
@@ -485,7 +469,7 @@ export default function BookingPanel({
                       <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
                         Jadwal
                       </span>
-                      <span className="text-right font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
+                      <span className="text-right text-zinc-950 transition-colors dark:text-zinc-100">
                         {getSelectedScheduleDetail()}
                       </span>
                     </div>
@@ -493,7 +477,7 @@ export default function BookingPanel({
                 </div>
 
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
                     Catatan Keluhan Awal
                   </h4>
                   <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
@@ -508,7 +492,7 @@ export default function BookingPanel({
                 </div>
               </div>
 
-              <p className="text-center text-[10px] leading-relaxed font-bold tracking-wide text-slate-500 uppercase italic transition-colors dark:text-zinc-500">
+              <p className="text-center text-[10px] leading-relaxed tracking-wide text-slate-500 uppercase italic transition-colors dark:text-zinc-500">
                 *Data di atas akan masuk ke dalam rekam medis sistem.
               </p>
             </div>
@@ -532,7 +516,7 @@ export default function BookingPanel({
                   ></path>
                 </svg>
               </div>
-              <h3 className="font-['Manrope'] text-2xl font-extrabold tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
+              <h3 className="font-['Manrope'] text-2xl tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
                 Reservasi Berhasil!
               </h3>
               <p className="mt-2 mb-8 text-sm font-medium text-slate-500 transition-colors dark:text-zinc-400">
@@ -542,10 +526,10 @@ export default function BookingPanel({
               </p>
 
               <div className="mb-6 w-full rounded-3xl border-2 border-slate-200 bg-slate-50 p-8 shadow-sm transition-colors dark:border-zinc-800 dark:bg-[#131314]">
-                <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
+                <span className="text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
                   Nomor Urut Pendaftaran
                 </span>
-                <div className="my-2 font-mono text-6xl font-black tracking-tighter text-teal-600 transition-colors dark:text-teal-400">
+                <div className="my-2 font-mono text-6xl tracking-tighter text-teal-600 transition-colors dark:text-teal-400">
                   {queueResult.queueNumber}
                 </div>
               </div>
@@ -568,11 +552,11 @@ export default function BookingPanel({
                         ></path>
                       </svg>
                     </div>
-                    <span className="text-xs font-black tracking-widest text-slate-500 uppercase transition-colors dark:text-zinc-400">
+                    <span className="text-xs tracking-widest text-slate-500 uppercase transition-colors dark:text-zinc-400">
                       Estimasi Tunggu
                     </span>
                   </div>
-                  <span className="text-lg font-extrabold text-zinc-900 transition-colors dark:text-zinc-100">
+                  <span className="text-lg text-zinc-900 transition-colors dark:text-zinc-100">
                     {queueResult.estimatedWaitTime} Menit
                   </span>
                 </div>
@@ -587,7 +571,7 @@ export default function BookingPanel({
             <button
               onClick={onNext}
               disabled={!selectedDoctorId || !selectedDate || !selectedScheduleId}
-              className="w-full rounded-xl bg-teal-600 py-4 font-extrabold text-white shadow-lg shadow-teal-600/20 transition-all outline-none hover:bg-teal-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none dark:bg-teal-700 dark:hover:bg-teal-600"
+              className="w-full rounded-xl bg-teal-600 py-4 text-white shadow-lg shadow-teal-600/20 transition-all outline-none hover:bg-teal-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none dark:bg-teal-700 dark:hover:bg-teal-600"
             >
               Lanjutkan Konfirmasi
             </button>
@@ -595,7 +579,7 @@ export default function BookingPanel({
           {step === 2 && (
             <div className="flex w-full flex-col gap-3">
               {hasActiveQueue && (
-                <div className="animate-in fade-in slide-in-from-bottom-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-center text-xs font-bold text-rose-700 transition-colors dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
+                <div className="animate-in fade-in slide-in-from-bottom-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-center text-xs text-rose-700 transition-colors dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
                   Peringatan: Anda tidak dapat melanjutkan karena saat ini Anda sedang dalam
                   antrean.
                 </div>
@@ -605,7 +589,7 @@ export default function BookingPanel({
                 <button
                   onClick={onPrev}
                   disabled={isSubmitting}
-                  className="flex-1 rounded-xl border border-slate-200 bg-white py-4 font-extrabold text-slate-600 shadow-sm transition-colors outline-none hover:bg-slate-50 disabled:opacity-50 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  className="flex-1 rounded-xl border border-slate-200 bg-white py-4 text-slate-600 shadow-sm transition-colors outline-none hover:bg-slate-50 disabled:opacity-50 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800"
                 >
                   Kembali
                 </button>
@@ -613,11 +597,7 @@ export default function BookingPanel({
                 <button
                   onClick={handleConfirmBooking}
                   disabled={isSubmitting || hasActiveQueue}
-                  className={`flex flex-2 items-center justify-center gap-2 rounded-xl py-4 font-extrabold transition-all outline-none ${
-                    hasActiveQueue
-                      ? 'cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400 shadow-none dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-600'
-                      : 'bg-teal-600 text-white shadow-lg shadow-teal-600/20 hover:bg-teal-700 active:scale-95 disabled:opacity-50 dark:bg-teal-700 dark:hover:bg-teal-600'
-                  }`}
+                  className={`flex flex-2 items-center justify-center gap-2 rounded-xl py-4 transition-all outline-none ${ hasActiveQueue ? 'cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400 shadow-none dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-600' : 'bg-teal-600 text-white shadow-lg shadow-teal-600/20 hover:bg-teal-700 active:scale-95 disabled:opacity-50 dark:bg-teal-700 dark:hover:bg-teal-600' }`}
                 >
                   {isSubmitting ? (
                     <>
@@ -655,7 +635,7 @@ export default function BookingPanel({
           {step === 3 && (
             <button
               onClick={handleClose}
-              className="w-full rounded-xl border-2 border-teal-600 bg-white py-4 font-extrabold text-teal-700 shadow-sm transition-colors outline-none hover:bg-teal-50 dark:bg-[#1e1f20] dark:text-teal-400 dark:hover:bg-teal-900/20"
+              className="w-full rounded-xl border-2 border-teal-600 bg-white py-4 text-teal-700 shadow-sm transition-colors outline-none hover:bg-teal-50 dark:bg-[#1e1f20] dark:text-teal-400 dark:hover:bg-teal-900/20"
             >
               Selesai & Tutup
             </button>

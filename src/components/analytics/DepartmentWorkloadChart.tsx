@@ -125,10 +125,10 @@ export default function DepartmentWorkloadChart() {
       <Doughnut data={data} options={options} />
       {/* Teks di tengah Donat */}
       <div className="pointer-events-none absolute inset-0 mt-[-30px] flex flex-col items-center justify-center">
-        <span className="font-['Manrope'] text-3xl font-extrabold text-zinc-900 dark:text-zinc-100">
+        <span className="font-['Manrope'] text-3xl text-zinc-900 dark:text-zinc-100">
           {chartData.totalPatients}
         </span>
-        <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Total Pasien</span>
+        <span className="text-xs text-slate-500 dark:text-zinc-400">Total Pasien</span>
       </div>
     </div>
   )

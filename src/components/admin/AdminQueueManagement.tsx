@@ -141,7 +141,7 @@ export default function AdminQueueManagement() {
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600"></div>
           </div>
         ) : errorTable ? (
-          <div className="py-12 text-center text-sm font-bold text-rose-600 dark:text-rose-400 italic">
+          <div className="py-12 text-center text-sm text-rose-600 dark:text-rose-400 italic">
             {errorTable}
           </div>
         ) : sortedQueues.length === 0 ? (
@@ -153,7 +153,7 @@ export default function AdminQueueManagement() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-[10px] font-black tracking-widest text-slate-500 dark:text-zinc-400 uppercase">
+              <thead className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-[10px] tracking-widest text-slate-500 dark:text-zinc-400 uppercase">
                 <tr>
                   <th className="p-5 pl-8">No. Antrean</th>
                   <th className="p-5">Nama Pasien</th>
@@ -188,22 +188,22 @@ export default function AdminQueueManagement() {
                   return (
                     <tr key={item.id} className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-[#131314]/50">
                       <td className="p-5 pl-8">
-                        <span className="inline-block rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono font-extrabold tracking-widest text-slate-700">
+                        <span className="inline-block rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono tracking-widest text-slate-700">
                           {item.department?.code}-{item.queueNumber}
                         </span>
                       </td>
                       <td className="p-5">
-                        <div className="font-extrabold text-zinc-950 dark:text-zinc-100 uppercase transition-colors group-hover:text-teal-600">
+                        <div className="text-zinc-950 dark:text-zinc-100 uppercase transition-colors group-hover:text-teal-600">
                           {item.patient?.user?.name || '-'}
                         </div>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700">
+                        <div className="text-slate-700">
                           {item.doctor?.user?.name || '-'}
                         </div>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700">
+                        <div className="text-slate-700">
                           {new Date(item.queueDate).toLocaleDateString('id-ID', {
                             year: 'numeric',
                             month: 'short',
@@ -212,7 +212,7 @@ export default function AdminQueueManagement() {
                         </div>
                       </td>
                       <td className="p-5">
-                        <span className="rounded-md border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-2 py-1 font-mono text-[11px] font-black tracking-widest text-slate-600 dark:text-zinc-400">
+                        <span className="rounded-md border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-2 py-1 font-mono text-[11px] tracking-widest text-slate-600 dark:text-zinc-400">
                           {item.checkInAt
                             ? new Date(item.checkInAt).toLocaleTimeString('id-ID', {
                                 hour: '2-digit',
@@ -222,25 +222,25 @@ export default function AdminQueueManagement() {
                         </span>
                       </td>
                       <td className="p-5">
-                        <span className="rounded-lg border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                        <span className="rounded-lg border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 text-sm text-indigo-600 dark:text-indigo-400">
                           {item.prediction?.estimatedMin
                             ? `${item.prediction.estimatedMin} min`
                             : '-'}
                         </span>
                       </td>
                       <td className="p-5">
-                        <div className="font-bold text-slate-700">
+                        <div className="text-slate-700">
                           {item.department?.name || '-'}
                         </div>
                       </td>
                       <td className="p-5">
                         <span
-                          className={`rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase ${statusClasses[item.status] || 'border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-slate-600 dark:text-zinc-400'}`}
+                          className={`rounded-lg border px-3 py-1 text-[10px] tracking-widest uppercase ${statusClasses[item.status] || 'border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-slate-600 dark:text-zinc-400'}`}
                         >
                           {statusLabel[item.status] || item.status}
                         </span>
                         {item.visitFlow?.currentStage && item.status === 'DONE' && (
-                          <p className="mt-1 text-[10px] font-bold text-teal-700 dark:text-teal-400">
+                          <p className="mt-1 text-[10px] text-teal-700 dark:text-teal-400">
                             Tahap: {VISIT_STAGE_LABELS[item.visitFlow.currentStage] ?? item.visitFlow.currentStage}
                           </p>
                         )}

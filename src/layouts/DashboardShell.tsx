@@ -112,11 +112,9 @@ export default function DashboardShell({
     <div className="relative min-h-screen bg-slate-50 font-['Inter'] dark:bg-[#131314]">
       <CustomAlert />
 
-      {/* Mobile overlay */}
+      {/* Sidebar Focus Overlay */}
       <div
-        className={`fixed inset-0 z-60 bg-white/40 backdrop-blur-sm transition-all duration-300 lg:hidden dark:bg-[#131314]/80 ${
-          isSidebarOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
-        }`}
+        className={`fixed inset-0 z-60 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${ isSidebarOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0' }`}
         onClick={() => setIsSidebarOpen(false)}
       />
 
@@ -124,11 +122,7 @@ export default function DashboardShell({
       {/* SIDEBAR                                     */}
       {/* ========================================== */}
       <aside
-        className={`fixed inset-y-0 left-0 z-70 flex flex-col border-r border-slate-200 bg-white transition-all duration-500 ease-in-out dark:border-zinc-800 dark:bg-[#1e1f20] ${
-          isSidebarOpen
-            ? 'w-72 translate-x-0 shadow-2xl lg:shadow-none'
-            : 'w-72 -translate-x-full lg:w-[76px] lg:translate-x-0'
-        }`}
+        className={`fixed inset-y-0 left-0 z-70 flex flex-col border-r border-slate-200 bg-white transition-all duration-500 ease-in-out dark:border-zinc-800 dark:bg-[#1e1f20] ${ isSidebarOpen ? 'w-72 translate-x-0 shadow-2xl lg:shadow-none' : 'w-72 -translate-x-full lg:w-[76px] lg:translate-x-0' }`}
       >
         {/* Sidebar header */}
         <header className="flex h-16 shrink-0 items-center px-[18px]">
@@ -150,7 +144,7 @@ export default function DashboardShell({
           </button>
 
           {isSidebarOpen && (
-            <span className="animate-in fade-in ml-3 font-['Manrope'] text-base font-extrabold tracking-tight text-zinc-950 duration-200 dark:text-white">
+            <span className="animate-in fade-in ml-3 font-['Manrope'] text-base tracking-tight text-zinc-950 duration-200 dark:text-white">
               {logoLabel}
               {logoAccent && <span className="text-teal-600 dark:text-teal-400">{logoAccent}</span>}
             </span>
@@ -163,7 +157,7 @@ export default function DashboardShell({
             {resolvedSections.map((section) => (
               <div key={section.title || 'default'} className="flex flex-col">
                 {section.title && isSidebarOpen && (
-                  <p className="animate-in fade-in mb-2 px-4 text-[10px] font-black tracking-widest text-slate-400 uppercase duration-200 dark:text-zinc-500">
+                  <p className="animate-in fade-in mb-2 px-4 text-[10px] tracking-widest text-slate-400 uppercase duration-200 dark:text-zinc-500">
                     {section.title}
                   </p>
                 )}
@@ -195,19 +189,13 @@ export default function DashboardShell({
                     >
                       <span className="h-5 w-5 shrink-0">{item.icon}</span>
                       <span
-                        className={`flex-1 text-left text-sm font-medium ${
-                          !isSidebarOpen ? 'lg:hidden' : 'animate-in fade-in block duration-200'
-                        }`}
+                        className={`flex-1 text-left text-sm font-medium ${ !isSidebarOpen ? 'lg:hidden' : 'animate-in fade-in block duration-200' }`}
                       >
                         {item.label}
                       </span>
                       {isSidebarOpen && (
                         <svg
-                          className={`h-4 w-4 shrink-0 transition-transform duration-300 ${
-                            expanded
-                              ? 'rotate-180 text-teal-600 dark:text-teal-400'
-                              : 'text-slate-400 dark:text-zinc-500'
-                          }`}
+                          className={`h-4 w-4 shrink-0 transition-transform duration-300 ${ expanded ? 'rotate-180 text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-zinc-500' }`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -246,9 +234,7 @@ export default function DashboardShell({
                   >
                     <span className="h-5 w-5 shrink-0">{item.icon}</span>
                     <span
-                      className={`text-sm font-medium ${
-                        !isSidebarOpen ? 'lg:hidden' : 'animate-in fade-in block duration-200'
-                      }`}
+                      className={`text-sm font-medium ${ !isSidebarOpen ? 'lg:hidden' : 'animate-in fade-in block duration-200' }`}
                     >
                       {item.label}
                     </span>
@@ -267,22 +253,18 @@ export default function DashboardShell({
           <div className="relative w-full">
             <button
               onClick={() => setIsUserMenuOpen((o) => !o)}
-              className={`flex w-full items-center rounded-xl py-1.5 transition-colors outline-none hover:bg-slate-50 dark:hover:bg-zinc-800/80 ${
-                isSidebarOpen ? 'justify-start gap-x-3 px-3' : 'justify-center'
-              }`}
+              className={`flex w-full items-center rounded-xl py-1.5 transition-colors outline-none hover:bg-slate-50 dark:hover:bg-zinc-800/80 ${ isSidebarOpen ? 'justify-start gap-x-3 px-3' : 'justify-center' }`}
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-teal-200 bg-teal-100 font-extrabold text-teal-700 shadow-sm dark:border-zinc-800 dark:bg-[#131314] dark:text-teal-400">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-teal-200 bg-teal-100 text-teal-700 shadow-sm dark:border-zinc-800 dark:bg-[#131314] dark:text-teal-400">
                 {user?.name?.charAt(0).toUpperCase() ?? 'U'}
               </div>
               {isSidebarOpen && (
                 <div className="animate-in fade-in flex min-w-0 flex-1 items-center text-start duration-200">
-                  <span className="truncate text-sm font-extrabold text-zinc-900 dark:text-zinc-100">
+                  <span className="truncate text-sm text-zinc-900 dark:text-zinc-100">
                     {user?.name ?? 'Pengguna'}
                   </span>
                   <svg
-                    className={`ms-auto h-4 w-4 shrink-0 text-slate-400 transition-transform dark:text-zinc-500 ${
-                      isUserMenuOpen ? 'rotate-180' : ''
-                    }`}
+                    className={`ms-auto h-4 w-4 shrink-0 text-slate-400 transition-transform dark:text-zinc-500 ${ isUserMenuOpen ? 'rotate-180' : '' }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -296,23 +278,21 @@ export default function DashboardShell({
 
             {isUserMenuOpen && (
               <div
-                className={`animate-in fade-in zoom-in-95 absolute bottom-full left-0 z-50 mb-2 origin-bottom overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl transition-colors duration-150 ease-out dark:border-zinc-800 dark:bg-[#1e1f20] ${
-                  isSidebarOpen ? 'w-full' : 'left-2 w-56'
-                }`}
+                className={`animate-in fade-in zoom-in-95 absolute bottom-full left-0 z-50 mb-2 origin-bottom overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl transition-colors duration-150 ease-out dark:border-zinc-800 dark:bg-[#1e1f20] ${ isSidebarOpen ? 'w-full' : 'left-2 w-56' }`}
               >
                 <div className="p-1.5">
                   <div className="mb-1 border-b border-slate-100 px-3 py-2 dark:border-zinc-800">
-                    <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-zinc-500">
+                    <p className="text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
                       Email Sesi
                     </p>
-                    <p className="mt-0.5 truncate text-xs font-bold text-zinc-800 dark:text-zinc-300">
+                    <p className="mt-0.5 truncate text-xs text-zinc-800 dark:text-zinc-300">
                       {user?.email}
                     </p>
                   </div>
 
                   {supportsTheme && (
                     <div className="mb-1 flex items-center justify-between border-b border-slate-100 px-3 py-2 dark:border-zinc-800">
-                      <span className="text-xs font-bold text-slate-700 dark:text-zinc-300">
+                      <span className="text-xs text-slate-700 dark:text-zinc-300">
                         Mode Gelap
                       </span>
                       <button
@@ -322,14 +302,10 @@ export default function DashboardShell({
                           e.stopPropagation()
                           toggleTheme()
                         }}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full shadow-inner transition-colors outline-none ${
-                          theme === 'dark' ? 'bg-teal-500' : 'bg-slate-200 dark:bg-zinc-700'
-                        }`}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full shadow-inner transition-colors outline-none ${ theme === 'dark' ? 'bg-teal-500' : 'bg-slate-200 dark:bg-zinc-700' }`}
                       >
                         <span
-                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform ${
-                            theme === 'dark' ? 'translate-x-4' : 'translate-x-1'
-                          }`}
+                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform ${ theme === 'dark' ? 'translate-x-4' : 'translate-x-1' }`}
                         />
                       </button>
                     </div>
@@ -411,11 +387,7 @@ export default function DashboardShell({
                 >
                   <div className="relative h-5 w-5">
                     <svg
-                      className={`absolute inset-0 h-5 w-5 transition-all duration-500 ease-in-out ${
-                        theme === 'dark'
-                          ? 'scale-100 rotate-0 opacity-100'
-                          : 'scale-50 -rotate-90 opacity-0'
-                      }`}
+                      className={`absolute inset-0 h-5 w-5 transition-all duration-500 ease-in-out ${ theme === 'dark' ? 'scale-100 rotate-0 opacity-100' : 'scale-50 -rotate-90 opacity-0' }`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -428,11 +400,7 @@ export default function DashboardShell({
                       />
                     </svg>
                     <svg
-                      className={`absolute inset-0 h-5 w-5 transition-all duration-500 ease-in-out ${
-                        theme === 'light'
-                          ? 'scale-100 rotate-0 opacity-100'
-                          : 'scale-50 rotate-90 opacity-0'
-                      }`}
+                      className={`absolute inset-0 h-5 w-5 transition-all duration-500 ease-in-out ${ theme === 'light' ? 'scale-100 rotate-0 opacity-100' : 'scale-50 rotate-90 opacity-0' }`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

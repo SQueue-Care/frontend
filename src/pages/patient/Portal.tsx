@@ -317,7 +317,7 @@ export default function PatientPortalLayout() {
                   />
                 </svg>
               </div>
-              <h3 className="mb-2 text-xl font-black tracking-tight text-zinc-900 dark:text-white">
+              <h3 className="mb-2 text-xl tracking-tight text-zinc-900 dark:text-white">
                 Akses Layanan Ditahan
               </h3>
               <p className="mb-8 text-sm leading-relaxed font-medium text-slate-500 dark:text-slate-400">
@@ -333,13 +333,13 @@ export default function PatientPortalLayout() {
                     setIsNikWarningOpen(false)
                     navigate('/portal/profile?editing=1')
                   }}
-                  className="w-full rounded-xl bg-teal-600 px-4 py-3.5 font-black text-white shadow-lg shadow-teal-500/20 transition-all hover:bg-teal-700 active:scale-95"
+                  className="w-full rounded-xl bg-teal-600 px-4 py-3.5 text-white shadow-lg shadow-teal-500/20 transition-all hover:bg-teal-700 active:scale-95"
                 >
                   Lengkapi Profil Sekarang
                 </button>
                 <button
                   onClick={() => setIsNikWarningOpen(false)}
-                  className="w-full rounded-xl px-4 py-3.5 font-extrabold text-slate-500 transition-all hover:bg-slate-100 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  className="w-full rounded-xl px-4 py-3.5 text-slate-500 transition-all hover:bg-slate-100 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800"
                 >
                   Nanti Saja
                 </button>
