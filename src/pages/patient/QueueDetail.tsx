@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import QueueVisitFlow from '../../components/patient/QueueVisitFlow'
+import QueueWaitTimePanel from '../../components/patient/QueueWaitTimePanel'
 import { DoctorNotesSection } from '../../components/shared/DoctorNotesDisplay'
+import { useQueueLiveEstimate } from '../../hooks/useQueueLiveEstimate'
 import apiClient from '../../lib/apiClient'
+import { buildWaitTimeContext, canShowWaitCountdown, formatSessionTimeLabel } from '../../lib/waitTimeEstimate'
 import { useAlertStore } from '../../store/alertStore'
 import { useQueueStore } from '../../store/queueStore'
 import type { Queue } from '../../lib/types'
@@ -67,6 +70,9 @@ export default function PatientQueueDetail() {
   const isLoading = id !== loadedId && id !== errorId
   const error = id === errorId ? 'Gagal memuat detail kunjungan. Silakan coba lagi.' : null
   const isLive = queue != null && !['DONE', 'CANCELLED'].includes(queue.status)
+  const { liveEstimate, isLoading: isLoadingEstimate } = useQueueLiveEstimate(queue)
+  const showWaitPanel =
+    queue != null && (canShowWaitCountdown(queue, liveEstimate) || isLoadingEstimate)
 
   const reloadQueue = useCallback(async () => {
     if (!id) return null
@@ -230,6 +236,20 @@ export default function PatientQueueDetail() {
             </div>
           </div>
 
+          {showWaitPanel && queue && (
+            <div className="lg:col-span-3">
+              {isLoadingEstimate && !buildWaitTimeContext(queue, liveEstimate) ? (
+                <div className="rounded-2xl border border-teal-200/80 bg-teal-50/50 p-6 text-center dark:border-teal-900/40 dark:bg-teal-500/10">
+                  <p className="text-xs tracking-widest text-teal-700 uppercase dark:text-teal-400">
+                    Menghitung prediksi waktu tunggu...
+                  </p>
+                </div>
+              ) : (
+                <QueueWaitTimePanel queue={queue} liveEstimate={liveEstimate} variant="prominent" />
+              )}
+            </div>
+          )}
+
           <QueueVisitFlow
             status={queue.status}
             doctorNotes={queue.doctorNotes}
@@ -283,7 +303,7 @@ export default function PatientQueueDetail() {
               />
               <DetailRow
                 label="Jam Sesi"
-                value={`${new Date(queue.queueDate).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`}
+                value={formatSessionTimeLabel(queue)}
               />
               <DetailRow
                 label="Didaftarkan"

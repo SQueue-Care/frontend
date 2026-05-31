@@ -5,6 +5,7 @@ import { destinationIconPath } from '../../lib/queueVisitFlow'
 import { useAlertStore } from '../../store/alertStore'
 import { useQueueStore } from '../../store/queueStore'
 import ConfirmModal from '../ui/ConfirmModal'
+import QueueWaitTimePanel from './QueueWaitTimePanel'
 
 interface LiveQueueTrackerProps {
   queueId: string | null
@@ -220,6 +221,11 @@ export default function LiveQueueTracker({ queueId, onCancelSuccess }: LiveQueue
                   )}
                 </div>
               )}
+            {isWaiting && (
+              <div className="mt-3">
+                <QueueWaitTimePanel queue={activeQueueDetail} variant="compact" />
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-6">

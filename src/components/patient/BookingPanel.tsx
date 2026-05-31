@@ -1,13 +1,20 @@
 // src/components/patient/BookingPanel.tsx
 import { useEffect, useMemo, useState } from 'react'
 import { getErrorMessage } from '../../lib/errors'
+import { toQueueWaitDisplay } from '../../lib/waitTimeEstimate'
 import { useAlertStore } from '../../store/alertStore'
+import { useAuthStore } from '../../store/authStore'
 import { useBookingStore } from '../../store/bookingStore'
+import { usePredictionStore } from '../../store/predictionStore'
+import WaitTimeEstimateCard from './WaitTimeEstimateCard'
 
 type BookingResult = {
   id?: string
   queueNumber?: string
   estimatedWaitTime?: number
+  waitKategori?: string | null
+  waitingAhead?: number
+  waitSource?: string
   isAppointment: boolean
 }
 
@@ -64,6 +71,13 @@ export default function BookingPanel({
     resetBookingState,
   } = useBookingStore()
   const showAlert = useAlertStore((state) => state.showAlert)
+  const patientId = useAuthStore((state) => state.user?.patient?.id)
+  const {
+    waitTimeEstimate,
+    isLoading: isLoadingEstimate,
+    fetchWaitTime,
+    clearWaitTime,
+  } = usePredictionStore()
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState<string>('')
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null)
@@ -71,6 +85,24 @@ export default function BookingPanel({
   const [queueResult, setQueueResult] = useState<BookingResult | null>(null)
 
   const availableDates = useMemo(() => generateNextDays(14), [])
+
+  const isTodayBooking = useMemo(() => {
+    if (!selectedDate) return false
+    const now = new Date()
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    return selectedDate.split('T')[0] === today
+  }, [selectedDate])
+
+  const previewEstimate = waitTimeEstimate ? toQueueWaitDisplay(waitTimeEstimate) : null
+  const successEstimate =
+    queueResult && !queueResult.isAppointment && (queueResult.estimatedWaitTime ?? 0) > 0
+      ? {
+          minutes: queueResult.estimatedWaitTime!,
+          kategori: queueResult.waitKategori,
+          waitingAhead: queueResult.waitingAhead,
+          source: queueResult.waitSource,
+        }
+      : null
 
   useEffect(() => {
     if (isOpen && selectedDept) {
@@ -98,12 +130,36 @@ export default function BookingPanel({
     fetchDepartmentAvailability,
   ])
 
+  useEffect(() => {
+    if (step !== 2 || !isTodayBooking || !selectedDept?.id || !selectedDoctorId) {
+      clearWaitTime()
+      return
+    }
+
+    void fetchWaitTime({
+      departmentId: selectedDept.id,
+      doctorId: selectedDoctorId,
+      patientId,
+      scheduleId: selectedScheduleId ?? undefined,
+    })
+  }, [
+    step,
+    isTodayBooking,
+    selectedDept?.id,
+    selectedDoctorId,
+    selectedScheduleId,
+    patientId,
+    fetchWaitTime,
+    clearWaitTime,
+  ])
+
   const handleClose = () => {
     setSelectedDoctorId(null)
     setSelectedDate('')
     setSelectedScheduleId(null)
     setNotes('')
     setQueueResult(null)
+    clearWaitTime()
     resetBookingState()
     onClose()
   }
@@ -492,6 +548,19 @@ export default function BookingPanel({
                 </div>
               </div>
 
+              {isTodayBooking && (
+                <div className="space-y-2">
+                  {isLoadingEstimate && (
+                    <p className="text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500">
+                      Menghitung estimasi tunggu...
+                    </p>
+                  )}
+                  {previewEstimate && !isLoadingEstimate && (
+                    <WaitTimeEstimateCard estimate={previewEstimate} variant="prominent" />
+                  )}
+                </div>
+              )}
+
               <p className="text-center text-[10px] leading-relaxed tracking-wide text-slate-500 uppercase italic transition-colors dark:text-zinc-500">
                 *Data di atas akan masuk ke dalam rekam medis sistem.
               </p>
@@ -534,32 +603,8 @@ export default function BookingPanel({
                 </div>
               </div>
 
-              {!queueResult.isAppointment && (queueResult.estimatedWaitTime ?? 0) > 0 && (
-                <div className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 transition-colors dark:bg-teal-900/30">
-                      <svg
-                        className="h-4 w-4 text-teal-600 dark:text-teal-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2.5"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        ></path>
-                      </svg>
-                    </div>
-                    <span className="text-xs tracking-widest text-slate-500 uppercase transition-colors dark:text-zinc-400">
-                      Estimasi Tunggu
-                    </span>
-                  </div>
-                  <span className="text-lg text-zinc-900 transition-colors dark:text-zinc-100">
-                    {queueResult.estimatedWaitTime} Menit
-                  </span>
-                </div>
+              {successEstimate && (
+                <WaitTimeEstimateCard estimate={successEstimate} variant="prominent" />
               )}
             </div>
           )}
