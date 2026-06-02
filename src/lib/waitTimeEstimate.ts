@@ -32,7 +32,6 @@ type WaitQueueInput = Pick<
   | 'status'
   | 'checkInAt'
   | 'createdAt'
-  | 'queueDate'
   | 'estimatedWaitMinutes'
   | 'estimatedCallAt'
   | 'sessionStartAt'
@@ -40,11 +39,14 @@ type WaitQueueInput = Pick<
   | 'prediction'
   | 'doctorId'
   | 'scheduleId'
-  | 'patient'
 > & {
+  queueDate?: string
   department?: { id: string } | null
   schedule?: { id: string; startTime: string; endTime?: string } | null
+  patient?: Queue['patient']
 }
+
+export type { WaitQueueInput }
 
 /** Parse HH:mm WIB + tanggal antrean → Date UTC anchor. */
 export function resolveSessionStartAtClient(queueDate: string, startTime: string): Date {
@@ -71,10 +73,7 @@ export function getQueueWaitMinutes(
 }
 
 export function getWaitStartedAt(
-  queue: Pick<
-    Queue,
-    'sessionStartAt' | 'sessionStartTime' | 'queueDate' | 'schedule' | 'checkInAt' | 'createdAt' | 'prediction'
-  >,
+  queue: WaitQueueInput,
   liveEstimate?: WaitTimeEstimate | null,
 ): Date | null {
   const sessionStartAt =
@@ -100,18 +99,7 @@ export function getWaitStartedAt(
 }
 
 export function getWaitTargetAt(
-  queue: Pick<
-    Queue,
-    | 'estimatedCallAt'
-    | 'sessionStartAt'
-    | 'sessionStartTime'
-    | 'queueDate'
-    | 'schedule'
-    | 'checkInAt'
-    | 'createdAt'
-    | 'estimatedWaitMinutes'
-    | 'prediction'
-  >,
+  queue: WaitQueueInput,
   liveEstimate?: WaitTimeEstimate | null,
 ): Date | null {
   const estimatedCallAt =

@@ -125,10 +125,10 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
               <div
                 className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${
                   isWaiting
-                    ? 'animate-pulse bg-emerald-500 ring-emerald-50 dark:ring-emerald-900/30' /* Sedang Terjadi (Hijau) */
+                    ? 'animate-pulse bg-emerald-500 ring-emerald-50 dark:ring-emerald-900/30'
                     : isFinal || isExamining
-                      ? 'bg-slate-300 ring-white dark:bg-zinc-600 dark:ring-[#1e1f20]' /* Sudah Lewat (Abu-abu) */
-                      : 'border-2 border-slate-300 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' /* Belum Terjadi (Kosong) */
+                      ? 'bg-slate-300 ring-white dark:bg-zinc-600 dark:ring-[#1e1f20]'
+                      : 'border-2 border-slate-300 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]'
                 }`}
               />
               <h4
@@ -146,10 +146,10 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
               <div
                 className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${
                   isExamining
-                    ? 'animate-pulse bg-amber-500 ring-amber-50 dark:ring-amber-900/30' /* Sedang Terjadi (Kuning) */
+                    ? 'animate-pulse bg-amber-500 ring-amber-50 dark:ring-amber-900/30'
                     : isDone
-                      ? 'bg-slate-300 ring-white dark:bg-zinc-600 dark:ring-[#1e1f20]' /* Sudah Lewat (Abu-abu) */
-                      : 'border-2 border-slate-200 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' /* Belum Terjadi (Kosong) */
+                      ? 'bg-slate-300 ring-white dark:bg-zinc-600 dark:ring-[#1e1f20]'
+                      : 'border-2 border-slate-200 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]'
                 }`}
               />
               <h4
@@ -171,8 +171,8 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
               <div
                 className={`absolute top-1 left-[-9px] h-4 w-4 rounded-full ring-4 transition-colors duration-500 ${
                   isFinal
-                    ? 'bg-slate-600 ring-slate-50 dark:bg-zinc-500 dark:ring-zinc-800' /* Sedang Terjadi/Final (Abu Gelap) */
-                    : 'border-2 border-slate-200 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]' /* Belum Terjadi (Kosong) */
+                    ? 'bg-slate-600 ring-slate-50 dark:bg-zinc-500 dark:ring-zinc-800'
+                    : 'border-2 border-slate-200 bg-white ring-white dark:border-zinc-700 dark:bg-[#1e1f20] dark:ring-[#1e1f20]'
                 }`}
               />
               <h4

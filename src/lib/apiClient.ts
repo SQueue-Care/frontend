@@ -126,11 +126,17 @@ apiClient.interceptors.response.use(
     }
 
     // Standardisasi format error untuk dilempar ke komponen UI
+    const responseData = error.response?.data as
+      | { message?: string; error?: { message?: string; code?: string } }
+      | undefined
+
     const standardizedError = {
       message:
-        (error.response?.data as { message: string })?.message || 'Terjadi kesalahan pada server.',
+        responseData?.error?.message ||
+        responseData?.message ||
+        'Terjadi kesalahan pada server.',
       status: error.response?.status || 500,
-      code: error.code,
+      code: responseData?.error?.code || error.code,
     }
 
     return Promise.reject(standardizedError)

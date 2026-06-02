@@ -175,6 +175,7 @@ export default function AdminAnnouncementsManagement() {
               <CustomSelect
                 label="Kategori"
                 value={form.category}
+                placeholder="Pilih kategori"
                 onChange={(val) =>
                   setForm((f) => ({
                     ...f,
@@ -192,6 +193,7 @@ export default function AdminAnnouncementsManagement() {
               <CustomSelect
                 label="Target"
                 value={form.targetRole}
+                placeholder="Pilih target"
                 onChange={(val) =>
                   setForm((f) => ({
                     ...f,

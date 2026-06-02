@@ -368,7 +368,6 @@ function UserTableInner({ role, title, onManage, onDelete }: UserTableProps) {
           </table>
         </div>
       </div>
-      </div>
     </div>
   )
 }

@@ -353,7 +353,12 @@ export default function DoctorQueueManagement() {
         )}
       </div>
 
-      <CDSSModal isOpen={!!cdssQueue} onClose={() => setCdssQueue(null)} queue={cdssQueue} />
+      <CDSSModal
+        isOpen={!!cdssQueue}
+        onClose={() => setCdssQueue(null)}
+        queue={cdssQueue}
+        onSaved={refreshDepartmentQueues}
+      />
       <DoctorNotesModal
         isOpen={!!notesQueue}
         onClose={() => setNotesQueue(null)}
