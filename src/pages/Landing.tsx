@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, ReactNode } from 'react'
+import { useEffect, useState, useRef, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useThemeStore } from '../store/themeStore'
 

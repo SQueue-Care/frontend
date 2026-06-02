@@ -1,17 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { Queue, WaitTimeEstimate } from '../lib/types'
+import type { WaitTimeEstimate } from '../lib/types'
 import {
   buildWaitTimeContext,
   computeWaitCountdown,
+  type WaitQueueInput,
   type WaitTimeContext,
 } from '../lib/waitTimeEstimate'
-
-type WaitQueueInput = Pick<
-  Queue,
-  'status' | 'checkInAt' | 'createdAt' | 'estimatedWaitMinutes' | 'prediction' | 'doctorId' | 'patient'
-> & {
-  department?: { id: string } | null
-}
 
 export function useWaitTimeCountdown(
   queue: WaitQueueInput | null | undefined,
@@ -19,6 +13,7 @@ export function useWaitTimeCountdown(
 ): {
   context: WaitTimeContext | null
   countdown: ReturnType<typeof computeWaitCountdown> | null
+  isActive: boolean
 } {
   const [now, setNow] = useState(() => Date.now())
 
@@ -41,5 +36,9 @@ export function useWaitTimeCountdown(
     return computeWaitCountdown(context.targetAt, now)
   }, [context, now])
 
-  return { context, countdown }
+  return {
+    context,
+    countdown,
+    isActive: context != null && countdown != null,
+  }
 }

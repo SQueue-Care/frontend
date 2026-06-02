@@ -1,13 +1,8 @@
 import { useWaitTimeCountdown } from '../../hooks/useWaitTimeCountdown'
-import type { Queue } from '../../lib/types'
-
-type CountdownQueue = Pick<
-  Queue,
-  'status' | 'checkInAt' | 'createdAt' | 'estimatedWaitMinutes' | 'prediction'
->
+import type { WaitQueueInput } from '../../lib/waitTimeEstimate'
 
 interface WaitTimeCountdownProps {
-  queue: CountdownQueue
+  queue: WaitQueueInput
   variant?: 'compact' | 'prominent'
   className?: string
 }
@@ -46,7 +41,7 @@ export default function WaitTimeCountdown({
             {isOverdue ? 'Estimasi Terlewati' : 'Sisa Waktu Tunggu'}
           </p>
           <p
-            className={`mt-1 font-mono tracking-tight ${timeClass} ${ isCompact ? 'text-xl' : 'text-4xl' }`}
+            className={`mt-1 font-mono tracking-tight ${timeClass} ${isCompact ? 'text-xl' : 'text-4xl'}`}
           >
             {isOverdue ? `+${countdown.formattedTime}` : countdown.formattedTime}
           </p>

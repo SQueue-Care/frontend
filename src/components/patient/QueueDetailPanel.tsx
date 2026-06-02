@@ -131,7 +131,7 @@ export default function QueueDetailPanel({
                     Nomor Urut
                   </p>
                   <span className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 font-mono text-xl text-zinc-900 shadow-sm transition-colors dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-100">
-                    {displayQueue.queueNumber}
+                    {queue.queueNumber}
                   </span>
                 </div>
                 <div className="text-right">
@@ -139,9 +139,9 @@ export default function QueueDetailPanel({
                     Status Antrean
                   </p>
                   <span
-                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${getQueueStatusStyle(displayQueue.status)}`}
+                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${getQueueStatusStyle(queue.status)}`}
                   >
-                    {getQueueStatusText(displayQueue.status)}
+                    {getQueueStatusText(queue.status)}
                   </span>
                 </div>
               </div>

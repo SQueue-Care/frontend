@@ -6,7 +6,7 @@ interface CustomInputProps {
   value: string
   onChange: (val: string) => void
   placeholder?: string
-  type?: 'text' | 'number' | 'email' | 'tel'
+  type?: 'text' | 'number' | 'email' | 'tel' | 'password'
   maxLength?: number
   multiline?: boolean
   rows?: number

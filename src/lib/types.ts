@@ -420,3 +420,39 @@ export interface Bill {
     doctor: { user: { name: string } } | null
   } | null
 }
+
+// ─── CDSS (SmartQueue AI — selaras Postman collection) ─────────────────────────
+
+export interface CdssKandidatDiagnosis {
+  nama_penyakit: string
+  tingkat_urgensi: string
+  confidence: number
+  departemen: string
+  penjelasan: string
+  pemeriksaan_lanjutan: string[]
+}
+
+export interface CdssRecommendResponse {
+  id: string
+  gejala?: string
+  gejala_teridentifikasi: string[]
+  kandidat_diagnosis: CdssKandidatDiagnosis[]
+  catatan_medis: string
+  disclaimer: string
+  status: string
+  notes?: string | null
+  createdAt?: string
+  patient?: {
+    id: string
+    user: { name: string }
+  }
+}
+
+export interface CdssHealthResponse {
+  status: string
+  gemini_api_configured: boolean
+  message: string
+  available?: boolean
+}
+
+export interface CdssHistoryItem extends CdssRecommendResponse {}
