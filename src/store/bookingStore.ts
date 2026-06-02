@@ -12,6 +12,12 @@ interface BookingResponse {
   queueNumber?: string | number
   estimatedWaitMinutes?: number
   estimatedWaitTime?: number
+  prediction?: {
+    estimatedMin?: number
+    kategori?: string | null
+    source?: string
+    features?: { waitingAhead?: number } | null
+  } | null
 }
 
 function isConflictError(error: unknown): boolean {
@@ -41,6 +47,9 @@ interface BookingState {
     id?: string
     queueNumber?: string
     estimatedWaitTime?: number
+    waitKategori?: string | null
+    waitingAhead?: number
+    waitSource?: string
     isAppointment: boolean
   }>
 
@@ -131,6 +140,12 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
       if (!responseData) throw new Error('Gagal menerima respons data dari server.')
 
+      const estimatedMinutes =
+        responseData.estimatedWaitMinutes ??
+        responseData.prediction?.estimatedMin ??
+        responseData.estimatedWaitTime ??
+        0
+
       set({ isSubmitting: false })
 
       return {
@@ -138,7 +153,10 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         queueNumber:
           String(responseData.queueNumber ?? '') ||
           responseData.id.substring(responseData.id.length - 6).toUpperCase(),
-        estimatedWaitTime: responseData.estimatedWaitMinutes || responseData.estimatedWaitTime || 0,
+        estimatedWaitTime: estimatedMinutes,
+        waitKategori: responseData.prediction?.kategori ?? null,
+        waitingAhead: responseData.prediction?.features?.waitingAhead,
+        waitSource: responseData.prediction?.source,
         isAppointment: !isToday,
       }
     } catch (error: unknown) {

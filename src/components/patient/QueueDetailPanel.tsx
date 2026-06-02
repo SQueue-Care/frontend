@@ -1,5 +1,10 @@
+import { useEffect, useState } from 'react'
 import QueueVisitFlow from './QueueVisitFlow'
+import QueueWaitTimePanel from './QueueWaitTimePanel'
 import { DoctorNotesSection } from '../shared/DoctorNotesDisplay'
+import apiClient from '../../lib/apiClient'
+import { useQueueLiveEstimate } from '../../hooks/useQueueLiveEstimate'
+import { buildWaitTimeContext, canShowWaitCountdown } from '../../lib/waitTimeEstimate'
 import type { Queue } from '../../lib/types'
 
 interface QueueDetailPanelProps {
@@ -54,6 +59,29 @@ export default function QueueDetailPanel({
   queue,
   patientProfile,
 }: QueueDetailPanelProps) {
+  const [detailQueue, setDetailQueue] = useState<Queue | null>(null)
+  const displayQueue = detailQueue ?? queue
+  const { liveEstimate, isLoading: isLoadingEstimate } = useQueueLiveEstimate(displayQueue)
+  const showWaitPanel =
+    displayQueue != null &&
+    (canShowWaitCountdown(displayQueue, liveEstimate) || isLoadingEstimate)
+
+  useEffect(() => {
+    if (!isOpen || !queue?.id) {
+      setDetailQueue(null)
+      return
+    }
+
+    let cancelled = false
+    void apiClient.get(`/queues/${queue.id}`).then((res) => {
+      if (!cancelled) setDetailQueue(res.data.data as Queue)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isOpen, queue?.id])
+
   // ANIMATION FIX: Do not return null to allow the panel to stay in the DOM and transition properly.
   // if (!queue) return null;
 
@@ -103,7 +131,7 @@ export default function QueueDetailPanel({
                     Nomor Urut
                   </p>
                   <span className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 font-mono text-xl text-zinc-900 shadow-sm transition-colors dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-100">
-                    {queue.queueNumber}
+                    {displayQueue.queueNumber}
                   </span>
                 </div>
                 <div className="text-right">
@@ -111,18 +139,36 @@ export default function QueueDetailPanel({
                     Status Antrean
                   </p>
                   <span
-                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${getQueueStatusStyle(queue.status)}`}
+                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${getQueueStatusStyle(displayQueue.status)}`}
                   >
-                    {getQueueStatusText(queue.status)}
+                    {getQueueStatusText(displayQueue.status)}
                   </span>
                 </div>
               </div>
 
+              {showWaitPanel && displayQueue && (
+                <>
+                  {isLoadingEstimate && !buildWaitTimeContext(displayQueue, liveEstimate) ? (
+                    <div className="rounded-2xl border border-teal-200/80 bg-teal-50/50 p-4 text-center dark:border-teal-900/40 dark:bg-teal-500/10">
+                      <p className="text-[10px] tracking-widest text-teal-700 uppercase dark:text-teal-400">
+                        Menghitung prediksi...
+                      </p>
+                    </div>
+                  ) : (
+                    <QueueWaitTimePanel
+                      queue={displayQueue}
+                      liveEstimate={liveEstimate}
+                      variant="prominent"
+                    />
+                  )}
+                </>
+              )}
+
               <QueueVisitFlow
-                status={queue.status}
-                doctorNotes={queue.doctorNotes}
-                visitFlow={queue.visitFlow}
-                nextDestination={queue.nextDestination}
+                status={displayQueue?.status ?? queue.status}
+                doctorNotes={displayQueue?.doctorNotes ?? queue.doctorNotes}
+                visitFlow={displayQueue?.visitFlow ?? queue.visitFlow}
+                nextDestination={displayQueue?.nextDestination ?? queue.nextDestination}
               />
 
               <div className="space-y-6 rounded-3xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">

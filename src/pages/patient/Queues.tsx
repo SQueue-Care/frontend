@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom'
+import QueueWaitTimePanel from '../../components/patient/QueueWaitTimePanel'
+import { canShowWaitCountdown } from '../../lib/waitTimeEstimate'
 import { useQueueStore } from '../../store/queueStore'
 
 const QUEUE_STATUS_STYLES: Record<string, string> = {
@@ -47,12 +49,13 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
 
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         <div className="no-scrollbar overflow-x-auto">
-          <table className="w-full min-w-[900px] border-collapse text-left">
+          <table className="w-full min-w-[1050px] border-collapse text-left">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                 <th className="p-6 pl-8">Layanan Medis</th>
                 <th className="p-6">Tgl. Kunjungan</th>
                 <th className="p-6">Jam Kunjungan</th>
+                <th className="p-6">Estimasi Tunggu</th>
                 <th className="p-6">Catatan Keluhan</th>
                 <th className="p-6 pr-8 text-right">Status</th>
               </tr>
@@ -61,7 +64,7 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
               {isLoadingTable ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="animate-pulse p-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500"
                   >
                     Menyinkronkan riwayat...
@@ -70,7 +73,7 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
               ) : patientHistory.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="p-16 text-center font-medium text-slate-400 italic dark:text-slate-500"
                   >
                     Tidak ada riwayat kunjungan yang terekam.
@@ -108,6 +111,13 @@ export default function PatientQueues({ embedded = false }: { embedded?: boolean
                         })}{' '}
                         WIB
                       </div>
+                    </td>
+                    <td className="p-6 align-top">
+                      {canShowWaitCountdown(item) ? (
+                        <QueueWaitTimePanel queue={item} variant="compact" />
+                      ) : (
+                        <span className="text-xs text-slate-400 italic dark:text-zinc-500">—</span>
+                      )}
                     </td>
                     <td className="p-6 align-top">
                       <div
