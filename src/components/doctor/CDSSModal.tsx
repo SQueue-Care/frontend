@@ -92,7 +92,7 @@ function CDSSModalContent({ queue, onClose }: { queue: Queue; onClose: () => voi
         <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white transition-colors dark:bg-[#1e1f20] shadow-lg">
           {/* Header */}
           <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] px-6 py-4">
-            <h2 className="text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100">🧠 Analisis CDSS</h2>
+            <h2 className="text-xl font-bold text-zinc-900 transition-colors dark:text-zinc-100">Analisis CDSS</h2>
             <button
               onClick={onClose}
               className="text-slate-400 transition-colors dark:text-zinc-500 transition-colors hover:text-slate-600"

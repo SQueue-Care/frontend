@@ -108,7 +108,7 @@ export default function AdminBillingManagement() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="inline-flex rounded-2xl border border-slate-200 bg-slate-50/80 p-1 dark:border-zinc-800 dark:bg-[#131314]">
         {(['all', 'unpaid', 'bpjs', 'paid'] as BillFilter[]).map((f) => (
           <button
             key={f}
@@ -116,54 +116,73 @@ export default function AdminBillingManagement() {
               setFilter(f)
               setPage(1)
             }}
-            className={`rounded-lg px-4 py-2 text-xs transition-colors ${ filter === f ? 'bg-teal-600 text-white' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700' }`}
+            className={`rounded-xl px-5 py-2.5 text-sm transition-all ${
+              filter === f
+                ? 'bg-white text-teal-700 shadow-sm dark:bg-[#1e1f20] dark:text-teal-400'
+                : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+            }`}
           >
             {f === 'all' ? 'Semua' : f === 'unpaid' ? 'Belum Bayar' : f === 'bpjs' ? 'BPJS' : 'Lunas'}
           </button>
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         {isLoading ? (
-          <p className="p-8 text-center text-sm text-slate-500 dark:text-zinc-400">Memuat tagihan...</p>
+          <p className="p-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500 animate-pulse">
+            Memuat tagihan...
+          </p>
         ) : bills.length === 0 ? (
-          <p className="p-8 text-center text-sm text-slate-500 dark:text-zinc-400">Tidak ada tagihan.</p>
+          <p className="p-16 text-center font-medium text-slate-400 italic dark:text-slate-500">
+            Tidak ada tagihan yang terekam.
+          </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-[10px] tracking-widest text-slate-500 dark:text-zinc-400 uppercase">
+          <div className="no-scrollbar overflow-x-auto">
+            <table className="w-full min-w-[900px] border-collapse text-left">
+              <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                 <tr>
-                  <th className="p-4">Pasien</th>
-                  <th className="p-4">Poli / Antrean</th>
-                  <th className="p-4">Jumlah</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Aksi</th>
+                  <th className="p-6 pl-8">Pasien</th>
+                  <th className="p-6">Poli / Antrean</th>
+                  <th className="p-6">Jumlah</th>
+                  <th className="p-6">Status</th>
+                  <th className="p-6 pr-8 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
                 {bills.map((bill) => (
-                  <tr key={bill.id} className="border-b border-slate-50 last:border-0">
-                    <td className="p-4 text-zinc-900 dark:text-zinc-100">
+                  <tr
+                    key={bill.id}
+                    className="transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
+                  >
+                    <td className="p-6 pl-8 align-top font-medium text-zinc-900 dark:text-white">
                       {bill.patient?.user?.name ?? bill.patientId}
                     </td>
-                    <td className="p-4 text-slate-600 dark:text-zinc-400">
-                      {bill.queue?.department?.name ?? '-'}
-                      {bill.queue?.queueNumber != null ? ` · No. ${bill.queue.queueNumber}` : ''}
+                    <td className="p-6 align-top text-slate-600 dark:text-zinc-400">
+                      <div>{bill.queue?.department?.name ?? '-'}</div>
+                      {bill.queue?.queueNumber != null && (
+                        <div className="mt-1 inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-[10px] tracking-widest text-slate-600 uppercase dark:bg-slate-900/50 dark:text-slate-400">
+                          No. {bill.queue.queueNumber}
+                        </div>
+                      )}
                     </td>
-                    <td className="p-4 text-zinc-900 dark:text-zinc-100">
+                    <td className="p-6 align-top font-semibold text-zinc-900 dark:text-white">
                       {formatRupiah(bill.patientShare ?? bill.totalAmount)}
                     </td>
-                    <td className="p-4">
-                      <span className={`rounded-lg border px-2.5 py-1 text-[10px] uppercase ${statusBadgeClass(bill.status)}`}>
+                    <td className="p-6 align-top">
+                      <span
+                        className={`inline-flex min-w-[120px] items-center justify-center rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${statusBadgeClass(
+                          bill.status
+                        )}`}
+                      >
                         {STATUS_LABELS[bill.status]}
                       </span>
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-6 pr-8 text-right align-top">
                       <div className="flex flex-wrap justify-end gap-2">
                         {(bill.status === 'PENDING' || bill.status === 'BPJS_PENDING') && (
                           <button
                             onClick={() => handleMarkPaid(bill)}
-                            className="rounded-lg bg-teal-600 px-3 py-1.5 text-[10px] text-white hover:bg-teal-700"
+                            className="rounded-lg bg-teal-600 px-4 py-2 text-[10px] tracking-widest uppercase text-white hover:bg-teal-700 transition-colors shadow-sm"
                           >
                             Tandai Lunas
                           </button>
@@ -174,7 +193,7 @@ export default function AdminBillingManagement() {
                               setSelectedBill(bill)
                               setSepNumber(bill.sepNumber ?? '')
                             }}
-                            className="rounded-lg border border-blue-200 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 px-3 py-1.5 text-[10px] text-blue-700 dark:text-blue-400"
+                            className="rounded-lg border border-blue-200 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 px-4 py-2 text-[10px] tracking-widest uppercase text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors shadow-sm"
                           >
                             Verifikasi BPJS
                           </button>
