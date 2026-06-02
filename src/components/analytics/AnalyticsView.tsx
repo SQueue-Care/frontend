@@ -12,6 +12,8 @@ import {
 import { useEffect, useState } from 'react'
 import { Bar, Line } from 'react-chartjs-2'
 import apiClient from '../../lib/apiClient'
+import { getChartTheme } from '../../lib/panelTheme'
+import { useThemeStore } from '../../store/themeStore'
 import CustomDatePicker from '../ui/CustomDatePicker'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend)
@@ -57,6 +59,9 @@ interface AppointmentStats {
 }
 
 export default function AnalyticsView() {
+  const isDark = useThemeStore((s) => s.theme) === 'dark'
+  const chartTheme = getChartTheme(isDark)
+
   const [fromDate, setFromDate] = useState<string>(() => {
     const d = new Date()
     d.setDate(d.getDate() - 7)
@@ -115,7 +120,9 @@ export default function AnalyticsView() {
   }
 
   if (!analytics) {
-    return <div className="py-10 text-center">Memuat data...</div>
+    return (
+      <div className="py-10 text-center text-slate-500 dark:text-zinc-400">Memuat data...</div>
+    )
   }
 
   // Chart data
@@ -176,18 +183,35 @@ export default function AnalyticsView() {
     ],
   }
 
+  const sharedScale = {
+    y: {
+      beginAtZero: true,
+      ticks: { color: chartTheme.text, font: { size: 11 } },
+      grid: { color: chartTheme.grid, display: true },
+    },
+    x: {
+      ticks: { color: chartTheme.text, font: { size: 11 } },
+      grid: { display: false },
+    },
+  }
+
   const lineChartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as const,
-        labels: { font: { size: 12, weight: 'bold' } },
+        labels: { font: { size: 12, weight: 'bold' }, color: chartTheme.text },
+      },
+      tooltip: {
+        backgroundColor: chartTheme.tooltipBg,
+        titleColor: chartTheme.tooltipTitle,
+        bodyColor: chartTheme.tooltipBody,
+        borderColor: chartTheme.tooltipBorder,
+        borderWidth: 1,
       },
     },
-    scales: {
-      y: { beginAtZero: true },
-    },
+    scales: sharedScale,
   }
 
   const barChartOptions: ChartOptions<'bar'> = {
@@ -196,12 +220,17 @@ export default function AnalyticsView() {
     plugins: {
       legend: {
         position: 'top' as const,
-        labels: { font: { size: 12, weight: 'bold' } },
+        labels: { font: { size: 12, weight: 'bold' }, color: chartTheme.text },
+      },
+      tooltip: {
+        backgroundColor: chartTheme.tooltipBg,
+        titleColor: chartTheme.tooltipTitle,
+        bodyColor: chartTheme.tooltipBody,
+        borderColor: chartTheme.tooltipBorder,
+        borderWidth: 1,
       },
     },
-    scales: {
-      y: { beginAtZero: true },
-    },
+    scales: sharedScale,
   }
 
   return (
@@ -270,7 +299,7 @@ export default function AnalyticsView() {
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
           <p className="mb-2 text-sm text-slate-500 dark:text-zinc-400">Total Antrian</p>
-          <p className="text-3xl text-teal-600">{analytics.summary.totalQueues}</p>
+          <p className="text-3xl text-teal-600 dark:text-teal-400">{analytics.summary.totalQueues}</p>
         </div>
         <div className="rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
           <p className="mb-2 text-sm text-slate-500 dark:text-zinc-400">Tingkat Selesai</p>

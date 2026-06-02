@@ -1,32 +1,26 @@
 import { useMemo } from 'react'
+import { QUEUE_STATUS_BADGE } from '../../lib/panelTheme'
 import { QueueStatus } from '../../lib/types'
 import { useDashboardFilterStore } from '../../store/dashboardFilterStore'
 import { useQueueStore } from '../../store/queueStore'
 import CustomSearchBar from '../ui/CustomSearchBar'
 
-// Helper untuk styling status
-const statusStyles: Record<
-  QueueStatus,
-  { text: string; bg: string; border: string; icon?: React.ReactNode }
-> = {
-  [QueueStatus.WAITING]: { text: 'Menunggu', bg: 'bg-slate-50 dark:bg-[#131314]', border: 'border-slate-200 dark:border-zinc-800' },
-  [QueueStatus.CALLED]: { text: 'Dipanggil', bg: 'bg-blue-50 dark:bg-blue-500/10', border: 'border-blue-200 dark:border-blue-500/20' },
-  [QueueStatus.IN_PROGRESS]: { text: 'Diperiksa', bg: 'bg-amber-50 dark:bg-amber-500/10', border: 'border-amber-200 dark:border-amber-500/20' },
-  [QueueStatus.DONE]: { text: 'Selesai', bg: 'bg-emerald-50 dark:bg-emerald-500/10', border: 'border-emerald-200 dark:border-emerald-500/20' },
-  [QueueStatus.SKIPPED]: { text: 'Dilewati', bg: 'bg-gray-50 dark:bg-zinc-800/50', border: 'border-gray-200 dark:border-zinc-700' },
-  [QueueStatus.CANCELLED]: { text: 'Dibatalkan', bg: 'bg-rose-50 dark:bg-rose-500/10', border: 'border-rose-200 dark:border-rose-500/20' },
+const STATUS_LABEL: Record<QueueStatus, string> = {
+  [QueueStatus.WAITING]: 'Menunggu',
+  [QueueStatus.CALLED]: 'Dipanggil',
+  [QueueStatus.IN_PROGRESS]: 'Diperiksa',
+  [QueueStatus.DONE]: 'Selesai',
+  [QueueStatus.SKIPPED]: 'Dilewati',
+  [QueueStatus.CANCELLED]: 'Dibatalkan',
 }
 
-const StatusBadge = ({ status }: { status: QueueStatus }) => {
-  const style = statusStyles[status] || statusStyles.WAITING
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs ${style.bg} ${style.border} text-zinc-800 dark:text-zinc-200`}
-    >
-      {style.text}
-    </span>
-  )
-}
+const StatusBadge = ({ status }: { status: QueueStatus }) => (
+  <span
+    className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs ${QUEUE_STATUS_BADGE[status] ?? QUEUE_STATUS_BADGE[QueueStatus.WAITING]}`}
+  >
+    {STATUS_LABEL[status] ?? status}
+  </span>
+)
 
 export default function QueueManagementTable() {
   const { queues, isLoadingTable, errorTable } = useQueueStore()
@@ -81,7 +75,7 @@ export default function QueueManagementTable() {
     if (errorTable) {
       return (
         <tr>
-          <td colSpan={5} className="p-8 text-center text-red-500 italic">
+          <td colSpan={5} className="p-8 text-center text-rose-600 italic dark:text-rose-400">
             {errorTable}
           </td>
         </tr>
@@ -103,7 +97,7 @@ export default function QueueManagementTable() {
     return filteredQueues.map((item) => (
       <tr key={item.id} className="transition-colors hover:bg-slate-50/50 dark:hover:bg-[#131314]/50">
         <td className="p-4 pl-6">
-          <span className="inline-block rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono text-slate-700">
+          <span className="inline-block rounded-lg border border-slate-200 bg-slate-100 px-3 py-1 font-mono text-slate-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
             {item.department?.code || 'XX'}-{item.queueNumber}
           </span>
         </td>

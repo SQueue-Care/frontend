@@ -36,7 +36,7 @@ export default function DoctorMedicalHistoryPanel({
             {pastVisits.map((visit) => (
               <li
                 key={visit.id}
-                className="rounded-xl border border-slate-100 transition-colors dark:border-zinc-800 bg-slate-50/60 p-4 transition-colors hover:border-indigo-100 hover:bg-indigo-50/30"
+                className="rounded-xl border border-slate-100 bg-slate-50/60 p-4 transition-colors hover:border-indigo-100 hover:bg-indigo-50/30 dark:border-zinc-800 dark:bg-[#131314]/60 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10"
               >
                 <div className="mb-2 flex items-start justify-between gap-2">
                   <div>

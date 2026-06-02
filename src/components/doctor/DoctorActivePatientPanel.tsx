@@ -104,7 +104,7 @@ export default function DoctorActivePatientPanel({
           </svg>
           <div>
             <p className="text-xs tracking-wide text-rose-700 transition-colors dark:text-rose-400 uppercase">Alergi</p>
-            <p className="text-sm font-medium text-rose-800">{allergies}</p>
+            <p className="text-sm font-medium text-rose-800 dark:text-rose-300">{allergies}</p>
           </div>
         </div>
       )}
@@ -126,22 +126,22 @@ export default function DoctorActivePatientPanel({
         )}
 
         {queue.notes?.trim() && (
-          <div className="mb-6 rounded-xl border border-amber-100 transition-colors dark:border-amber-500/20 bg-amber-50/70 p-4">
-            <p className="mb-1 text-[10px] tracking-wider text-amber-700 transition-colors dark:text-amber-400 uppercase">
+          <div className="mb-6 rounded-xl border border-amber-100 bg-amber-50/70 p-4 dark:border-amber-500/20 dark:bg-amber-500/10">
+            <p className="mb-1 text-[10px] tracking-wider text-amber-700 uppercase dark:text-amber-400">
               Keluhan / Catatan Kunjungan
             </p>
-            <p className="text-sm whitespace-pre-wrap text-amber-950">{queue.notes}</p>
+            <p className="text-sm whitespace-pre-wrap text-amber-950 dark:text-amber-100">{queue.notes}</p>
           </div>
         )}
 
         {hasBlockingPatient && queue.status === QueueStatus.WAITING && (
-          <div className="mb-4 rounded-xl border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-800">
+          <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
             Selesaikan pasien saat ini terlebih dahulu sebelum menerima pasien baru.
           </div>
         )}
 
         {allowedTransitions.includes(QueueStatus.DONE) && (
-          <div className="mb-4 rounded-xl border border-emerald-200 transition-colors dark:border-emerald-500/20 bg-emerald-50 transition-colors dark:bg-emerald-500/10 px-4 py-3 text-sm text-emerald-900">
+          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100">
             Setelah menandai <strong>Selesai</strong>, pasien akan diarahkan ke loket administrasi/kasir
             {queue.department?.adminCounter ? ` (${queue.department.adminCounter})` : ''} untuk pembayaran.
           </div>
@@ -151,14 +151,14 @@ export default function DoctorActivePatientPanel({
           <button
             type="button"
             onClick={onOpenCdss}
-            className="rounded-lg border border-violet-200 bg-violet-50 transition-colors dark:bg-violet-900/20 px-4 py-2 text-xs text-violet-700 transition-colors hover:bg-violet-100"
+            className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2 text-xs text-violet-700 transition-colors hover:bg-violet-100 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-300 dark:hover:bg-violet-500/20"
           >
             Analisis CDSS
           </button>
           <button
             type="button"
             onClick={onOpenNotes}
-            className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-4 py-2 text-xs text-amber-800 transition-colors hover:bg-amber-100"
+            className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-800 transition-colors hover:bg-amber-100 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200 dark:hover:bg-amber-500/20"
           >
             Catatan Dokter
           </button>

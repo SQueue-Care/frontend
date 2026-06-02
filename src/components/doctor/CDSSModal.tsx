@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import apiClient from '../../lib/apiClient'
 import { isCdssAvailable, normalizeCdssResult } from '../../lib/cdssUtils'
 import { getErrorMessage } from '../../lib/errors'
+import { cdss } from '../../lib/panelTheme'
 import type { CdssHealthResponse, CdssRecommendResponse, Queue } from '../../lib/types'
 import CdssResultsView from './CdssResultsView'
 
@@ -104,17 +105,17 @@ function CDSSModalContent({
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]" onClick={onClose} />
+      <div className={cdss.backdrop} onClick={onClose} />
 
       <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
         <div
-          className="flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:max-h-[min(90dvh,880px)] sm:rounded-2xl dark:bg-[#1e1f20]"
+          className={cdss.modal}
           role="dialog"
           aria-modal="true"
           aria-labelledby="cdss-modal-title"
         >
           {/* Header — tetap di atas */}
-          <div className="shrink-0 border-b border-slate-200 px-5 py-4 dark:border-zinc-800">
+          <div className={cdss.modalHeader}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <h2
@@ -142,7 +143,7 @@ function CDSSModalContent({
               <button
                 type="button"
                 onClick={onClose}
-                className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                className={cdss.closeButton}
                 aria-label="Tutup"
               >
                 ✕
@@ -154,11 +155,11 @@ function CDSSModalContent({
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <div className="space-y-4 p-5">
               {/* Form input — bisa dilipat saat hasil sudah ada */}
-              <section className="rounded-xl border border-slate-200 dark:border-zinc-800">
+              <section className={cdss.section}>
                 <button
                   type="button"
                   onClick={() => setShowInput((v) => !v)}
-                  className="flex w-full items-center justify-between px-4 py-3 text-left"
+                  className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-slate-50/80 dark:hover:bg-zinc-800/40"
                 >
                   <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
                     Deskripsi Gejala
@@ -174,7 +175,7 @@ function CDSSModalContent({
                       value={gejala}
                       onChange={(e) => setGejala(e.target.value)}
                       disabled={isLoading || !cdssReady}
-                      className="max-h-40 min-h-[7rem] w-full resize-y rounded-lg border border-slate-200 px-3 py-2.5 text-sm leading-relaxed text-zinc-800 placeholder-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none disabled:bg-slate-50 dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-200"
+                      className={cdss.textarea}
                       placeholder="Contoh: demam tinggi sudah 3 hari, batuk kering, sesak napas..."
                     />
                     <p className="text-xs text-slate-500 dark:text-zinc-400">
@@ -184,7 +185,7 @@ function CDSSModalContent({
                       type="button"
                       onClick={handleRecommend}
                       disabled={isLoading || !cdssReady || gejala.trim().length < 3}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                      className={cdss.primaryButton}
                     >
                       {isLoading ? (
                         <>
@@ -240,7 +241,7 @@ function CDSSModalContent({
               )}
 
               {result && (
-                <section className="rounded-xl border border-violet-200/80 bg-violet-50/30 dark:border-violet-500/20 dark:bg-violet-500/5">
+                <section className={cdss.accentSection}>
                   <div className="border-b border-violet-200/60 px-4 py-3 dark:border-violet-500/20">
                     <h3 className="text-sm font-semibold text-violet-900 dark:text-violet-200">
                       Hasil Rekomendasi
@@ -259,11 +260,11 @@ function CDSSModalContent({
           </div>
 
           {/* Footer — tetap di bawah */}
-          <div className="shrink-0 border-t border-slate-200 bg-white px-5 py-3 dark:border-zinc-800 dark:bg-[#1e1f20]">
+          <div className={cdss.modalFooter}>
             <button
               type="button"
               onClick={onClose}
-              className="w-full rounded-lg bg-slate-100 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 sm:w-auto sm:px-6 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+              className={`w-full sm:w-auto sm:px-6 ${cdss.secondaryButton}`}
             >
               Tutup
             </button>

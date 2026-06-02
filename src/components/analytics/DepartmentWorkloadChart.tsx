@@ -4,8 +4,10 @@ import type { TooltipItem } from 'chart.js'
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
 import { useMemo } from 'react'
 import { Doughnut } from 'react-chartjs-2'
+import { getChartTheme } from '../../lib/panelTheme'
 import { useDepartmentStore } from '../../store/departmentStore'
 import { useQueueStore } from '../../store/queueStore'
+import { useThemeStore } from '../../store/themeStore'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -23,6 +25,8 @@ const COLOR_PALETTE = [
 ]
 
 export default function DepartmentWorkloadChart() {
+  const isDark = useThemeStore((s) => s.theme) === 'dark'
+  const chartTheme = getChartTheme(isDark)
   const { overviewStats, isLoadingStats, errorStats } = useQueueStore()
   const {
     departments,
@@ -71,11 +75,15 @@ export default function DepartmentWorkloadChart() {
           usePointStyle: true,
           padding: 15,
           font: { family: 'Inter', size: 10 },
-          color: '#475569',
+          color: chartTheme.text,
         },
       },
       tooltip: {
-        backgroundColor: '#1e293b',
+        backgroundColor: chartTheme.tooltipBg,
+        titleColor: chartTheme.tooltipTitle,
+        bodyColor: chartTheme.tooltipBody,
+        borderColor: chartTheme.tooltipBorder,
+        borderWidth: 1,
         bodyFont: { family: 'Inter', size: 13 },
         padding: 12,
         cornerRadius: 8,

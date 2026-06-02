@@ -33,7 +33,7 @@ export default function CustomSelect({
             {selectedOpt ? selectedOpt.label : placeholder}
           </span>
           <svg
-            className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`h-4 w-4 text-slate-400 transition-transform dark:text-zinc-500 ${isOpen ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

@@ -86,7 +86,7 @@ export default function AdminDepartmentsOverview() {
                     {dept.doctors.map((d) => (
                       <span
                         key={d.id}
-                        className="rounded-full border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] px-2.5 py-0.5 text-xs font-medium text-slate-700"
+                        className="rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300"
                       >
                         {d.user?.name ?? 'Dokter'}
                       </span>

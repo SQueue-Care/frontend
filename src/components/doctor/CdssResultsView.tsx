@@ -16,7 +16,7 @@ function CandidateCard({
   compact?: boolean
 }) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-4 dark:border-zinc-700 dark:bg-[#131314]/80">
+    <article className="rounded-lg border border-slate-200 bg-white p-4 transition-colors dark:border-zinc-700 dark:bg-[#131314]/80">
       <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <p className="min-w-0 flex-1 text-sm font-medium leading-snug break-words text-zinc-900 dark:text-zinc-100">
           {index + 1}. {candidate.nama_penyakit}
@@ -42,7 +42,7 @@ function CandidateCard({
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-zinc-700">
           <div
-            className="h-full rounded-full bg-teal-500 transition-all"
+            className="h-full rounded-full bg-violet-500 transition-all dark:bg-violet-400"
             style={{ width: `${Math.min(100, Math.max(0, candidate.confidence))}%` }}
           />
         </div>
@@ -64,7 +64,7 @@ function CandidateCard({
       )}
 
       {(candidate.pemeriksaan_lanjutan?.length ?? 0) > 0 && (
-        <div className="mt-2 rounded-md bg-slate-50 px-3 py-2 dark:bg-zinc-800/50">
+        <div className="mt-2 rounded-md border border-slate-100 bg-slate-50 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-800/50">
           <p className="mb-1.5 text-xs font-medium text-slate-600 dark:text-zinc-300">
             Pemeriksaan lanjutan
           </p>

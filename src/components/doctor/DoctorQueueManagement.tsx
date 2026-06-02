@@ -14,6 +14,7 @@ import { useAlertStore } from '../../store/alertStore'
 import { useAuthStore } from '../../store/authStore'
 import { useDoctorStore } from '../../store/doctorStore'
 import { useQueueStore } from '../../store/queueStore'
+import { panel, QUEUE_STATUS_BADGE } from '../../lib/panelTheme'
 import CDSSModal from './CDSSModal'
 import DoctorPatientExamination from './DoctorPatientExamination'
 import DoctorNotesModal from './DoctorNotesModal'
@@ -29,14 +30,7 @@ const STATUS_LABEL: Record<QueueStatus, string> = {
   [QueueStatus.CANCELLED]: 'Dibatalkan',
 }
 
-const STATUS_CLASSES: Record<QueueStatus, string> = {
-  [QueueStatus.WAITING]: 'bg-slate-50 transition-colors dark:bg-[#131314] text-slate-700 transition-colors dark:text-zinc-300 border-slate-200 transition-colors dark:border-zinc-800 ',
-  [QueueStatus.CALLED]: 'bg-blue-50 text-blue-700 border-blue-200',
-  [QueueStatus.IN_PROGRESS]: 'bg-amber-50 transition-colors dark:bg-amber-500/10 text-amber-700 transition-colors dark:text-amber-400 border-amber-200 transition-colors dark:border-amber-500/20 ',
-  [QueueStatus.DONE]: 'bg-emerald-50 transition-colors dark:bg-emerald-500/10 text-emerald-700 border-emerald-200 transition-colors dark:border-emerald-500/20 ',
-  [QueueStatus.SKIPPED]: 'bg-gray-50 text-gray-600 border-gray-200',
-  [QueueStatus.CANCELLED]: 'bg-rose-50 transition-colors dark:bg-rose-500/10 text-rose-700 transition-colors dark:text-rose-400 border-rose-200 transition-colors dark:border-rose-500/20 ',
-}
+const STATUS_CLASSES = QUEUE_STATUS_BADGE
 
 export default function DoctorQueueManagement() {
   const user = useAuthStore((state) => state.user)
@@ -150,10 +144,8 @@ export default function DoctorQueueManagement() {
   return (
     <div className="animate-in fade-in space-y-6 duration-500">
       <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">
-          Terima Pasien
-        </h1>
-        <p className="text-slate-600 transition-colors dark:text-zinc-300">
+        <h1 className={`mb-2 ${panel.headingLg}`}>Terima Pasien</h1>
+        <p className={panel.subtext}>
           Selamat datang, {user?.name}. Kelola pemeriksaan pasien dan lihat riwayat medis.
         </p>
       </div>
@@ -186,7 +178,7 @@ export default function DoctorQueueManagement() {
         </div>
       )}
 
-      <div className="rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-6 shadow-sm">
+      <div className={`${panel.card} p-6`}>
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
             <h3 className="font-['Manrope'] text-lg text-zinc-900 transition-colors dark:text-zinc-100">Daftar Antrean</h3>
@@ -213,14 +205,14 @@ export default function DoctorQueueManagement() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="border-b border-slate-100 transition-colors dark:border-zinc-800 text-xs tracking-wider text-slate-500 transition-colors dark:text-zinc-400 uppercase">
+                <tr className={panel.tableHead}>
                   <th className="p-3 pl-0">No. Antrean</th>
                   <th className="p-3">Nama Pasien</th>
                   <th className="p-3">Status</th>
                   <th className="p-3 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 transition-colors dark:divide-zinc-800 text-sm font-medium text-zinc-900 transition-colors dark:text-zinc-100">
+              <tbody className={panel.tableBody}>
                 {departmentQueues.map((queue) => {
                   const isCurrent = queue.id === activePatientQueue?.id
                   const isBlocked =
@@ -233,7 +225,7 @@ export default function DoctorQueueManagement() {
                   return (
                     <tr
                       key={queue.id}
-                      className={`transition-colors ${ isCurrent ? 'bg-indigo-50/80 ring-1 ring-inset ring-indigo-100' : 'hover:bg-slate-50/70' }`}
+                      className={isCurrent ? panel.tableRowActive : panel.tableRowHover}
                     >
                       <td className="p-3 pl-0 font-mono text-zinc-900 transition-colors dark:text-zinc-100">
                         {queue.department?.code || 'XX'}-{queue.queueNumber}
@@ -257,7 +249,7 @@ export default function DoctorQueueManagement() {
                             <button
                               type="button"
                               onClick={() => setCdssQueue(queue)}
-                              className="rounded-lg border border-violet-200 bg-violet-50 transition-colors dark:bg-violet-900/20 px-3 py-1.5 text-[11px] text-violet-600 transition-colors dark:text-violet-400 transition-colors hover:bg-violet-100"
+                              className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-[11px] text-violet-600 transition-colors hover:bg-violet-100 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/20"
                             >
                               CDSS
                             </button>
@@ -273,7 +265,7 @@ export default function DoctorQueueManagement() {
                             <button
                               type="button"
                               onClick={() => setNotesQueue(queue)}
-                              className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-3 py-1.5 text-[11px] text-amber-700 transition-colors dark:text-amber-400 transition-colors hover:bg-amber-100"
+                              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-[11px] text-amber-700 transition-colors hover:bg-amber-100 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20"
                             >
                               Catatan
                             </button>
@@ -314,7 +306,7 @@ export default function DoctorQueueManagement() {
                             <button
                               type="button"
                               onClick={() => handleCancelQueue(queue.id, queue.status)}
-                              className="rounded-lg border border-transparent p-1.5 text-slate-400 transition-colors dark:text-zinc-500 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+                              className="rounded-lg border border-transparent p-1.5 text-slate-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-zinc-500 dark:hover:border-rose-500/30 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
                               title="Batalkan antrean"
                             >
                               <svg

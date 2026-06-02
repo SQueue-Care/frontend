@@ -101,7 +101,7 @@ export default function AdminPatientsManagement() {
               Pilih pasien dari daftar untuk melihat profil
             </div>
           ) : isLoading && !selectedPatient ? (
-            <div className="flex min-h-[320px] items-center justify-center rounded-2xl border bg-white dark:bg-[#1e1f20]">
+            <div className="flex min-h-[320px] items-center justify-center rounded-2xl border border-slate-200 bg-white dark:border-zinc-800 dark:bg-[#1e1f20]">
               <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600" />
             </div>
           ) : selectedPatient ? (
@@ -111,11 +111,11 @@ export default function AdminPatientsManagement() {
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <dt className="text-slate-500 dark:text-zinc-400">Email</dt>
-                    <dd className="font-medium">{selectedPatient.user.email}</dd>
+                    <dd className="font-medium text-zinc-900 dark:text-zinc-100">{selectedPatient.user.email}</dd>
                   </div>
                   <div>
                     <dt className="text-slate-500 dark:text-zinc-400">Telepon</dt>
-                    <dd className="font-medium">{selectedPatient.phone || '—'}</dd>
+                    <dd className="font-medium text-zinc-900 dark:text-zinc-100">{selectedPatient.phone || '—'}</dd>
                   </div>
                   <div>
                     <dt className="text-slate-500 dark:text-zinc-400">NIK</dt>

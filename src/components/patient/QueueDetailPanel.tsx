@@ -60,27 +60,26 @@ export default function QueueDetailPanel({
   patientProfile,
 }: QueueDetailPanelProps) {
   const [detailQueue, setDetailQueue] = useState<Queue | null>(null)
-  const displayQueue = detailQueue ?? queue
+  const fetchQueueId = isOpen && queue?.id ? queue.id : null
+  const displayQueue =
+    detailQueue && queue && detailQueue.id === queue.id ? detailQueue : queue
   const { liveEstimate, isLoading: isLoadingEstimate } = useQueueLiveEstimate(displayQueue)
   const showWaitPanel =
     displayQueue != null &&
     (canShowWaitCountdown(displayQueue, liveEstimate) || isLoadingEstimate)
 
   useEffect(() => {
-    if (!isOpen || !queue?.id) {
-      setDetailQueue(null)
-      return
-    }
+    if (!fetchQueueId) return
 
     let cancelled = false
-    void apiClient.get(`/queues/${queue.id}`).then((res) => {
+    void apiClient.get(`/queues/${fetchQueueId}`).then((res) => {
       if (!cancelled) setDetailQueue(res.data.data as Queue)
     })
 
     return () => {
       cancelled = true
     }
-  }, [isOpen, queue?.id])
+  }, [fetchQueueId])
 
   // ANIMATION FIX: Do not return null to allow the panel to stay in the DOM and transition properly.
   // if (!queue) return null;

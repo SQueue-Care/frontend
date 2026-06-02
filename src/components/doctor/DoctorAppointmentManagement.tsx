@@ -169,7 +169,8 @@ export default function DoctorAppointmentManagement() {
                 {filteredAppointments.map((apt) => {
                   const statusClasses: Record<string, string> = {
                     BOOKED: 'bg-amber-50 transition-colors dark:bg-amber-500/10 text-amber-600 transition-colors dark:text-amber-400 border-amber-200 transition-colors dark:border-amber-500/20 ',
-                    CONFIRMED: 'bg-blue-50 text-blue-600 border-blue-200',
+                    CONFIRMED:
+                      'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
                     CANCELLED: 'bg-rose-50 transition-colors dark:bg-rose-500/10 text-rose-600 transition-colors dark:text-rose-400 border-rose-200 transition-colors dark:border-rose-500/20 ',
                     COMPLETED: 'bg-emerald-50 transition-colors dark:bg-emerald-500/10 text-emerald-600 transition-colors dark:text-emerald-400 border-emerald-200 transition-colors dark:border-emerald-500/20 ',
                   }
@@ -181,8 +182,11 @@ export default function DoctorAppointmentManagement() {
                   }
 
                   return (
-                    <tr key={apt.id} className="group transition-colors hover:bg-slate-50/50">
-                      <td className="p-5 pl-8 text-zinc-950 transition-colors dark:text-zinc-100 uppercase transition-colors group-hover:text-indigo-600">
+                    <tr
+                      key={apt.id}
+                      className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-zinc-800/40"
+                    >
+                      <td className="p-5 pl-8 uppercase text-zinc-950 transition-colors group-hover:text-indigo-600 dark:text-zinc-100 dark:group-hover:text-indigo-400">
                         {apt.patient?.user?.name || '-'}
                       </td>
                       <td className="p-5 text-slate-700 transition-colors dark:text-zinc-300">
@@ -219,7 +223,7 @@ export default function DoctorAppointmentManagement() {
                             <>
                               <button
                                 onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
-                                className="rounded-lg border border-transparent p-1.5 text-emerald-600 transition-colors dark:text-emerald-400 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+                                className="rounded-lg border border-transparent p-1.5 text-emerald-600 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:border-emerald-500/30 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-300"
                                 title="Konfirmasi"
                               >
                                 <svg
@@ -241,7 +245,7 @@ export default function DoctorAppointmentManagement() {
                                   setSelectedCancelAptId(apt.id)
                                   setIsCancelModalOpen(true)
                                 }}
-                                className="rounded-lg border border-transparent p-1.5 text-rose-600 transition-colors dark:text-rose-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                                className="rounded-lg border border-transparent p-1.5 text-rose-600 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:border-rose-500/30 dark:hover:bg-rose-500/10 dark:hover:text-rose-300"
                                 title="Batalkan"
                               >
                                 <svg
@@ -275,7 +279,7 @@ export default function DoctorAppointmentManagement() {
       {isCancelModalOpen && (
         <div className="animate-in fade-in fixed inset-0 z-70 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm duration-300">
           <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] shadow-2xl">
-            <div className="border-b border-slate-100 transition-colors dark:border-zinc-800 bg-rose-50/30 p-6">
+            <div className="border-b border-slate-100 bg-rose-50/30 p-6 dark:border-zinc-800 dark:bg-rose-500/10">
               <h3 className="text-lg tracking-tighter text-zinc-900 transition-colors dark:text-zinc-100 uppercase">
                 Konfirmasi Pembatalan
               </h3>

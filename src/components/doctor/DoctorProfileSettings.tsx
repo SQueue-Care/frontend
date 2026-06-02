@@ -93,7 +93,7 @@ export default function DoctorProfileSettings() {
                   <p className="mt-0.5 text-xs font-medium text-slate-500 transition-colors dark:text-zinc-400">
                     {profile?.department?.name || 'Departemen Belum Ditentukan'}
                   </p>
-                  <span className="mt-2 inline-block rounded bg-emerald-50 transition-colors dark:bg-emerald-500/10 px-2 py-0.5 text-[9px] tracking-wider text-emerald-700 uppercase">
+                  <span className="mt-2 inline-block rounded bg-emerald-50 px-2 py-0.5 text-[9px] tracking-wider text-emerald-700 uppercase dark:bg-emerald-500/10 dark:text-emerald-400">
                     SIP Aktif
                   </span>
                 </div>

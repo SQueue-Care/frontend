@@ -74,7 +74,25 @@ export default function DoctorLayout() {
       logoLabel="Doctor"
       logoAccent="Portal"
       pageTitle={PAGE_TITLES[activeView]}
-      headerExtras={<NotificationBell />}
+      headerExtras={
+        <div className="flex items-center gap-3">
+          <NotificationBell />
+          <div className="hidden h-6 w-px bg-slate-200 md:block dark:bg-zinc-800" />
+          <div className="hidden flex-col text-right md:flex">
+            <span className="text-sm leading-none text-zinc-900 dark:text-zinc-100">
+              {user?.name ?? 'Dokter'}
+            </span>
+            <span className="mt-0.5 text-[11px] tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+              {profile?.department?.name ?? 'Dokter'}
+            </span>
+          </div>
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-indigo-200 bg-indigo-50 dark:border-zinc-700 dark:bg-zinc-800">
+            <span className="text-sm text-indigo-700 dark:text-indigo-400">
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
+            </span>
+          </div>
+        </div>
+      }
     >
       <Outlet />
     </DashboardShell>

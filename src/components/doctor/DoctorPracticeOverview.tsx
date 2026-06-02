@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { QueueStatus } from '../../lib/types'
+import { doctor, panel } from '../../lib/panelTheme'
 import { useAuthStore } from '../../store/authStore'
 import { useDoctorStore } from '../../store/doctorStore'
 import { useQueueStore } from '../../store/queueStore'
@@ -45,62 +46,66 @@ export default function DoctorPracticeOverview() {
   return (
     <div className="animate-in fade-in space-y-6 duration-500">
       <div>
-        <h1 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 transition-colors dark:text-zinc-100">Dashboard Praktik</h1>
-        <p className="text-slate-600 transition-colors dark:text-zinc-300">
+        <h1 className={`mb-2 ${panel.headingLg}`}>Dashboard Praktik</h1>
+        <p className={panel.subtext}>
           Selamat datang, {user?.name}. Ringkasan praktik hari ini di {profile?.department?.name ?? 'poli Anda'}.
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm">
-          <p className="text-xs text-slate-500 transition-colors dark:text-zinc-400 uppercase">Total Hari Ini</p>
-          <p className="mt-1 text-3xl text-zinc-900 transition-colors dark:text-zinc-100">{stats.total}</p>
+        <div className={`${panel.card} p-5`}>
+          <p className="text-xs text-slate-500 uppercase dark:text-zinc-400">Total Hari Ini</p>
+          <p className="mt-1 text-3xl text-zinc-900 dark:text-zinc-100">{stats.total}</p>
         </div>
-        <div className="rounded-2xl border border-amber-100 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 p-5">
-          <p className="text-xs text-amber-700 transition-colors dark:text-amber-400 uppercase">Menunggu</p>
-          <p className="mt-1 text-3xl text-amber-800">{stats.waiting}</p>
+        <div className={doctor.statWaiting}>
+          <p className="text-xs text-amber-700 uppercase dark:text-amber-400">Menunggu</p>
+          <p className="mt-1 text-3xl text-amber-800 dark:text-amber-300">{stats.waiting}</p>
         </div>
-        <div className="rounded-2xl border border-indigo-100 transition-colors dark:border-indigo-800/50 bg-indigo-50 transition-colors dark:bg-indigo-900/20 p-5">
-          <p className="text-xs text-indigo-700 transition-colors dark:text-indigo-400 uppercase">Sedang Dilayani</p>
-          <p className="mt-1 text-3xl text-indigo-800 transition-colors dark:text-indigo-300">{stats.inProgress}</p>
+        <div className={doctor.statInProgress}>
+          <p className="text-xs text-indigo-700 uppercase dark:text-indigo-400">Sedang Dilayani</p>
+          <p className="mt-1 text-3xl text-indigo-800 dark:text-indigo-300">{stats.inProgress}</p>
         </div>
-        <div className="rounded-2xl border border-emerald-100 transition-colors dark:border-emerald-500/20 bg-emerald-50 transition-colors dark:bg-emerald-500/10 p-5">
-          <p className="text-xs text-emerald-700 uppercase">Selesai</p>
-          <p className="mt-1 text-3xl text-emerald-800">{stats.done}</p>
+        <div className={doctor.statDone}>
+          <p className="text-xs text-emerald-700 uppercase dark:text-emerald-400">Selesai</p>
+          <p className="mt-1 text-3xl text-emerald-800 dark:text-emerald-300">{stats.done}</p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-indigo-200 transition-colors dark:border-indigo-800/50 bg-gradient-to-br from-indigo-50 to-white p-6 shadow-sm">
+      <div className={doctor.activePatientCard}>
         <div className="mb-4 flex items-center justify-between gap-4">
-          <h2 className="font-['Manrope'] text-lg font-bold text-indigo-900">Pasien Saat Ini</h2>
+          <h2 className="font-['Manrope'] text-lg font-bold text-indigo-900 dark:text-indigo-200">
+            Pasien Saat Ini
+          </h2>
           <Link
             to="/doctor/queues"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-xs text-white hover:bg-indigo-700"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400"
           >
             Buka Antrean
           </Link>
         </div>
         {isLoadingTable ? (
           <div className="flex justify-center py-8">
-            <div className="h-7 w-7 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent dark:border-indigo-400" />
           </div>
         ) : activePatient ? (
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-xl text-white">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-xl font-semibold text-white dark:bg-indigo-500">
               {activePatient.queueNumber}
             </div>
             <div>
-              <p className="text-lg text-zinc-900 transition-colors dark:text-zinc-100">{activePatient.patient?.user?.name}</p>
-              <p className="text-sm text-indigo-700 transition-colors dark:text-indigo-400">
+              <p className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
+                {activePatient.patient?.user?.name}
+              </p>
+              <p className="text-sm text-indigo-700 dark:text-indigo-300">
                 Status:{' '}
                 {activePatient.status === QueueStatus.IN_PROGRESS ? 'Sedang diperiksa' : 'Sudah dipanggil'}
               </p>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-slate-600 transition-colors dark:text-zinc-300">
+          <p className="text-sm text-slate-600 dark:text-zinc-300">
             Belum ada pasien aktif. Panggil pasien dari{' '}
-            <Link to="/doctor/queues" className="text-indigo-600 transition-colors dark:text-indigo-400 underline">
+            <Link to="/doctor/queues" className="font-medium text-indigo-600 underline dark:text-indigo-400">
               antrean hari ini
             </Link>
             .
@@ -109,26 +114,17 @@ export default function DoctorPracticeOverview() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Link
-          to="/doctor/queues"
-          className="rounded-xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md"
-        >
-          <p className="text-zinc-900 transition-colors dark:text-zinc-100">Antrean Hari Ini</p>
-          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400">Kelola pemeriksaan & catatan medis</p>
+        <Link to="/doctor/queues" className={doctor.navLink}>
+          <p className="text-zinc-900 dark:text-zinc-100">Antrean Hari Ini</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-zinc-400">Kelola pemeriksaan & catatan medis</p>
         </Link>
-        <Link
-          to="/doctor/appointments"
-          className="rounded-xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md"
-        >
-          <p className="text-zinc-900 transition-colors dark:text-zinc-100">Jadwal Reservasi</p>
-          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400">Lihat reservasi mendatang</p>
+        <Link to="/doctor/appointments" className={doctor.navLink}>
+          <p className="text-zinc-900 dark:text-zinc-100">Jadwal Reservasi</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-zinc-400">Lihat reservasi mendatang</p>
         </Link>
-        <Link
-          to="/doctor/patients"
-          className="rounded-xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md"
-        >
-          <p className="text-zinc-900 transition-colors dark:text-zinc-100">Riwayat Pasien</p>
-          <p className="mt-1 text-sm text-slate-500 transition-colors dark:text-zinc-400">Cari & lihat rekam medis</p>
+        <Link to="/doctor/patients" className={doctor.navLink}>
+          <p className="text-zinc-900 dark:text-zinc-100">Riwayat Pasien</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-zinc-400">Cari & lihat rekam medis</p>
         </Link>
       </div>
     </div>

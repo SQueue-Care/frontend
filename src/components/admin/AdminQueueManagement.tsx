@@ -15,6 +15,7 @@ import { VISIT_STAGE_LABELS } from '../../lib/queueVisitFlow'
 import { useAlertStore } from '../../store/alertStore'
 import { useDepartmentStore } from '../../store/departmentStore'
 import { useQueueStore } from '../../store/queueStore'
+import { panel, QUEUE_STATUS_BADGE } from '../../lib/panelTheme'
 import CustomSearchBar from '../ui/CustomSearchBar'
 import CustomSelect from '../ui/CustomSelect'
 
@@ -81,15 +82,13 @@ export default function AdminQueueManagement() {
   return (
     <div className="animate-in fade-in duration-500">
       <div className="mb-8">
-        <h2 className="mb-1 font-['Manrope'] text-2xl font-extrabold text-zinc-950 dark:text-zinc-100">
-          Daftar Antrean Aktif
-        </h2>
-        <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
+        <h2 className={`mb-1 ${panel.heading}`}>Daftar Antrean Aktif</h2>
+        <p className={panel.subtext}>
           Kelola dan perbarui status antrean aktif pasien secara real-time.
         </p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
+      <div className={`${panel.card} p-6`}>
         {/* AREA FILTER & SEARCH (Identik dengan Reservasi) */}
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="w-full md:w-72">
@@ -136,7 +135,7 @@ export default function AdminQueueManagement() {
         </div>
 
         {/* TABEL DATA ANTREAN */}
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
+        <div className={`overflow-hidden ${panel.cardLg}`}>
           {isLoadingTable ? (
             <p className="p-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500 animate-pulse">
               Memuat antrean...
@@ -167,22 +166,9 @@ export default function AdminQueueManagement() {
                     <th className="p-6 pr-8 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
+                <tbody className={panel.tableBody}>
                   {sortedQueues.map((item) => {
-                    const statusClasses: Record<string, string> = {
-                      WAITING:
-                        'bg-slate-50 dark:bg-[#131314] text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800',
-                      CALLED:
-                        'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
-                      IN_PROGRESS:
-                        'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
-                      DONE:
-                        'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
-                      SKIPPED:
-                        'bg-gray-50 dark:bg-zinc-800/50 text-gray-600 dark:text-zinc-400 border-gray-200 dark:border-zinc-700',
-                      CANCELLED:
-                        'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
-                    }
+                    const statusClasses: Record<string, string> = QUEUE_STATUS_BADGE
                     const statusLabel: Record<string, string> = {
                       WAITING: 'Menunggu',
                       CALLED: 'Dipanggil',
@@ -195,7 +181,7 @@ export default function AdminQueueManagement() {
                     return (
                       <tr
                         key={item.id}
-                        className="group transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
+                        className={`group ${panel.tableRowHover}`}
                       >
                         <td className="p-6 pl-8 align-top">
                           <span className="inline-block rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono tracking-widest text-slate-700 dark:text-zinc-300 shadow-sm">
@@ -203,17 +189,17 @@ export default function AdminQueueManagement() {
                           </span>
                         </td>
                         <td className="p-6 align-top">
-                          <div className="font-medium text-zinc-950 dark:text-white uppercase transition-colors group-hover:text-teal-600">
+                          <div className="font-medium uppercase text-zinc-950 transition-colors group-hover:text-teal-600 dark:text-zinc-100 dark:group-hover:text-teal-400">
                             {item.patient?.user?.name || '-'}
                           </div>
                         </td>
                         <td className="p-6 align-top">
-                          <div className="text-slate-700 dark:text-slate-300">
+                          <div className="text-slate-700 dark:text-zinc-300">
                             {item.doctor?.user?.name || '-'}
                           </div>
                         </td>
                         <td className="p-6 align-top">
-                          <div className="text-slate-700 dark:text-slate-300">
+                          <div className="text-slate-700 dark:text-zinc-300">
                             {new Date(item.queueDate).toLocaleDateString('id-ID', {
                               year: 'numeric',
                               month: 'short',
@@ -222,7 +208,7 @@ export default function AdminQueueManagement() {
                           </div>
                         </td>
                         <td className="p-6 align-top">
-                          <div className="inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-[10px] tracking-widest text-slate-600 uppercase dark:bg-slate-900/50 dark:text-slate-400">
+                          <div className="inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-[10px] tracking-widest text-slate-600 uppercase dark:bg-zinc-800 dark:text-zinc-400">
                             {item.checkInAt
                               ? new Date(item.checkInAt).toLocaleTimeString('id-ID', {
                                   hour: '2-digit',
@@ -238,7 +224,7 @@ export default function AdminQueueManagement() {
                               : '-'}
                           </span>
                         </td>
-                        <td className="p-6 align-top text-slate-700 dark:text-slate-300">
+                        <td className="p-6 align-top text-slate-700 dark:text-zinc-300">
                           {item.department?.name || '-'}
                         </td>
                         <td className="p-6 align-top">

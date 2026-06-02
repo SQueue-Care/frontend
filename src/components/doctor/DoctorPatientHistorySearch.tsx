@@ -56,7 +56,7 @@ export default function DoctorPatientHistorySearch() {
                   <button
                     type="button"
                     onClick={() => handleSelect(p.id)}
-                    className={`w-full px-4 py-3 text-left hover:bg-indigo-50/50 ${ selectedId === p.id ? 'bg-indigo-50 transition-colors dark:bg-indigo-900/20 ' : '' }`}
+                    className={`w-full px-4 py-3 text-left transition-colors hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 ${selectedId === p.id ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''}`}
                   >
                     <p className="text-zinc-900 transition-colors dark:text-zinc-100">{p.user.name}</p>
                     <p className="text-xs text-slate-500 transition-colors dark:text-zinc-400">{p.nik || p.user.email}</p>

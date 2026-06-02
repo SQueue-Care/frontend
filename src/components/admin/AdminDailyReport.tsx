@@ -73,7 +73,7 @@ export default function AdminDailyReport() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <div className="rounded-2xl border bg-white dark:bg-[#1e1f20] p-5 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
           <p className="text-xs text-slate-500 dark:text-zinc-400 uppercase">Total Antrean</p>
           <p className="mt-1 text-2xl text-zinc-900 dark:text-zinc-100">{summary?.totalQueues ?? queues.length}</p>
         </div>
@@ -120,8 +120,8 @@ export default function AdminDailyReport() {
           <h3 className="mb-4 text-zinc-900 dark:text-zinc-100">Selesai per Poliklinik</h3>
           <div className="space-y-2">
             {byDepartment.map((row) => (
-              <div key={row.name} className="flex items-center justify-between rounded-lg bg-slate-50 dark:bg-[#131314] px-4 py-2">
-                <span className="font-medium">{row.name}</span>
+              <div key={row.name} className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-2 dark:bg-[#131314]">
+                <span className="font-medium text-zinc-900 dark:text-zinc-100">{row.name}</span>
                 <span className="text-teal-700 dark:text-teal-400">{row.done}</span>
               </div>
             ))}
