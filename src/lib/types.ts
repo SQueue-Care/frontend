@@ -27,6 +27,9 @@ export type ReservationStatus = 'BOOKED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETE
 export type PaymentType = 'BPJS' | 'UMUM' | 'ASURANSI_SWASTA'
 export type BillStatus = 'PENDING' | 'PAID' | 'WAIVED' | 'BPJS_PENDING'
 
+export type QueuePriority = 'DARURAT' | 'TINGGI' | 'URGENT' | 'SEDANG' | 'NORMAL' | 'RENDAH'
+export type PatientType = 'RAWAT_JALAN' | 'RAWAT_INAP'
+
 export type VisitStage =
   | 'REGISTRATION'
   | 'WAITING'
@@ -249,6 +252,10 @@ export interface Queue {
   currentServingNumber?: number | null
   actualWaitMinutes?: number | null
   estimatedWaitMinutes?: number | null
+  sessionStartAt?: string | null
+  estimatedCallAt?: string | null
+  sessionStartTime?: string | null
+  scheduleId?: string | null
   currentVisitStage?: VisitStage
   pharmacyRequired?: boolean
   visitFlow?: VisitFlow
@@ -259,9 +266,24 @@ export interface Queue {
     paymentType: PaymentType
     patientShare: number | null
   } | null
+  priority?: QueuePriority
+  patientType?: PatientType
   prediction?: {
     source: string
     estimatedMin?: number
+    kategori?: string | null
+    modelVersion?: string | null
+    features?: {
+      waitingAhead?: number
+      avgServiceMinutes?: number
+      sessionStartAt?: string
+      estimatedCallAt?: string
+    } | null
+  } | null
+  schedule?: {
+    id: string
+    startTime: string
+    endTime: string
   } | null
   patient: PatientProfile
   department: {
@@ -344,8 +366,12 @@ export interface WaitTimeEstimate {
   estimatedMinutes: number
   source: 'ml' | 'heuristic'
   modelVersion?: string
+  kategori?: string
   waitingAhead: number
   avgServiceMinutes: number
+  sessionStartAt?: string
+  estimatedCallAt?: string
+  sessionStartTime?: string
 }
 
 // ─── Misc ─────────────────────────────────────────────────────────────────────
