@@ -1,12 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-scrollbar">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend-portal-pasien</title>
+    <title>SQueue-Care</title>
+
+    <script>
+      try {
+        const stored = localStorage.getItem('patient-theme-storage')
+        const savedTheme = stored ? JSON.parse(stored)?.state?.theme : null
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+          document.documentElement.classList.add('dark')
+        }
+      } catch (e) {}
+    </script>
   </head>
-  <body>
+  <body class="no-scrollbar">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

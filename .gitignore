@@ -22,6 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+bun.lock
 
 # Local env files
 .env
@@ -32,5 +33,14 @@ dist-ssr
 database_schema.md
 PRD.md
 
-# Exclude Claude Code directory
+# OS
 .DS_Store
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# Local Netlify folder
+.netlify
+agent.md
+.claude
