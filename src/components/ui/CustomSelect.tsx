@@ -6,7 +6,7 @@ interface CustomSelectProps {
   value: string
   onChange: (val: string) => void
   options: { value: string; label: string }[]
-  placeholder: string
+  placeholder?: string
 }
 
 export default function CustomSelect({
@@ -14,7 +14,7 @@ export default function CustomSelect({
   value,
   onChange,
   options,
-  placeholder,
+  placeholder = 'Pilih...',
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const selectedOpt = options.find((o) => o.value === value)
