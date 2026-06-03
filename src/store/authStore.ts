@@ -23,7 +23,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
-  isLoading: true, // Diatur true di awal agar aplikasi menunggu pengecekan sesi sebelum merender
+  isLoading: true, 
   error: null,
   hasCheckedAuth: false,
   isCheckingAuth: false,
@@ -33,25 +33,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const response = await apiClient.post('/auth/login', { email, password })
 
-      // Standar API Anda membungkus data di dalam objek "data"
-      // Sesuaikan nama variabel access_token/refresh_token dengan key persis dari backend Anda
       const tokenData = response.data.data
 
       localStorage.setItem('access_token', tokenData.accessToken || tokenData.access_token)
       localStorage.setItem('refresh_token', tokenData.refreshToken || tokenData.refresh_token)
 
-      // Profil pengguna harus diambil setelah token berhasil disimpan
       await get().fetchProfile()
-    } catch (error: unknown) {
-      const errorMessage = getErrorMessage(
-        error,
-        'Gagal melakukan otentikasi. Periksa kredensial Anda.'
-      )
-      set({
-        error: errorMessage,
-        isLoading: false,
-      })
-      throw error
+    } catch (error: any) {
+      // PERBAIKAN: Memastikan state isLoading dikembalikan ke false tanpa melempar ulang 
+      // pesan error generik yang merusak struktur dari API Client.
+      set({ isLoading: false })
+      throw error // Melempar error asli agar bisa ditangkap oleh blok catch di Auth.tsx
     }
   },
 
@@ -59,12 +51,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true })
     try {
       const refreshToken = localStorage.getItem('refresh_token')
-      // Memanggil endpoint logout untuk mencabut refresh token di server
       await apiClient.post('/auth/logout', { refreshToken })
     } catch (error) {
       console.error('[AuthStore] API Logout gagal, memaksa pembersihan sesi lokal.', error)
     } finally {
-      // Sesi lokal wajib dibersihkan meskipun server mengembalikan error
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
       set({ user: null, isAuthenticated: false, isLoading: false, error: null })
@@ -109,7 +99,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     set({ isCheckingAuth: true })
-    // Jika token ada, validasi dengan mengambil data profil terbaru
     await get().fetchProfile()
   },
 }))
