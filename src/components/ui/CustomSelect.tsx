@@ -7,6 +7,7 @@ interface CustomSelectProps {
   onChange: (val: string) => void
   options: { value: string; label: string }[]
   placeholder: string
+  disabled?: boolean // Penambahan properti opsional
 }
 
 export default function CustomSelect({
@@ -15,25 +16,32 @@ export default function CustomSelect({
   onChange,
   options,
   placeholder,
+  disabled = false,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const selectedOpt = options.find((o) => o.value === value)
   const isFloating = isOpen || !!selectedOpt
 
   return (
-    <div className="relative w-full pt-2">
-      {/* Penyelarasan Struktur Pembungkus */}
+    <div className={`relative w-full pt-2 ${disabled ? 'cursor-not-allowed opacity-70' : ''}`}>
       <div className="relative">
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-zinc-900 shadow-sm transition-all outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-100 dark:focus:border-teal-600"
+          disabled={disabled}
+          onClick={() => !disabled && setIsOpen(!isOpen)}
+          className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-sm shadow-sm transition-all outline-none ${
+            disabled
+              ? 'border-slate-200/50 bg-slate-50 text-slate-400 dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:text-zinc-500'
+              : 'border-slate-200 bg-white text-zinc-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-100 dark:focus:border-teal-600'
+          }`}
         >
-          <span className="text-sm text-zinc-900 dark:text-zinc-100">
+          <span className="text-sm">
             {selectedOpt ? selectedOpt.label : placeholder}
           </span>
           <svg
-            className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`h-4 w-4 transition-transform ${
+              isOpen ? 'rotate-180' : ''
+            } ${disabled ? 'text-slate-300 dark:text-zinc-700' : 'text-slate-400'}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -48,13 +56,23 @@ export default function CustomSelect({
         </button>
 
         <label
-          className={`pointer-events-none absolute left-3 z-10 rounded-sm px-1.5 transition-all duration-200 ease-in-out ${ isFloating ? 'top-0 -translate-y-1/2 text-[10px] bg-white text-teal-600 dark:bg-[#1e1f20] dark:text-teal-400' : 'top-1/2 -translate-y-1/2 text-sm bg-transparent text-slate-500 dark:text-zinc-500' }`}
+          className={`pointer-events-none absolute left-3 z-10 rounded-sm px-1.5 transition-all duration-200 ease-in-out ${
+            isFloating
+              ? `top-0 -translate-y-1/2 text-[10px] ${
+                  disabled
+                    ? 'bg-slate-50 text-slate-400 dark:bg-[#131314] dark:text-zinc-600'
+                    : 'bg-white text-teal-600 dark:bg-[#1e1f20] dark:text-teal-400'
+                }`
+              : `top-1/2 -translate-y-1/2 text-sm bg-transparent ${
+                  disabled ? 'text-slate-400 dark:text-zinc-600' : 'text-slate-500 dark:text-zinc-500'
+                }`
+          }`}
         >
           {label}
         </label>
       </div>
 
-      {isOpen && (
+      {isOpen && !disabled && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div className="animate-in fade-in zoom-in-95 absolute z-50 mt-1.5 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl duration-200 dark:border-zinc-800 dark:bg-[#1e1f20]">
@@ -66,7 +84,11 @@ export default function CustomSelect({
                   onChange(opt.value)
                   setIsOpen(false)
                 }}
-                className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${ value === opt.value ? 'bg-teal-50 text-teal-700 dark:bg-[#131314] dark:text-teal-400' : 'text-zinc-900 hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-zinc-800/80' }`}
+                className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
+                  value === opt.value
+                    ? 'bg-teal-50 text-teal-700 dark:bg-[#131314] dark:text-teal-400'
+                    : 'text-zinc-900 hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-zinc-800/80'
+                }`}
               >
                 {opt.label}
               </button>

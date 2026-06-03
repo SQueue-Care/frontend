@@ -215,7 +215,8 @@ export default function AnalyticsView() {
 
       {/* Filter Bar */}
       <div className="mb-8 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-        <div className="flex flex-wrap items-end gap-4">
+        {/* REVISI 1: Mengubah items-end menjadi items-center agar sejajar secara vertikal */}
+        <div className="flex flex-wrap items-center gap-4">
           <div className="w-full md:w-64">
             <CustomDatePicker
               label="Dari Tanggal"
@@ -230,35 +231,33 @@ export default function AnalyticsView() {
               onChange={(val) => setToDate(val)}
             />
           </div>
+          
+          {/* REVISI 2: Menyesuaikan padding (py-2.5) dan rounded-xl agar selaras dengan input */}
           <button
             onClick={handleApplyFilter}
             disabled={loading}
-            className="rounded-lg bg-teal-600 px-4 py-2 text-sm text-white transition-colors hover:bg-teal-700 disabled:bg-slate-400"
+            className="rounded-xl bg-teal-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-teal-700 disabled:bg-slate-400 dark:bg-teal-500 dark:text-zinc-900 dark:hover:bg-teal-400"
           >
             {loading ? 'Memuat...' : 'Terapkan Filter'}
           </button>
-          <div className="ml-auto flex gap-2">
+          
+          {/* REVISI 3: Menyamakan warna tombol preset dengan tombol Terapkan Filter */}
+          <div className="ml-auto flex flex-wrap items-center gap-2">
             <button
-              onClick={() => {
-                setPresetDates(1)
-              }}
-              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
+              onClick={() => setPresetDates(1)}
+              className="rounded-xl bg-teal-600 px-4 py-2.5 text-xs font-medium text-white shadow-sm transition-all hover:bg-teal-700 dark:bg-teal-500 dark:text-zinc-900 dark:hover:bg-teal-400"
             >
               Hari Ini
             </button>
             <button
-              onClick={() => {
-                setPresetDates(7)
-              }}
-              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
+              onClick={() => setPresetDates(7)}
+              className="rounded-xl bg-teal-600 px-4 py-2.5 text-xs font-medium text-white shadow-sm transition-all hover:bg-teal-700 dark:bg-teal-500 dark:text-zinc-900 dark:hover:bg-teal-400"
             >
               7 Hari
             </button>
             <button
-              onClick={() => {
-                setPresetDates(30)
-              }}
-              className="rounded-lg bg-slate-100 dark:bg-zinc-800 px-3 py-2 text-xs text-slate-600 dark:text-zinc-400 transition-colors hover:bg-slate-200 dark:hover:bg-zinc-700"
+              onClick={() => setPresetDates(30)}
+              className="rounded-xl bg-teal-600 px-4 py-2.5 text-xs font-medium text-white shadow-sm transition-all hover:bg-teal-700 dark:bg-teal-500 dark:text-zinc-900 dark:hover:bg-teal-400"
             >
               30 Hari
             </button>

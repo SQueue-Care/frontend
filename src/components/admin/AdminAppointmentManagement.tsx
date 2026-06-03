@@ -1,5 +1,7 @@
 // src/components/AdminAppointmentManagement.tsx
-import { useEffect, useState } from 'react'
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { Fragment, useEffect, useState } from 'react'
 import apiClient from '../../lib/apiClient'
 import { getErrorMessage } from '../../lib/errors'
 import type { AppointmentDetail, AppointmentStatusPayload, Department } from '../../lib/types'
@@ -98,7 +100,7 @@ export default function AdminAppointmentManagement() {
           Daftar Reservasi Pasien
         </h2>
         <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
-          Kelola dan perbarui status reservasi pasien di seluruh sistem RS Ethereal.
+          Kelola dan perbarui status reservasi pasien di seluruh sistem SQueue.
         </p>
       </div>
 
@@ -159,7 +161,7 @@ export default function AdminAppointmentManagement() {
                 : 'Belum ada data reservasi yang sesuai dengan kriteria filter.'}
             </p>
           ) : (
-            <div className="no-scrollbar overflow-x-auto">
+            <div className="no-scrollbar overflow-x-auto relative">
               <table className="w-full min-w-[1000px] border-collapse text-left">
                 <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                   <tr>
@@ -170,11 +172,11 @@ export default function AdminAppointmentManagement() {
                     <th className="p-6">No. Identitas</th>
                     <th className="p-6">Departemen</th>
                     <th className="p-6">Status</th>
-                    <th className="p-6 pr-8 text-right">Aksi</th>
+                    <th className="p-6 pr-8 text-right sticky right-0 z-20 bg-slate-50/95 dark:bg-[#131314]/95 backdrop-blur-sm border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
-                  {filteredAppointments.map((apt) => {
+                  {filteredAppointments.map((apt, index) => {
                     const statusClasses: Record<string, string> = {
                       BOOKED:
                         'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
@@ -199,8 +201,10 @@ export default function AdminAppointmentManagement() {
                           setSelectedAptDetail(apt)
                           setIsAptDetailModalOpen(true)
                         }}
-                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
+                        style={{ zIndex: filteredAppointments.length - index }}
+                        className="group relative cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
                       >
+                        {/* INI ADALAH KOLOM DATA YANG TERHAPUS SEBELUMNYA */}
                         <td className="p-6 pl-8 align-top">
                           <div className="font-medium text-zinc-950 dark:text-white uppercase transition-colors group-hover:text-teal-600">
                             {apt.patient?.user?.name || '-'}
@@ -248,73 +252,95 @@ export default function AdminAppointmentManagement() {
                             {statusLabel[apt.status] || apt.status}
                           </span>
                         </td>
+                        
+                        {/* KOLOM AKSI (DROPDOWN) */}
                         <td
-                          className="p-6 pr-8 text-right align-top"
+                          className="p-6 pr-8 text-right align-top sticky right-0 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors focus-within:z-50 group-hover:z-50"
+                          style={{ zIndex: filteredAppointments.length - index }}
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className="flex flex-wrap items-center justify-end gap-2">
-                            {apt.status === 'BOOKED' && (
-                              <>
-                                <button
-                                  onClick={() => handleUpdateAppointmentStatus(apt.id, 'CONFIRMED')}
-                                  className="rounded-lg border border-transparent p-2 text-emerald-600 dark:text-emerald-400 transition-colors hover:border-emerald-200 hover:bg-emerald-50 dark:hover:border-emerald-500/30 dark:hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-300"
-                                  title="Konfirmasi"
+                          <div className="flex items-center justify-end">
+                            {['BOOKED', 'CONFIRMED'].includes(apt.status) ? (
+                              <Menu as="div" className="relative inline-block text-left">
+                                <div>
+                                  <MenuButton className="flex items-center justify-center rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 focus:outline-none transition-colors">
+                                    <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
+                                  </MenuButton>
+                                </div>
+                                <Transition
+                                  as={Fragment}
+                                  enter="transition ease-out duration-100"
+                                  enterFrom="transform opacity-0 scale-95"
+                                  enterTo="transform opacity-100 scale-100"
+                                  leave="transition ease-in duration-75"
+                                  leaveFrom="transform opacity-100 scale-100"
+                                  leaveTo="transform opacity-0 scale-95"
                                 >
-                                  <svg
-                                    className="h-4 w-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M5 13l4 4L19 7"
-                                    />
-                                  </svg>
-                                </button>
-                                <button
-                                  onClick={() => handleUpdateAppointmentStatus(apt.id, 'CANCELLED')}
-                                  className="rounded-lg border border-transparent p-2 text-rose-600 dark:text-rose-400 transition-colors hover:border-rose-200 hover:bg-rose-50 dark:hover:border-rose-500/30 dark:hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300"
-                                  title="Batalkan"
-                                >
-                                  <svg
-                                    className="h-4 w-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M6 18L18 6M6 6l12 12"
-                                    />
-                                  </svg>
-                                </button>
-                              </>
-                            )}
-                            {apt.status === 'CONFIRMED' && (
-                              <button
-                                onClick={() => handleUpdateAppointmentStatus(apt.id, 'COMPLETED')}
-                                className="rounded-lg border border-transparent p-2 text-indigo-600 dark:text-indigo-400 transition-colors hover:border-indigo-200 hover:bg-indigo-50 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 hover:text-indigo-700 dark:hover:text-indigo-300"
-                                title="Selesai"
-                              >
-                                <svg
-                                  className="h-4 w-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                  />
-                                </svg>
-                              </button>
+                                  <MenuItems className="absolute right-0 mt-2 w-max min-w-[140px] origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-[#1e1f20] dark:ring-white/10 z-50 divide-y divide-slate-100 dark:divide-zinc-800">
+                                    <div className="py-1">
+                                      {apt.status === 'BOOKED' && (
+                                        <>
+                                          <MenuItem>
+                                            {({ active }) => (
+                                              <button
+                                                onClick={(e) => { 
+                                                  e.stopPropagation(); 
+                                                  handleUpdateAppointmentStatus(apt.id, 'CONFIRMED'); 
+                                                }}
+                                                className={`${
+                                                  active
+                                                    ? 'bg-slate-50 text-emerald-600 dark:bg-zinc-800 dark:text-emerald-400'
+                                                    : 'text-slate-700 dark:text-zinc-300'
+                                                } group flex w-full items-center px-4 py-2.5 text-sm transition-colors`}
+                                              >
+                                                Konfirmasi
+                                              </button>
+                                            )}
+                                          </MenuItem>
+                                          <MenuItem>
+                                            {({ active }) => (
+                                              <button
+                                                onClick={(e) => { 
+                                                  e.stopPropagation(); 
+                                                  handleUpdateAppointmentStatus(apt.id, 'CANCELLED'); 
+                                                }}
+                                                className={`${
+                                                  active
+                                                    ? 'bg-slate-50 text-rose-600 dark:bg-zinc-800 dark:text-rose-400'
+                                                    : 'text-slate-700 dark:text-zinc-300'
+                                                } group flex w-full items-center px-4 py-2.5 text-sm transition-colors`}
+                                              >
+                                                Batalkan
+                                              </button>
+                                            )}
+                                          </MenuItem>
+                                        </>
+                                      )}
+                                      {apt.status === 'CONFIRMED' && (
+                                        <MenuItem>
+                                          {({ active }) => (
+                                            <button
+                                              onClick={(e) => { 
+                                                e.stopPropagation(); 
+                                                handleUpdateAppointmentStatus(apt.id, 'COMPLETED'); 
+                                              }}
+                                              className={`${
+                                                active
+                                                  ? 'bg-slate-50 text-indigo-600 dark:bg-zinc-800 dark:text-indigo-400'
+                                                  : 'text-slate-700 dark:text-zinc-300'
+                                              } group flex w-full items-center px-4 py-2.5 text-sm transition-colors`}
+                                            >
+                                              Tandai Selesai
+                                            </button>
+                                          )}
+                                        </MenuItem>
+                                      )}
+                                    </div>
+                                  </MenuItems>
+                                </Transition>
+                              </Menu>
+                            ) : (
+                              <span className="text-xs text-slate-400 dark:text-zinc-500 italic px-2">Tidak ada aksi</span>
                             )}
                           </div>
                         </td>
