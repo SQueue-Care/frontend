@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import apiClient from '../../lib/apiClient'
 import { isCdssAvailable, normalizeCdssResult } from '../../lib/cdssUtils'
 import { getErrorMessage } from '../../lib/errors'
-import { cdss } from '../../lib/panelTheme'
 import type { CdssHealthResponse, CdssRecommendResponse, Queue } from '../../lib/types'
 import CdssResultsView from './CdssResultsView'
 

@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { QueueStatus } from '../../lib/types'
-import { doctor, panel } from '../../lib/panelTheme'
 import { useAuthStore } from '../../store/authStore'
 import { useDoctorStore } from '../../store/doctorStore'
 import { useQueueStore } from '../../store/queueStore'

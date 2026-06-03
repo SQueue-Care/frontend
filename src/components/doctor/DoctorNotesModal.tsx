@@ -4,7 +4,6 @@ import { getErrorMessage } from '../../lib/errors'
 import type { DoctorNotes, Queue } from '../../lib/types'
 import { QueueStatus } from '../../lib/types'
 import { useAlertStore } from '../../store/alertStore'
-import { doctor } from '../../lib/panelTheme'
 
 interface DoctorNotesModalProps {
   isOpen: boolean

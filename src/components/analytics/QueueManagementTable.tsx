@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { QUEUE_STATUS_BADGE } from '../../lib/panelTheme'
 import { QueueStatus } from '../../lib/types'
 import { useDashboardFilterStore } from '../../store/dashboardFilterStore'
 import { useQueueStore } from '../../store/queueStore'

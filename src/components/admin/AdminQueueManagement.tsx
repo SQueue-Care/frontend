@@ -7,9 +7,7 @@ import { getErrorMessage } from '../../lib/errors'
 import {
   getAllowedQueueTransitions,
   isValidQueueTransition,
-  QUEUE_TRANSITION_CLASSES,
   QUEUE_TRANSITION_LABELS,
-  QUEUE_TRANSITION_TITLES,
 } from '../../lib/queueStateMachine'
 import type { Department } from '../../lib/types'
 import { QueueStatus } from '../../lib/types'
@@ -17,7 +15,7 @@ import { VISIT_STAGE_LABELS } from '../../lib/queueVisitFlow'
 import { useAlertStore } from '../../store/alertStore'
 import { useDepartmentStore } from '../../store/departmentStore'
 import { useQueueStore } from '../../store/queueStore'
-import { panel, QUEUE_STATUS_BADGE } from '../../lib/panelTheme'
+import { panel } from '../../lib/panelTheme'
 import CustomSearchBar from '../ui/CustomSearchBar'
 import CustomSelect from '../ui/CustomSelect'
 
