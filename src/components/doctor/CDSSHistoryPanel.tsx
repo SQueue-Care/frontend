@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react'
 import apiClient from '../../lib/apiClient'
 import { normalizeCdssResult } from '../../lib/cdssUtils'
 import { getErrorMessage } from '../../lib/errors'
-import { cdss, panel } from '../../lib/panelTheme'
 import type { CdssHistoryItem } from '../../lib/types'
-import CdssResultsView from './CdssResultsView'
 
 export default function CDSSHistoryPanel() {
   const [results, setResults] = useState<CdssHistoryItem[]>([])
@@ -61,36 +59,36 @@ export default function CDSSHistoryPanel() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h2 className={`mb-1 ${panel.heading}`}>
+          <h2 className="mb-2 font-['Manrope'] text-3xl font-extrabold text-zinc-950 dark:text-zinc-100">
             Riwayat Analisis CDSS
           </h2>
-          <p className={panel.subtext}>
-            Rekomendasi dari SmartQueue AI (Google Gemini).
+          <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
+            Kumpulan rekomendasi diagnosis dari SmartQueue AI (Google Gemini).
           </p>
         </div>
         <button
           onClick={fetchResults}
           disabled={isLoading}
-          className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500"
+          className="shrink-0 rounded-xl bg-teal-600 px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-white shadow-sm transition-all hover:bg-teal-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-teal-500 dark:text-zinc-900 dark:hover:bg-teal-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-600"
         >
-          {isLoading ? 'Loading...' : 'Refresh'}
+          {isLoading ? 'Memuat Ulang...' : 'Refresh Data'}
         </button>
       </div>
 
-      <div className={`${panel.card} p-6`}>
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         {isLoading ? (
-          <div className="flex justify-center py-10">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-teal-600" />
+          <div className="flex justify-center py-16">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-100 border-b-teal-600 dark:border-zinc-800 dark:border-b-teal-500" />
           </div>
         ) : error ? (
-          <div className="py-12 text-center text-sm text-rose-600 italic dark:text-rose-400">
+          <div className="py-16 text-center text-sm font-medium text-rose-600 italic dark:text-rose-400">
             {error}
           </div>
         ) : results.length === 0 ? (
-          <div className="py-12 text-center text-sm text-slate-500 italic dark:text-zinc-400">
-            Belum ada hasil analisis CDSS.
+          <div className="py-16 text-center text-sm font-medium text-slate-500 italic dark:text-zinc-400">
+            Belum ada hasil analisis CDSS yang tercatat.
           </div>
         ) : (
           <div className="space-y-4">
@@ -100,44 +98,46 @@ export default function CDSSHistoryPanel() {
               return (
                 <div
                   key={result.id}
-                  className={cdss.historyItem}
+                  className="cursor-pointer rounded-2xl border border-slate-200 p-5 transition-all hover:-translate-y-0.5 hover:border-teal-200 hover:bg-slate-50 hover:shadow-md dark:border-zinc-800 dark:hover:border-teal-800/50 dark:hover:bg-[#131314]/80"
                   onClick={() => setSelectedResult(result)}
                 >
-                  <div className="mb-2 flex items-start justify-between">
+                  <div className="mb-3 flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <h3 className="text-zinc-900 dark:text-zinc-100">{patientName}</h3>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+                      <h3 className="font-['Manrope'] text-lg font-bold text-zinc-900 dark:text-zinc-100">{patientName}</h3>
+                      <p className="mt-0.5 text-xs font-medium text-slate-500 dark:text-zinc-500">
                         {formatDate(result.createdAt)}
                       </p>
                     </div>
-                    <span className="rounded-md border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs text-violet-600 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-400">
+                    <span className="shrink-0 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-[10px] font-bold tracking-widest text-violet-600 uppercase dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-400">
                       {result.kandidat_diagnosis?.length || 0} diagnosis
                     </span>
                   </div>
 
                   {(result.gejala_teridentifikasi?.length ?? 0) > 0 && (
-                    <div className="mb-2">
-                      <p className="mb-2 text-xs text-slate-600 dark:text-zinc-300">Gejala:</p>
-                      <div className="flex flex-wrap gap-1">
+                    <div className="mb-3">
+                      <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500">Gejala Ekstraksi AI:</p>
+                      <div className="flex flex-wrap gap-1.5">
                         {result.gejala_teridentifikasi!.slice(0, 3).map((symptom) => (
                           <span
                             key={symptom}
-                            className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
+                            className="rounded-md border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
                           >
                             {symptom}
                           </span>
                         ))}
                         {(result.gejala_teridentifikasi?.length ?? 0) > 3 && (
-                          <span className="px-2 py-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                            +{(result.gejala_teridentifikasi?.length ?? 0) - 3}
+                          <span className="rounded-md bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500 dark:bg-zinc-800 dark:text-zinc-400">
+                            +{(result.gejala_teridentifikasi?.length ?? 0) - 3} lainnya
                           </span>
                         )}
                       </div>
                     </div>
                   )}
 
-                  <div className="line-clamp-2 text-xs text-slate-600 dark:text-zinc-300">
-                    <span>Gejala input:</span> {result.gejala || result.notes || '-'}
+                  <div className="rounded-lg bg-slate-50 p-3 dark:bg-[#131314]">
+                    <p className="line-clamp-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
+                      <span className="font-semibold text-slate-800 dark:text-zinc-300">Input Dokter:</span> {result.gejala || result.notes || '-'}
+                    </p>
                   </div>
                 </div>
               )
@@ -146,79 +146,69 @@ export default function CDSSHistoryPanel() {
         )}
       </div>
 
+      {/* REVISI: Z-Index 60, pt-24, max-h-[85dvh] agar tidak menabrak Navbar */}
       {selectedResult && (
-        <>
-          <div
-            className={cdss.backdrop}
-            onClick={() => setSelectedResult(null)}
-            aria-hidden="true"
-          />
-          <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-            <div
-              className={cdss.modal}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="cdss-history-modal-title"
-            >
-              <div className={`${cdss.modalHeader} flex items-center justify-between`}>
-                <h2
-                  id="cdss-history-modal-title"
-                  className="text-lg font-bold text-zinc-900 dark:text-zinc-100"
-                >
-                  Detail Analisis CDSS
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setSelectedResult(null)}
-                  className={cdss.closeButton}
-                  aria-label="Tutup"
-                >
-                  ✕
-                </button>
-              </div>
+        <div className="fixed inset-0 z-[60] flex items-end justify-center p-0 pt-24 sm:items-center sm:p-4 sm:pt-24">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity" onClick={() => setSelectedResult(null)} />
+          <div className="relative z-10 flex max-h-[85dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl dark:border dark:border-zinc-800 dark:bg-[#1e1f20]">
 
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5">
-                <div className="mb-4 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2.5 dark:border-zinc-800 dark:bg-[#131314]/50">
-                    <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400">Pasien</p>
-                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                      {selectedResult.patient?.user?.name ?? 'Pasien'}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2.5 dark:border-zinc-800 dark:bg-[#131314]/50">
-                    <p className="mb-1 text-xs text-slate-500 dark:text-zinc-400">Tanggal</p>
-                    <p className="text-sm text-slate-600 dark:text-zinc-300">
-                      {formatDate(selectedResult.createdAt)}
-                    </p>
-                  </div>
-                </div>
-
-                {(selectedResult.gejala || selectedResult.notes) && (
-                  <div className={`mb-4 ${cdss.section}`}>
-                    <p className="border-b border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 dark:border-zinc-800 dark:text-zinc-400">
-                      Gejala Input
-                    </p>
-                    <p className="max-h-32 overflow-y-auto overscroll-contain px-3 py-2.5 text-sm leading-relaxed break-words whitespace-pre-wrap text-slate-600 dark:text-zinc-300">
-                      {selectedResult.gejala || selectedResult.notes}
-                    </p>
-                  </div>
-                )}
-
-                <CdssResultsView result={selectedResult} />
-              </div>
-
-              <div className={cdss.modalFooter}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedResult(null)}
-                  className={`w-full sm:w-auto sm:px-6 ${cdss.secondaryButton}`}
-                >
-                  Tutup
-                </button>
-              </div>
+            {/* ── Header Modal ── */}
+            <div className="shrink-0 flex items-center justify-between border-b border-slate-200 px-6 py-5 dark:border-zinc-800">
+              <h2 className="font-['Manrope'] text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                Detail Analisis CDSS
+              </h2>
+              <button
+                type="button"
+                onClick={() => setSelectedResult(null)}
+                className="rounded-xl p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                aria-label="Tutup"
+              >
+                ✕
+              </button>
             </div>
+
+            {/* ── Body Modal (scrollable) ── */}
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6">
+              <div className="mb-6 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-zinc-800 dark:bg-[#131314]">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500">Pasien Teridentifikasi</p>
+                  <p className="font-['Manrope'] text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                    {selectedResult.patient?.user?.name ?? 'Pasien Anonim'}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-zinc-800 dark:bg-[#131314]">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500">Waktu Analisis</p>
+                  <p className="font-mono text-sm text-slate-700 dark:text-zinc-300">
+                    {formatDate(selectedResult.createdAt)}
+                  </p>
+                </div>
+              </div>
+
+              {(selectedResult.gejala || selectedResult.notes) && (
+                <div className="mb-6 overflow-hidden rounded-xl border border-slate-200 dark:border-zinc-800">
+                  <p className="border-b border-slate-200 bg-slate-50 px-4 py-3 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-400">
+                    Gejala Input Awal
+                  </p>
+                  <p className="max-h-32 overflow-y-auto overscroll-contain bg-white px-4 py-3.5 text-sm leading-relaxed break-words whitespace-pre-wrap text-slate-700 dark:bg-[#1e1f20] dark:text-zinc-300">
+                    {selectedResult.gejala || selectedResult.notes}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* ── Footer Modal ── */}
+            <div className="shrink-0 border-t border-slate-200 bg-slate-50/50 px-6 py-4 dark:border-zinc-800 dark:bg-[#131314]/50">
+              <button
+                type="button"
+                onClick={() => setSelectedResult(null)}
+                className="w-full rounded-xl border border-slate-200 bg-white py-3 text-xs font-bold uppercase tracking-widest text-slate-700 shadow-sm transition-all hover:bg-slate-50 sm:w-auto sm:px-8 dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800"
+              >
+                Tutup Jendela
+              </button>
+            </div>
+
           </div>
-        </>
+        </div>
       )}
     </div>
   )

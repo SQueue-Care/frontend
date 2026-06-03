@@ -109,8 +109,8 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Informasi',
     items: [
-      { id: 'announcements', label: 'Pengumuman', icon: adminNavIcons.settings },
-      { id: 'notifications', label: 'Notifikasi', icon: adminNavIcons.dashboard },
+      { id: 'announcements', label: 'Pengumuman', icon: adminNavIcons.announcements },
+      { id: 'notifications', label: 'Notifikasi', icon: adminNavIcons.notifications },
     ],
   },
   {

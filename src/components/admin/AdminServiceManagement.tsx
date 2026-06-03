@@ -5,6 +5,7 @@ import { getErrorMessage } from '../../lib/errors'
 import type { Department } from '../../lib/types'
 import { useAlertStore } from '../../store/alertStore'
 import { useDepartmentStore } from '../../store/departmentStore'
+import CustomSelect from '../ui/CustomSelect'
 
 interface ScheduleItem {
   id: string
@@ -308,49 +309,44 @@ export default function AdminServiceManagement() {
       {servicesTab === 'schedules' && (
         <div className="space-y-6">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
-            <div className="flex items-end gap-4">
+            <div className="flex items-start gap-4">
               <div className="flex-1">
-                <label className="mb-2 block text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                  Departemen
-                </label>
-                <select
+                <CustomSelect
+                  label="Filter Departemen"
                   value={selectedScheduleDeptFilter}
-                  onChange={(e) => {
-                    setSelectedScheduleDeptFilter(e.target.value)
+                  onChange={(val) => {
+                    setSelectedScheduleDeptFilter(val)
                     setSelectedDoctorFilter('')
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm transition-all focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-[#131314] dark:focus:border-teal-500 dark:focus:bg-[#1e1f20]"
-                >
-                  <option value="">Pilih Departemen...</option>
-                  {departments.map((dept: Department) => (
-                    <option key={dept.id} value={dept.id}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { value: '', label: 'Pilih Departemen...' },
+                    ...departments.map((dept: Department) => ({ value: dept.id, label: dept.name })),
+                  ]}
+                  placeholder="Pilih Departemen..."
+                />
               </div>
 
               <div className="flex-1">
-                <label className="mb-2 block text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">Dokter</label>
-                <select
+                <CustomSelect
+                  label="Filter Dokter"
                   value={selectedDoctorFilter}
-                  onChange={(e) => setSelectedDoctorFilter(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm transition-all focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-[#131314] dark:focus:border-teal-500 dark:focus:bg-[#1e1f20]"
+                  onChange={(val) => setSelectedDoctorFilter(val)}
+                  options={[
+                    { value: '', label: 'Pilih Dokter...' },
+                    ...schedules
+                      .filter((s: ScheduleItem) => s.departmentId === selectedScheduleDeptFilter)
+                      .reduce((acc: ScheduleItem[], s: ScheduleItem) => {
+                        if (!acc.find((d) => d.doctorId === s.doctorId)) acc.push(s)
+                        return acc
+                      }, [])
+                      .map((s: ScheduleItem) => ({
+                        value: s.doctorId,
+                        label: s.doctor?.user?.name || '-',
+                      })),
+                  ]}
+                  placeholder="Pilih Dokter..."
                   disabled={!selectedScheduleDeptFilter}
-                >
-                  <option value="">Pilih Dokter...</option>
-                  {schedules
-                    .filter((s: ScheduleItem) => s.departmentId === selectedScheduleDeptFilter)
-                    .reduce((acc: ScheduleItem[], s: ScheduleItem) => {
-                      if (!acc.find((d) => d.doctorId === s.doctorId)) acc.push(s)
-                      return acc
-                    }, [])
-                    .map((s: ScheduleItem) => (
-                      <option key={s.doctorId} value={s.doctorId}>
-                        {s.doctor?.user?.name || '-'}
-                      </option>
-                    ))}
-                </select>
+                />
               </div>
             </div>
           </div>
@@ -495,7 +491,7 @@ export default function AdminServiceManagement() {
                   value={deptFormData.name}
                   onChange={(e) => setDeptFormData({ ...deptFormData, name: e.target.value })}
                   placeholder="Contoh: Poliklinik Umum"
-                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500 dark:bg-[#131314] dark:text-zinc-100"
                 />
               </div>
               <div>
@@ -507,7 +503,7 @@ export default function AdminServiceManagement() {
                   value={deptFormData.code}
                   onChange={(e) => setDeptFormData({ ...deptFormData, code: e.target.value })}
                   placeholder="Contoh: UMU"
-                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500 dark:bg-[#131314] dark:text-zinc-100"
                 />
               </div>
               <div>
@@ -521,7 +517,7 @@ export default function AdminServiceManagement() {
                   }
                   placeholder="Deskripsi departemen"
                   rows={3}
-                  className="w-full resize-none rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full resize-none rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500 dark:bg-[#131314] dark:text-zinc-100"
                 />
               </div>
             </div>
@@ -552,25 +548,26 @@ export default function AdminServiceManagement() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm text-slate-700">Hari</label>
-                <select
+                <CustomSelect
+                  label="Hari"
                   value={scheduleFormData.dayOfWeek}
-                  onChange={(e) =>
-                    setScheduleFormData({ ...scheduleFormData, dayOfWeek: e.target.value })
+                  onChange={(val) =>
+                    setScheduleFormData({ ...scheduleFormData, dayOfWeek: val })
                   }
-                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="">Pilih Hari...</option>
-                  <option value="MONDAY">Senin</option>
-                  <option value="TUESDAY">Selasa</option>
-                  <option value="WEDNESDAY">Rabu</option>
-                  <option value="THURSDAY">Kamis</option>
-                  <option value="FRIDAY">Jumat</option>
-                  <option value="SATURDAY">Sabtu</option>
-                  <option value="SUNDAY">Minggu</option>
-                </select>
+                  options={[
+                    { value: '', label: 'Pilih Hari...' },
+                    { value: 'MONDAY', label: 'Senin' },
+                    { value: 'TUESDAY', label: 'Selasa' },
+                    { value: 'WEDNESDAY', label: 'Rabu' },
+                    { value: 'THURSDAY', label: 'Kamis' },
+                    { value: 'FRIDAY', label: 'Jumat' },
+                    { value: 'SATURDAY', label: 'Sabtu' },
+                    { value: 'SUNDAY', label: 'Minggu' },
+                  ]}
+                  placeholder="Pilih Hari..."
+                />
               </div>
-              <div>
+              <div className="pt-2">
                 <label className="mb-1 block text-sm text-slate-700">Jam Mulai</label>
                 <input
                   type="time"
@@ -578,7 +575,7 @@ export default function AdminServiceManagement() {
                   onChange={(e) =>
                     setScheduleFormData({ ...scheduleFormData, startTime: e.target.value })
                   }
-                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500 dark:bg-[#131314] dark:text-zinc-100"
                 />
               </div>
               <div>
@@ -591,7 +588,7 @@ export default function AdminServiceManagement() {
                   onChange={(e) =>
                     setScheduleFormData({ ...scheduleFormData, endTime: e.target.value })
                   }
-                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500 dark:bg-[#131314] dark:text-zinc-100"
                 />
               </div>
               <div>
@@ -603,7 +600,7 @@ export default function AdminServiceManagement() {
                   onChange={(e) =>
                     setScheduleFormData({ ...scheduleFormData, capacity: Number(e.target.value) })
                   }
-                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-indigo-500 dark:bg-[#131314] dark:text-zinc-100"
                 />
               </div>
             </div>
