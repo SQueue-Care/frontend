@@ -34,17 +34,17 @@ export const QUEUE_TRANSITION_TITLES: Record<QueueStatus, string> = {
 
 export const QUEUE_TRANSITION_CLASSES: Record<QueueStatus, string> = {
   [QueueStatus.WAITING]:
-    'px-3 py-1.5 bg-slate-50 text-slate-700 hover:bg-slate-600 hover:text-white text-xs  rounded-lg transition-colors border border-slate-200 hover:border-slate-600',
+    'rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 transition-colors hover:border-slate-600 hover:bg-slate-600 hover:text-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-600 dark:hover:text-white',
   [QueueStatus.CALLED]:
-    'px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white text-xs  rounded-lg transition-colors border border-blue-100 hover:border-blue-600',
+    'rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs text-blue-700 transition-colors hover:border-blue-600 hover:bg-blue-600 hover:text-white dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:border-blue-500 dark:hover:bg-blue-600',
   [QueueStatus.IN_PROGRESS]:
-    'px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-600 hover:text-white text-xs  rounded-lg transition-colors border border-amber-100 hover:border-amber-600',
+    'rounded-lg border border-amber-100 bg-amber-50 px-3 py-1.5 text-xs text-amber-700 transition-colors hover:border-amber-600 hover:bg-amber-600 hover:text-white dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:border-amber-500 dark:hover:bg-amber-600',
   [QueueStatus.DONE]:
-    'px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white text-xs  rounded-lg transition-colors border border-emerald-100 hover:border-emerald-600',
+    'rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-xs text-emerald-700 transition-colors hover:border-emerald-600 hover:bg-emerald-600 hover:text-white dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:border-emerald-500 dark:hover:bg-emerald-600',
   [QueueStatus.SKIPPED]:
-    'px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-500 hover:text-white text-xs  rounded-lg transition-colors border border-slate-200 hover:border-slate-500',
+    'rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs text-slate-600 transition-colors hover:border-slate-500 hover:bg-slate-500 hover:text-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-500 dark:hover:bg-zinc-600',
   [QueueStatus.CANCELLED]:
-    'p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200',
+    'rounded-lg border border-transparent p-1.5 text-slate-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-zinc-500 dark:hover:border-rose-500/30 dark:hover:bg-rose-500/10 dark:hover:text-rose-400',
 }
 
 export function getAllowedQueueTransitions(status: QueueStatus): QueueStatus[] {

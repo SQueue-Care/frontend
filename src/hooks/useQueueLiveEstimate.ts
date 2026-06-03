@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   buildLiveEstimateParams,
   getQueueWaitMinutes,
@@ -23,57 +23,57 @@ type WaitQueueInput = Pick<
   id?: string
 }
 
+function buildFetchConfig(queue: WaitQueueInput) {
+  if (!['WAITING', 'CALLED'].includes(queue.status)) return null
+  if (getQueueWaitMinutes(queue) != null) return null
+
+  const params = buildLiveEstimateParams(queue)
+  if (!params) return null
+
+  const key = [
+    queue.id,
+    queue.status,
+    queue.estimatedWaitMinutes,
+    queue.prediction?.estimatedMin,
+    queue.department?.id,
+    queue.doctorId,
+    queue.scheduleId,
+    queue.schedule?.id,
+    queue.queueDate,
+    queue.patient?.id,
+  ].join(':')
+
+  return { key, params }
+}
+
 export function useQueueLiveEstimate(queue: WaitQueueInput | null | undefined) {
   const fetchWaitTime = usePredictionStore((s) => s.fetchWaitTime)
-  const [liveEstimate, setLiveEstimate] = useState<WaitTimeEstimate | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const fetchConfig = useMemo(() => (queue ? buildFetchConfig(queue) : null), [queue])
+
+  const [fetchResult, setFetchResult] = useState<{
+    key: string
+    estimate: WaitTimeEstimate | null
+  } | null>(null)
 
   useEffect(() => {
-    if (!queue || !['WAITING', 'CALLED'].includes(queue.status)) {
-      setLiveEstimate(null)
-      setIsLoading(false)
-      return
-    }
-
-    if (getQueueWaitMinutes(queue) != null) {
-      setLiveEstimate(null)
-      setIsLoading(false)
-      return
-    }
-
-    const params = buildLiveEstimateParams(queue)
-    if (!params) {
-      setLiveEstimate(null)
-      setIsLoading(false)
-      return
-    }
+    if (!fetchConfig) return
 
     let cancelled = false
-    setIsLoading(true)
 
-    void fetchWaitTime(params).then((estimate) => {
+    void fetchWaitTime(fetchConfig.params).then((estimate) => {
       if (!cancelled) {
-        setLiveEstimate(estimate)
-        setIsLoading(false)
+        setFetchResult({ key: fetchConfig.key, estimate })
       }
     })
 
     return () => {
       cancelled = true
     }
-  }, [
-    queue?.id,
-    queue?.status,
-    queue?.estimatedWaitMinutes,
-    queue?.prediction?.estimatedMin,
-    queue?.department?.id,
-    queue?.doctorId,
-    queue?.scheduleId,
-    queue?.schedule?.id,
-    queue?.queueDate,
-    queue?.patient?.id,
-    fetchWaitTime,
-  ])
+  }, [fetchConfig, fetchWaitTime])
+
+  const liveEstimate =
+    fetchConfig && fetchResult?.key === fetchConfig.key ? fetchResult.estimate : null
+  const isLoading = Boolean(fetchConfig) && fetchResult?.key !== fetchConfig?.key
 
   return { liveEstimate, isLoading }
 }

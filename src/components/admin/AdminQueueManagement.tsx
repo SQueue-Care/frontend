@@ -7,9 +7,7 @@ import { getErrorMessage } from '../../lib/errors'
 import {
   getAllowedQueueTransitions,
   isValidQueueTransition,
-  QUEUE_TRANSITION_CLASSES,
   QUEUE_TRANSITION_LABELS,
-  QUEUE_TRANSITION_TITLES,
 } from '../../lib/queueStateMachine'
 import type { Department } from '../../lib/types'
 import { QueueStatus } from '../../lib/types'
@@ -17,6 +15,7 @@ import { VISIT_STAGE_LABELS } from '../../lib/queueVisitFlow'
 import { useAlertStore } from '../../store/alertStore'
 import { useDepartmentStore } from '../../store/departmentStore'
 import { useQueueStore } from '../../store/queueStore'
+import { panel } from '../../lib/panelTheme'
 import CustomSearchBar from '../ui/CustomSearchBar'
 import CustomSelect from '../ui/CustomSelect'
 
@@ -138,7 +137,7 @@ export default function AdminQueueManagement() {
         </div>
 
         {/* TABEL DATA ANTREAN */}
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
+        <div className={`overflow-hidden ${panel.cardLg}`}>
           {isLoadingTable ? (
             <p className="p-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500 animate-pulse">
               Memuat antrean...
@@ -218,7 +217,7 @@ export default function AdminQueueManagement() {
                           </div>
                         </td>
                         <td className="p-6 align-top">
-                          <div className="text-slate-700 dark:text-slate-300">
+                          <div className="text-slate-700 dark:text-zinc-300">
                             {new Date(item.queueDate).toLocaleDateString('id-ID', {
                               year: 'numeric',
                               month: 'short',
@@ -227,7 +226,7 @@ export default function AdminQueueManagement() {
                           </div>
                         </td>
                         <td className="p-6 align-top">
-                          <div className="inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-[10px] tracking-widest text-slate-600 uppercase dark:bg-slate-900/50 dark:text-slate-400">
+                          <div className="inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-[10px] tracking-widest text-slate-600 uppercase dark:bg-zinc-800 dark:text-zinc-400">
                             {item.checkInAt
                               ? new Date(item.checkInAt).toLocaleTimeString('id-ID', {
                                   hour: '2-digit',
@@ -243,7 +242,7 @@ export default function AdminQueueManagement() {
                               : '-'}
                           </span>
                         </td>
-                        <td className="p-6 align-top text-slate-700 dark:text-slate-300 max-w-[150px] truncate">
+                        <td className="p-6 align-top text-slate-700 dark:text-slate-300">
                           {item.department?.name || '-'}
                         </td>
                         <td className="p-6 align-top">

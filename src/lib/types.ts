@@ -455,4 +455,4 @@ export interface CdssHealthResponse {
   available?: boolean
 }
 
-export interface CdssHistoryItem extends CdssRecommendResponse {}
+export type CdssHistoryItem = CdssRecommendResponse

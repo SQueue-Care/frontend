@@ -3,7 +3,6 @@ import apiClient from '../../lib/apiClient'
 import { normalizeCdssResult } from '../../lib/cdssUtils'
 import { getErrorMessage } from '../../lib/errors'
 import type { CdssHistoryItem } from '../../lib/types'
-import CdssResultsView from './CdssResultsView'
 
 export default function CDSSHistoryPanel() {
   const [results, setResults] = useState<CdssHistoryItem[]>([])
@@ -152,6 +151,8 @@ export default function CDSSHistoryPanel() {
         <div className="fixed inset-0 z-[60] flex items-end justify-center p-0 pt-24 sm:items-center sm:p-4 sm:pt-24">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity" onClick={() => setSelectedResult(null)} />
           <div className="relative z-10 flex max-h-[85dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl dark:border dark:border-zinc-800 dark:bg-[#1e1f20]">
+
+            {/* ── Header Modal ── */}
             <div className="shrink-0 flex items-center justify-between border-b border-slate-200 px-6 py-5 dark:border-zinc-800">
               <h2 className="font-['Manrope'] text-xl font-bold text-zinc-900 dark:text-zinc-100">
                 Detail Analisis CDSS
@@ -166,6 +167,7 @@ export default function CDSSHistoryPanel() {
               </button>
             </div>
 
+            {/* ── Body Modal (scrollable) ── */}
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6">
               <div className="mb-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-zinc-800 dark:bg-[#131314]">
@@ -192,10 +194,9 @@ export default function CDSSHistoryPanel() {
                   </p>
                 </div>
               )}
-
-              <CdssResultsView result={selectedResult} />
             </div>
 
+            {/* ── Footer Modal ── */}
             <div className="shrink-0 border-t border-slate-200 bg-slate-50/50 px-6 py-4 dark:border-zinc-800 dark:bg-[#131314]/50">
               <button
                 type="button"
@@ -205,6 +206,7 @@ export default function CDSSHistoryPanel() {
                 Tutup Jendela
               </button>
             </div>
+
           </div>
         </div>
       )}

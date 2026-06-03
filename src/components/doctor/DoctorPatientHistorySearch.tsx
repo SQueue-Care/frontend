@@ -56,7 +56,7 @@ export default function DoctorPatientHistorySearch() {
           <div className="shrink-0 border-b border-slate-100 bg-slate-50/80 px-5 py-4 dark:border-zinc-800 dark:bg-[#131314]/80">
             <h2 className="font-['Manrope'] text-base font-bold text-zinc-900 dark:text-zinc-100">Daftar Pasien</h2>
             <p className="text-[10px] tracking-widest text-slate-400 dark:text-zinc-500 uppercase">
-              {pagination?.totalItems ? `${pagination.totalItems} Terdaftar` : 'Hasil Pencarian'}
+              {pagination?.total ? `${pagination.total} Terdaftar` : 'Hasil Pencarian'}
             </p>
           </div>
 

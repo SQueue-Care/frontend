@@ -22,14 +22,17 @@ export function useWaitTimeCountdown(
     [queue, liveEstimate],
   )
 
+  const targetAtMs = context?.targetAt.getTime()
+  const startedAtMs = context?.startedAt.getTime()
+
   useEffect(() => {
-    if (!context) return
+    if (targetAtMs == null || startedAtMs == null) return
 
     const tick = () => setNow(Date.now())
     tick()
     const interval = setInterval(tick, 1000)
     return () => clearInterval(interval)
-  }, [context?.targetAt.getTime(), context?.startedAt.getTime()])
+  }, [targetAtMs, startedAtMs])
 
   const countdown = useMemo(() => {
     if (!context) return null
