@@ -1,5 +1,7 @@
 // src/components/AdminQueueManagement.tsx
-import { useEffect, useState } from 'react'
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { Fragment, useEffect, useState } from 'react'
 import apiClient from '../../lib/apiClient'
 import { getErrorMessage } from '../../lib/errors'
 import {
@@ -80,15 +82,17 @@ export default function AdminQueueManagement() {
   })
 
   return (
-    <div className="animate-in fade-in duration-500">
-      <div className="mb-8">
-        <h2 className={`mb-1 ${panel.heading}`}>Daftar Antrean Aktif</h2>
-        <p className={panel.subtext}>
+    <div className="animate-in fade-in duration-700 ease-out space-y-6">
+      <div>
+        <h2 className="mb-1 font-['Manrope'] text-2xl font-extrabold text-zinc-950 dark:text-zinc-100 tracking-tight">
+          Daftar Antrean Aktif
+        </h2>
+        <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
           Kelola dan perbarui status antrean aktif pasien secara real-time.
         </p>
       </div>
 
-      <div className={`${panel.card} p-6`}>
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         {/* AREA FILTER & SEARCH (Identik dengan Reservasi) */}
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="w-full md:w-72">
@@ -151,11 +155,11 @@ export default function AdminQueueManagement() {
                 : 'Belum ada data antrean yang sesuai dengan kriteria filter.'}
             </p>
           ) : (
-            <div className="no-scrollbar overflow-x-auto">
-              <table className="w-full min-w-[1000px] border-collapse text-left">
+            <div className="no-scrollbar overflow-x-auto relative">
+              <table className="w-full min-w-[1000px] border-collapse text-left whitespace-nowrap">
                 <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                   <tr>
-                    <th className="p-6 pl-8">No. Antrean</th>
+                    <th className="p-6 pl-8 sticky left-0 z-20 bg-slate-50/95 dark:bg-[#131314]/95 backdrop-blur-sm border-r border-slate-100 dark:border-zinc-800/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">No. Antrean</th>
                     <th className="p-6">Nama Pasien</th>
                     <th className="p-6">Dokter</th>
                     <th className="p-6">Tanggal</th>
@@ -163,12 +167,25 @@ export default function AdminQueueManagement() {
                     <th className="p-6">Estimasi Tunggu</th>
                     <th className="p-6">Departemen</th>
                     <th className="p-6">Status</th>
-                    <th className="p-6 pr-8 text-right">Aksi</th>
+                    <th className="p-6 pr-8 text-right sticky right-0 z-20 bg-slate-50/95 dark:bg-[#131314]/95 backdrop-blur-sm border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)]">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className={panel.tableBody}>
-                  {sortedQueues.map((item) => {
-                    const statusClasses: Record<string, string> = QUEUE_STATUS_BADGE
+                <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
+                  {sortedQueues.map((item, index) => {
+                    const statusClasses: Record<string, string> = {
+                      WAITING:
+                        'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
+                      CALLED:
+                        'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+                      IN_PROGRESS:
+                        'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+                      DONE:
+                        'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
+                      SKIPPED:
+                        'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
+                      CANCELLED:
+                        'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
+                    }
                     const statusLabel: Record<string, string> = {
                       WAITING: 'Menunggu',
                       CALLED: 'Dipanggil',
@@ -178,23 +195,26 @@ export default function AdminQueueManagement() {
                       CANCELLED: 'Dibatalkan',
                     }
 
+                    const allowedTransitions = getAllowedQueueTransitions(item.status)
+
                     return (
                       <tr
                         key={item.id}
-                        className={`group ${panel.tableRowHover}`}
-                      >
-                        <td className="p-6 pl-8 align-top">
+                        style={{ zIndex: sortedQueues.length - index }}
+                        className="group relative transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
+                    >
+                        <td className="p-6 pl-8 align-top sticky left-0 z-10 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-r border-slate-100 dark:border-zinc-800/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors">
                           <span className="inline-block rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono tracking-widest text-slate-700 dark:text-zinc-300 shadow-sm">
                             {item.department?.code}-{item.queueNumber}
                           </span>
                         </td>
                         <td className="p-6 align-top">
-                          <div className="font-medium uppercase text-zinc-950 transition-colors group-hover:text-teal-600 dark:text-zinc-100 dark:group-hover:text-teal-400">
+                          <div className="font-medium text-zinc-950 dark:text-white uppercase transition-colors group-hover:text-teal-600 max-w-[200px] truncate">
                             {item.patient?.user?.name || '-'}
                           </div>
                         </td>
                         <td className="p-6 align-top">
-                          <div className="text-slate-700 dark:text-zinc-300">
+                          <div className="text-slate-700 dark:text-slate-300 max-w-[150px] truncate">
                             {item.doctor?.user?.name || '-'}
                           </div>
                         </td>
@@ -224,7 +244,7 @@ export default function AdminQueueManagement() {
                               : '-'}
                           </span>
                         </td>
-                        <td className="p-6 align-top text-slate-700 dark:text-zinc-300">
+                        <td className="p-6 align-top text-slate-700 dark:text-slate-300">
                           {item.department?.name || '-'}
                         </td>
                         <td className="p-6 align-top">
@@ -244,18 +264,53 @@ export default function AdminQueueManagement() {
                             </p>
                           )}
                         </td>
-                        <td className="p-6 pr-8 text-right align-top">
-                          <div className="flex flex-wrap items-center justify-end gap-2">
-                            {getAllowedQueueTransitions(item.status).map((nextStatus) => (
-                              <button
-                                key={nextStatus}
-                                onClick={() => handleUpdateStatus(item.id, item.status, nextStatus)}
-                                className={QUEUE_TRANSITION_CLASSES[nextStatus]}
-                                title={QUEUE_TRANSITION_TITLES[nextStatus]}
-                              >
-                                {QUEUE_TRANSITION_LABELS[nextStatus]}
-                              </button>
-                            ))}
+                        <td 
+                        style={{ zIndex: sortedQueues.length - index }}
+                        className="p-6 pr-8 text-right align-top sticky right-0 z-10 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors focus-within:z-50 group-hover:z-50">
+                          <div className="flex items-center justify-end">
+                            {allowedTransitions.length > 0 ? (
+                              <Menu as="div" className="relative inline-block text-left">
+                                <div>
+                                  <MenuButton className="flex items-center justify-center rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 focus:outline-none transition-colors">
+                                    <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
+                                  </MenuButton>
+                                </div>
+                                <Transition
+                                  as={Fragment}
+                                  enter="transition ease-out duration-100"
+                                  enterFrom="transform opacity-0 scale-95"
+                                  enterTo="transform opacity-100 scale-100"
+                                  leave="transition ease-in duration-75"
+                                  leaveFrom="transform opacity-100 scale-100"
+                                  leaveTo="transform opacity-0 scale-95"
+                                >
+                                  <MenuItems className="absolute right-0 mt-2 w-max min-w-[140px] origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-[#1e1f20] dark:ring-white/10 z-50 divide-y divide-slate-100 dark:divide-zinc-800">
+                                    <div className="py-1">
+                                      {allowedTransitions.map((nextStatus) => (
+                                        <MenuItem key={nextStatus}>
+                                          {({ active }) => (
+                                            <button
+                                              onClick={() =>
+                                                handleUpdateStatus(item.id, item.status, nextStatus)
+                                              }
+                                              className={`${
+                                                active
+                                                  ? 'bg-slate-50 text-teal-600 dark:bg-zinc-800 dark:text-teal-400'
+                                                  : 'text-slate-700 dark:text-zinc-300'
+                                              } group flex w-full items-center px-4 py-2.5 text-sm transition-colors`}
+                                            >
+                                              {QUEUE_TRANSITION_LABELS[nextStatus]}
+                                            </button>
+                                          )}
+                                        </MenuItem>
+                                      ))}
+                                    </div>
+                                  </MenuItems>
+                                </Transition>
+                              </Menu>
+                            ) : (
+                              <span className="text-xs text-slate-400 dark:text-zinc-500 italic px-2">Tidak ada aksi</span>
+                            )}
                           </div>
                         </td>
                       </tr>

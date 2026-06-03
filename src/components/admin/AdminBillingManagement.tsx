@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { formatRupiah } from '../../lib/formatCurrency'
 import type { Bill, BillStatus } from '../../lib/types'
 import { useAlertStore } from '../../store/alertStore'
@@ -20,7 +22,7 @@ function statusBadgeClass(status: BillStatus): string {
     case 'WAIVED':
       return 'border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
     case 'BPJS_PENDING':
-      return 'border-blue-200 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400'
+    case 'PENDING':
     default:
       return 'border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400'
   }
@@ -137,22 +139,23 @@ export default function AdminBillingManagement() {
             Tidak ada tagihan yang terekam.
           </p>
         ) : (
-          <div className="no-scrollbar overflow-x-auto">
-            <table className="w-full min-w-[900px] border-collapse text-left">
+          <div className="no-scrollbar overflow-x-auto relative">
+            <table className="w-full min-w-[900px] border-collapse text-left whitespace-nowrap">
               <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                 <tr>
                   <th className="p-6 pl-8">Pasien</th>
                   <th className="p-6">Poli / Antrean</th>
                   <th className="p-6">Jumlah</th>
                   <th className="p-6">Status</th>
-                  <th className="p-6 pr-8 text-right">Aksi</th>
+                  <th className="p-6 pr-8 text-right sticky right-0 z-20 bg-slate-50/95 dark:bg-[#131314]/95 backdrop-blur-sm border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)]">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
-                {bills.map((bill) => (
+                {bills.map((bill, index) => (
                   <tr
                     key={bill.id}
-                    className="transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
+                    style={{ zIndex: bills.length - index }}
+                    className="group relative transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30 focus-within:z-50 hover:z-50"
                   >
                     <td className="p-6 pl-8 align-top font-medium text-zinc-900 dark:text-white">
                       {bill.patient?.user?.name ?? bill.patientId}
@@ -177,26 +180,72 @@ export default function AdminBillingManagement() {
                         {STATUS_LABELS[bill.status]}
                       </span>
                     </td>
-                    <td className="p-6 pr-8 text-right align-top">
-                      <div className="flex flex-wrap justify-end gap-2">
-                        {(bill.status === 'PENDING' || bill.status === 'BPJS_PENDING') && (
-                          <button
-                            onClick={() => handleMarkPaid(bill)}
-                            className="rounded-lg bg-teal-600 px-4 py-2 text-[10px] tracking-widest uppercase text-white hover:bg-teal-700 transition-colors shadow-sm"
-                          >
-                            Tandai Lunas
-                          </button>
-                        )}
-                        {bill.status === 'BPJS_PENDING' && (
-                          <button
-                            onClick={() => {
-                              setSelectedBill(bill)
-                              setSepNumber(bill.sepNumber ?? '')
-                            }}
-                            className="rounded-lg border border-blue-200 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 px-4 py-2 text-[10px] tracking-widest uppercase text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors shadow-sm"
-                          >
-                            Verifikasi BPJS
-                          </button>
+                    <td 
+                      className="p-6 pr-8 text-right align-top sticky right-0 z-10 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors focus-within:z-50 group-hover:z-50"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex items-center justify-end">
+                        {(bill.status === 'PENDING' || bill.status === 'BPJS_PENDING') ? (
+                          <Menu as="div" className="relative inline-block text-left">
+                            <div>
+                              <MenuButton className="flex items-center justify-center rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 focus:outline-none transition-colors">
+                                <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
+                              </MenuButton>
+                            </div>
+                            <Transition
+                              as={Fragment}
+                              enter="transition ease-out duration-100"
+                              enterFrom="transform opacity-0 scale-95"
+                              enterTo="transform opacity-100 scale-100"
+                              leave="transition ease-in duration-75"
+                              leaveFrom="transform opacity-100 scale-100"
+                              leaveTo="transform opacity-0 scale-95"
+                            >
+                              <MenuItems className="absolute right-0 mt-2 w-max min-w-[150px] origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-[#1e1f20] dark:ring-white/10 z-50 divide-y divide-slate-100 dark:divide-zinc-800">
+                                <div className="py-1">
+                                  <MenuItem>
+                                    {({ active }) => (
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          void handleMarkPaid(bill)
+                                        }}
+                                        className={`${
+                                          active
+                                            ? 'bg-slate-50 text-emerald-600 dark:bg-zinc-800 dark:text-emerald-400'
+                                            : 'text-slate-700 dark:text-zinc-300'
+                                        } group flex w-full items-center px-4 py-2.5 text-sm transition-colors`}
+                                      >
+                                        Tandai Lunas
+                                      </button>
+                                    )}
+                                  </MenuItem>
+                                  {bill.status === 'BPJS_PENDING' && (
+                                    <MenuItem>
+                                      {({ active }) => (
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setSelectedBill(bill)
+                                            setSepNumber(bill.sepNumber ?? '')
+                                          }}
+                                          className={`${
+                                            active
+                                              ? 'bg-slate-50 text-blue-600 dark:bg-zinc-800 dark:text-blue-400'
+                                              : 'text-slate-700 dark:text-zinc-300'
+                                          } group flex w-full items-center px-4 py-2.5 text-sm transition-colors`}
+                                        >
+                                          Verifikasi BPJS
+                                        </button>
+                                      )}
+                                    </MenuItem>
+                                  )}
+                                </div>
+                              </MenuItems>
+                            </Transition>
+                          </Menu>
+                        ) : (
+                          <span className="text-xs text-slate-400 dark:text-zinc-500 italic px-2">Tidak ada aksi</span>
                         )}
                       </div>
                     </td>
@@ -244,13 +293,13 @@ export default function AdminBillingManagement() {
             <div className="mt-5 flex justify-end gap-2">
               <button
                 onClick={() => setSelectedBill(null)}
-                className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-xs"
+                className="rounded-lg border border-slate-200 dark:border-zinc-800 px-4 py-2 text-xs text-slate-600 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
               >
                 Batal
               </button>
               <button
                 onClick={() => void handleVerifyBpjs(selectedBill)}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-xs text-white"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-xs text-white hover:bg-blue-700 transition-colors shadow-sm"
               >
                 Simpan
               </button>

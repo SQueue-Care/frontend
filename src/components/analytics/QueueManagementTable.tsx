@@ -5,22 +5,42 @@ import { useDashboardFilterStore } from '../../store/dashboardFilterStore'
 import { useQueueStore } from '../../store/queueStore'
 import CustomSearchBar from '../ui/CustomSearchBar'
 
-const STATUS_LABEL: Record<QueueStatus, string> = {
-  [QueueStatus.WAITING]: 'Menunggu',
-  [QueueStatus.CALLED]: 'Dipanggil',
-  [QueueStatus.IN_PROGRESS]: 'Diperiksa',
-  [QueueStatus.DONE]: 'Selesai',
-  [QueueStatus.SKIPPED]: 'Dilewati',
-  [QueueStatus.CANCELLED]: 'Dibatalkan',
+// Helper untuk styling status
+const statusClasses: Record<string, string> = {
+  WAITING:
+    'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
+  CALLED:
+    'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+  IN_PROGRESS:
+    'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+  DONE:
+    'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
+  SKIPPED:
+    'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
+  CANCELLED:
+    'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
 }
 
-const StatusBadge = ({ status }: { status: QueueStatus }) => (
-  <span
-    className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs ${QUEUE_STATUS_BADGE[status] ?? QUEUE_STATUS_BADGE[QueueStatus.WAITING]}`}
-  >
-    {STATUS_LABEL[status] ?? status}
-  </span>
-)
+const statusLabel: Record<string, string> = {
+  WAITING: 'Menunggu',
+  CALLED: 'Dipanggil',
+  IN_PROGRESS: 'Diperiksa',
+  DONE: 'Selesai',
+  SKIPPED: 'Dilewati',
+  CANCELLED: 'Dibatalkan',
+}
+
+const StatusBadge = ({ status }: { status: QueueStatus }) => {
+  const classes = statusClasses[status] || statusClasses.WAITING
+  const label = statusLabel[status] || status
+  return (
+    <span
+      className={`inline-flex min-w-[120px] items-center justify-center rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${classes}`}
+    >
+      {label}
+    </span>
+  )
+}
 
 export default function QueueManagementTable() {
   const { queues, isLoadingTable, errorTable } = useQueueStore()
@@ -65,7 +85,7 @@ export default function QueueManagementTable() {
     if (isLoadingTable) {
       return (
         <tr>
-          <td colSpan={5} className="p-8 text-center text-slate-400 dark:text-zinc-500 italic">
+          <td colSpan={5} className="p-16 text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500 animate-pulse">
             Memuat data antrean...
           </td>
         </tr>
@@ -75,7 +95,7 @@ export default function QueueManagementTable() {
     if (errorTable) {
       return (
         <tr>
-          <td colSpan={5} className="p-8 text-center text-rose-600 italic dark:text-rose-400">
+          <td colSpan={5} className="p-16 text-center text-sm text-rose-600 dark:text-rose-400 italic">
             {errorTable}
           </td>
         </tr>
@@ -85,7 +105,7 @@ export default function QueueManagementTable() {
     if (filteredQueues.length === 0) {
       return (
         <tr>
-          <td colSpan={5} className="p-8 text-center text-slate-400 dark:text-zinc-500 italic">
+          <td colSpan={5} className="p-16 text-center font-medium text-slate-400 italic dark:text-slate-500">
             {queues.length === 0
               ? 'Tidak ada antrean terdeteksi.'
               : 'Pasien tidak ditemukan dalam daftar antrean.'}
@@ -95,16 +115,28 @@ export default function QueueManagementTable() {
     }
 
     return filteredQueues.map((item) => (
-      <tr key={item.id} className="transition-colors hover:bg-slate-50/50 dark:hover:bg-[#131314]/50">
-        <td className="p-4 pl-6">
-          <span className="inline-block rounded-lg border border-slate-200 bg-slate-100 px-3 py-1 font-mono text-slate-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+      <tr key={item.id} className="group transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30">
+        <td className="p-6 pl-8 align-top">
+          <span className="inline-block rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 px-3 py-1 font-mono tracking-widest text-slate-700 dark:text-zinc-300 shadow-sm">
             {item.department?.code || 'XX'}-{item.queueNumber}
           </span>
         </td>
-        <td className="p-4">{item.patient?.user?.name || '-'}</td>
-        <td className="p-4 text-slate-500 dark:text-zinc-400">{item.department?.name || '-'}</td>
-        <td className="p-4 text-slate-500 dark:text-zinc-400">{item.doctor?.user?.name || '-'}</td>
-        <td className="p-4">
+        <td className="p-6 align-top">
+          <div className="font-medium text-zinc-950 dark:text-white uppercase transition-colors group-hover:text-teal-600">
+            {item.patient?.user?.name || '-'}
+          </div>
+        </td>
+        <td className="p-6 align-top">
+          <div className="text-slate-700 dark:text-slate-300">
+            {item.department?.name || '-'}
+          </div>
+        </td>
+        <td className="p-6 align-top">
+          <div className="text-slate-700 dark:text-slate-300">
+            {item.doctor?.user?.name || '-'}
+          </div>
+        </td>
+        <td className="p-6 pr-8 align-top">
           <StatusBadge status={item.status} />
         </td>
       </tr>
@@ -112,12 +144,11 @@ export default function QueueManagementTable() {
   }
 
   return (
-    /* Kontainer Utama: Statis (Tanpa Efek Hover) */
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] shadow-sm">
+    <div className="flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
       {/* HEADER & SEARCH BAR PREMIUM */}
-      <div className="flex flex-col justify-between gap-4 border-b border-slate-100 dark:border-zinc-800 p-6 lg:flex-row lg:items-center">
+      <div className="flex flex-col justify-between gap-4 border-b border-slate-100 p-6 dark:border-zinc-800 md:flex-row md:items-center bg-white dark:bg-[#1e1f20]">
         <div>
-          <h3 className="font-['Manrope'] text-lg text-zinc-950 dark:text-zinc-100">
+          <h3 className="font-['Manrope'] text-lg font-extrabold text-zinc-950 dark:text-zinc-100 tracking-tight">
             Live Queue Control
           </h3>
           <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
@@ -125,31 +156,29 @@ export default function QueueManagementTable() {
           </p>
         </div>
 
-        <div className="flex w-full items-center lg:w-auto">
-          <div className="w-full lg:w-80">
-            <CustomSearchBar
-              label="Cari Pasien"
-              value={searchQuery}
-              onChange={(val) => setSearchQuery(val)}
-              placeholder="Cari ID Pasien, Nama..."
-            />
-          </div>
+        <div className="w-full md:w-72">
+          <CustomSearchBar
+            label="Cari Pasien"
+            value={searchQuery}
+            onChange={(val) => setSearchQuery(val)}
+            placeholder="Cari ID Pasien, Nama..."
+          />
         </div>
       </div>
 
       {/* AREA TABEL */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left">
-          <thead>
-            <tr className="border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-[#131314] text-xs tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
-              <th className="p-4 pl-6">No. Antrean</th>
-              <th className="p-4">Nama Pasien</th>
-              <th className="p-4">Poliklinik</th>
-              <th className="p-4">Dokter</th>
-              <th className="p-4">Status</th>
+      <div className="no-scrollbar overflow-x-auto bg-white dark:bg-[#1e1f20]">
+        <table className="w-full min-w-[800px] border-collapse text-left">
+          <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
+            <tr>
+              <th className="p-6 pl-8">No. Antrean</th>
+              <th className="p-6">Nama Pasien</th>
+              <th className="p-6">Poliklinik</th>
+              <th className="p-6">Dokter</th>
+              <th className="p-6 pr-8">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-zinc-800 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
             {renderTableBody()}
           </tbody>
         </table>
