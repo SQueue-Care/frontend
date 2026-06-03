@@ -25,11 +25,11 @@ interface DoctorActivePatientPanelProps {
 
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-slate-100 transition-colors dark:border-zinc-800 bg-slate-50/80 transition-colors dark:bg-[#131314]/80 p-3">
-      <p className="mb-0.5 text-[10px] tracking-wider text-slate-400 transition-colors dark:text-zinc-500 uppercase">
+    <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 transition-colors dark:border-zinc-800 dark:bg-[#131314]/80">
+      <p className="mb-0.5 text-[10px] tracking-wider text-slate-400 uppercase dark:text-zinc-500">
         {label}
       </p>
-      <p className="text-sm text-zinc-900 transition-colors dark:text-zinc-100">{value}</p>
+      <p className="text-sm text-zinc-900 dark:text-zinc-100">{value}</p>
     </div>
   )
 }
@@ -58,9 +58,9 @@ export default function DoctorActivePatientPanel({
   )
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-indigo-100 transition-colors dark:border-indigo-800/50 bg-white transition-colors dark:bg-[#1e1f20] shadow-sm">
-      <div className="relative border-b border-indigo-100 transition-colors dark:border-indigo-800/50 bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 px-6 py-5 text-white">
-        <div className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+    <div className="overflow-hidden rounded-2xl border border-indigo-100 bg-white shadow-sm transition-colors dark:border-indigo-500/20 dark:bg-[#1e1f20]">
+      <div className="relative border-b border-indigo-100 bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 px-6 py-5 text-white dark:border-indigo-800/50">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border-2 border-white/30 bg-white/15 text-2xl backdrop-blur-sm">
@@ -88,9 +88,9 @@ export default function DoctorActivePatientPanel({
       </div>
 
       {allergies && (
-        <div className="flex items-start gap-3 border-b border-rose-100 transition-colors dark:border-rose-500/20 bg-rose-50 transition-colors dark:bg-rose-500/10 px-6 py-3">
+        <div className="flex items-start gap-3 border-b border-rose-100 bg-rose-50 px-6 py-3 transition-colors dark:border-rose-500/20 dark:bg-rose-500/10">
           <svg
-            className="mt-0.5 h-5 w-5 shrink-0 text-rose-600 transition-colors dark:text-rose-400"
+            className="mt-0.5 h-5 w-5 shrink-0 text-rose-600 dark:text-rose-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -103,8 +103,8 @@ export default function DoctorActivePatientPanel({
             />
           </svg>
           <div>
-            <p className="text-xs tracking-wide text-rose-700 transition-colors dark:text-rose-400 uppercase">Alergi</p>
-            <p className="text-sm font-medium text-rose-800">{allergies}</p>
+            <p className="text-xs tracking-wide text-rose-700 uppercase dark:text-rose-400">Alergi</p>
+            <p className="text-sm font-medium text-rose-800 dark:text-rose-300">{allergies}</p>
           </div>
         </div>
       )}
@@ -126,22 +126,22 @@ export default function DoctorActivePatientPanel({
         )}
 
         {queue.notes?.trim() && (
-          <div className="mb-6 rounded-xl border border-amber-100 transition-colors dark:border-amber-500/20 bg-amber-50/70 p-4">
-            <p className="mb-1 text-[10px] tracking-wider text-amber-700 transition-colors dark:text-amber-400 uppercase">
+          <div className="mb-6 rounded-xl border border-amber-100 bg-amber-50/70 p-4 transition-colors dark:border-amber-500/20 dark:bg-amber-500/10">
+            <p className="mb-1 text-[10px] tracking-wider text-amber-700 uppercase dark:text-amber-400">
               Keluhan / Catatan Kunjungan
             </p>
-            <p className="text-sm whitespace-pre-wrap text-amber-950">{queue.notes}</p>
+            <p className="whitespace-pre-wrap text-sm text-amber-950 dark:text-amber-200">{queue.notes}</p>
           </div>
         )}
 
         {hasBlockingPatient && queue.status === QueueStatus.WAITING && (
-          <div className="mb-4 rounded-xl border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-800">
+          <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">
             Selesaikan pasien saat ini terlebih dahulu sebelum menerima pasien baru.
           </div>
         )}
 
         {allowedTransitions.includes(QueueStatus.DONE) && (
-          <div className="mb-4 rounded-xl border border-emerald-200 transition-colors dark:border-emerald-500/20 bg-emerald-50 transition-colors dark:bg-emerald-500/10 px-4 py-3 text-sm text-emerald-900">
+          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
             Setelah menandai <strong>Selesai</strong>, pasien akan diarahkan ke loket administrasi/kasir
             {queue.department?.adminCounter ? ` (${queue.department.adminCounter})` : ''} untuk pembayaran.
           </div>
@@ -151,17 +151,20 @@ export default function DoctorActivePatientPanel({
           <button
             type="button"
             onClick={onOpenCdss}
-            className="rounded-lg border border-violet-200 bg-violet-50 transition-colors dark:bg-violet-900/20 px-4 py-2 text-xs text-violet-700 transition-colors hover:bg-violet-100"
+            className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2 text-xs text-violet-700 transition-colors hover:bg-violet-100 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/20"
           >
             Analisis CDSS
           </button>
           <button
             type="button"
             onClick={onOpenNotes}
-            className="rounded-lg border border-amber-200 transition-colors dark:border-amber-500/20 bg-amber-50 transition-colors dark:bg-amber-500/10 px-4 py-2 text-xs text-amber-800 transition-colors hover:bg-amber-100"
+            className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-800 transition-colors hover:bg-amber-100 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20"
           >
             Catatan Dokter
           </button>
+          
+          {/* Untuk tombol nextStatus, karena class berasal dari file antarmuka statis QUEUE_TRANSITION_CLASSES, 
+              pastikan variabel tersebut pada lib/queueStateMachine.ts juga mendukung utilitas dark mode */}
           {allowedTransitions.map((nextStatus) => (
             <button
               key={nextStatus}

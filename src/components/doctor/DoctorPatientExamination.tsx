@@ -61,11 +61,17 @@ export default function DoctorPatientExamination({
           onOpenCdss={() => onOpenCdss(queue)}
         />
       </div>
-      <DoctorMedicalHistoryPanel
-        history={medicalProfile?.medicalHistory ?? []}
-        isLoading={isLoadingProfile}
-        currentQueueId={queue.id}
-      />
+      
+      {/* REVISI: Trik Wrapper Absolut (Memaksa tinggi mengikuti panel kiri) */}
+      <div className="relative min-h-[400px] lg:min-h-0">
+        <div className="h-full w-full lg:absolute lg:inset-0">
+          <DoctorMedicalHistoryPanel
+            history={medicalProfile?.medicalHistory ?? []}
+            isLoading={isLoadingProfile}
+            currentQueueId={queue.id}
+          />
+        </div>
+      </div>
     </div>
   )
 }

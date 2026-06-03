@@ -15,19 +15,20 @@ export default function DoctorMedicalHistoryPanel({
   const pastVisits = history.filter((visit) => visit.id !== currentQueueId)
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-slate-200 transition-colors dark:border-zinc-800 bg-white transition-colors dark:bg-[#1e1f20] shadow-sm">
-      <div className="border-b border-slate-100 transition-colors dark:border-zinc-800 px-5 py-4">
+    <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
+      <div className="border-b border-slate-100 px-5 py-4 transition-colors dark:border-zinc-800">
         <h3 className="font-['Manrope'] text-lg text-zinc-900 transition-colors dark:text-zinc-100">Riwayat Medis</h3>
         <p className="text-xs text-slate-500 transition-colors dark:text-zinc-400">Kunjungan sebelumnya yang telah selesai</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* PENYESUAIAN: Menambahkan no-scrollbar agar rapi */}
+      <div className="no-scrollbar flex-1 overflow-y-auto p-4">
         {isLoading ? (
           <div className="flex justify-center py-10">
-            <div className="h-7 w-7 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent dark:border-indigo-500 dark:border-t-transparent" />
           </div>
         ) : pastVisits.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-200 transition-colors dark:border-zinc-800 bg-slate-50 transition-colors dark:bg-[#131314] px-4 py-8 text-center">
+          <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center transition-colors dark:border-zinc-800 dark:bg-[#131314]">
             <p className="text-sm font-medium text-slate-500 transition-colors dark:text-zinc-400">Belum ada riwayat kunjungan</p>
             <p className="mt-1 text-xs text-slate-400 transition-colors dark:text-zinc-500">Riwayat akan muncul setelah pemeriksaan selesai</p>
           </div>
@@ -36,7 +37,7 @@ export default function DoctorMedicalHistoryPanel({
             {pastVisits.map((visit) => (
               <li
                 key={visit.id}
-                className="rounded-xl border border-slate-100 transition-colors dark:border-zinc-800 bg-slate-50/60 p-4 transition-colors hover:border-indigo-100 hover:bg-indigo-50/30"
+                className="rounded-xl border border-slate-100 bg-slate-50/60 p-4 transition-colors hover:border-indigo-100 hover:bg-indigo-50/30 dark:border-zinc-800 dark:bg-zinc-800/30 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10"
               >
                 <div className="mb-2 flex items-start justify-between gap-2">
                   <div>
@@ -46,7 +47,7 @@ export default function DoctorMedicalHistoryPanel({
                     <p className="text-[11px] text-slate-500 transition-colors dark:text-zinc-400">{formatDateId(visit.queueDate)}</p>
                   </div>
                   {visit.doctor?.user?.name && (
-                    <span className="shrink-0 rounded-md bg-white transition-colors dark:bg-[#1e1f20] px-2 py-0.5 text-[10px] text-slate-600 transition-colors dark:text-zinc-300">
+                    <span className="shrink-0 rounded-md bg-white px-2 py-0.5 text-[10px] text-slate-600 transition-colors dark:bg-[#1e1f20] dark:text-zinc-300">
                       {visit.doctor.user.name}
                     </span>
                   )}

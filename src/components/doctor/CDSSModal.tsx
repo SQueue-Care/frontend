@@ -104,16 +104,15 @@ function CDSSModalContent({
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px] transition-opacity" onClick={onClose} />
 
       <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
         <div
-          className="flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:max-h-[min(90dvh,880px)] sm:rounded-2xl dark:bg-[#1e1f20]"
+          className="flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:max-h-[min(90dvh,880px)] sm:rounded-2xl dark:border dark:border-zinc-800 dark:bg-[#1e1f20]"
           role="dialog"
           aria-modal="true"
           aria-labelledby="cdss-modal-title"
         >
-          {/* Header — tetap di atas */}
           <div className="shrink-0 border-b border-slate-200 px-5 py-4 dark:border-zinc-800">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
@@ -133,7 +132,7 @@ function CDSSModalContent({
                 </p>
                 {health && (
                   <p
-                    className={`mt-1 text-xs ${cdssReady ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}
+                    className={`mt-1 text-xs font-medium ${cdssReady ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}
                   >
                     {cdssReady ? '● SmartQueue AI aktif' : `● ${health.message}`}
                   </p>
@@ -142,7 +141,7 @@ function CDSSModalContent({
               <button
                 type="button"
                 onClick={onClose}
-                className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                className="shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
                 aria-label="Tutup"
               >
                 ✕
@@ -150,45 +149,44 @@ function CDSSModalContent({
             </div>
           </div>
 
-          {/* Body — scroll terpisah */}
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <div className="space-y-4 p-5">
-              {/* Form input — bisa dilipat saat hasil sudah ada */}
               <section className="rounded-xl border border-slate-200 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setShowInput((v) => !v)}
-                  className="flex w-full items-center justify-between px-4 py-3 text-left"
+                  className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800/50"
                 >
                   <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
                     Deskripsi Gejala
                   </span>
-                  <span className="text-xs text-violet-600 dark:text-violet-400">
+                  <span className="text-xs font-medium text-violet-600 dark:text-violet-400">
                     {showInput ? 'Sembunyikan' : 'Tampilkan / Edit'}
                   </span>
                 </button>
 
                 {showInput && (
-                  <div className="space-y-3 border-t border-slate-200 px-4 py-3 dark:border-zinc-800">
+                  <div className="space-y-3 border-t border-slate-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-[#1e1f20]">
+                    {/* REVISI PADA TEXTAREA: penambahan dark:focus:bg-[#1e1f20] */}
                     <textarea
                       value={gejala}
                       onChange={(e) => setGejala(e.target.value)}
-                      disabled={isLoading || !cdssReady}
-                      className="max-h-40 min-h-[7rem] w-full resize-y rounded-lg border border-slate-200 px-3 py-2.5 text-sm leading-relaxed text-zinc-800 placeholder-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none disabled:bg-slate-50 dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-200"
+                      disabled={isLoading}
+                      className="max-h-40 min-h-[7rem] w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-zinc-800 placeholder-slate-400 transition-colors focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-200 dark:placeholder-zinc-600 dark:focus:border-violet-500 dark:focus:bg-[#1e1f20] dark:disabled:bg-zinc-800/50"
                       placeholder="Contoh: demam tinggi sudah 3 hari, batuk kering, sesak napas..."
                     />
-                    <p className="text-xs text-slate-500 dark:text-zinc-400">
+                    <p className="text-xs text-slate-500 dark:text-zinc-500">
                       Umur & jenis kelamin diambil otomatis dari profil pasien.
                     </p>
                     <button
                       type="button"
                       onClick={handleRecommend}
                       disabled={isLoading || !cdssReady || gejala.trim().length < 3}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 dark:bg-violet-600 dark:hover:bg-violet-500 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-600"
                     >
                       {isLoading ? (
                         <>
-                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-zinc-300 dark:border-t-transparent" />
                           Menganalisis...
                         </>
                       ) : result ? (
@@ -208,7 +206,7 @@ function CDSSModalContent({
                     <button
                       type="button"
                       onClick={() => setShowInput(true)}
-                      className="mt-2 text-xs font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400"
+                      className="mt-2 text-xs font-bold text-violet-600 transition-colors hover:text-violet-700 dark:text-violet-400"
                     >
                       Edit gejala
                     </button>
@@ -217,40 +215,38 @@ function CDSSModalContent({
               </section>
 
               {!cdssReady && health && (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-500/10">
-                  <p className="text-sm text-amber-700 dark:text-amber-400">
-                    CDSS tidak aktif. Pastikan SmartQueue AI berjalan dan GEMINI_API_KEY sudah
-                    dikonfigurasi.
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/10">
+                  <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                    CDSS saat ini tidak aktif. Pastikan SmartQueue AI berjalan dan API Key sudah dikonfigurasi.
                   </p>
                 </div>
               )}
 
               {saveMessage && (
-                <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-500/20 dark:bg-emerald-500/10">
-                  <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm dark:border-emerald-500/20 dark:bg-emerald-500/10">
+                  <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
                     {saveMessage}
                   </p>
                 </div>
               )}
 
               {error && (
-                <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 dark:border-rose-500/20 dark:bg-rose-500/10">
-                  <p className="text-sm font-medium text-rose-600 dark:text-rose-400">{error}</p>
+                <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 shadow-sm dark:border-rose-500/20 dark:bg-rose-500/10">
+                  <p className="text-sm font-medium text-rose-800 dark:text-rose-300">{error}</p>
                 </div>
               )}
 
               {result && (
-                <section className="rounded-xl border border-violet-200/80 bg-violet-50/30 dark:border-violet-500/20 dark:bg-violet-500/5">
-                  <div className="border-b border-violet-200/60 px-4 py-3 dark:border-violet-500/20">
-                    <h3 className="text-sm font-semibold text-violet-900 dark:text-violet-200">
+                <section className="rounded-2xl border border-violet-200/80 bg-violet-50/50 shadow-sm dark:border-violet-500/20 dark:bg-violet-500/5">
+                  <div className="border-b border-violet-200/60 px-5 py-4 dark:border-violet-500/20">
+                    <h3 className="text-sm font-bold text-violet-900 dark:text-violet-200">
                       Hasil Rekomendasi
                     </h3>
-                    <p className="mt-0.5 text-xs text-violet-700/80 dark:text-violet-300/80">
-                      {result.kandidat_diagnosis?.length ?? 0} kandidat diagnosis · status{' '}
-                      {result.status}
+                    <p className="mt-0.5 text-xs font-medium text-violet-700/80 dark:text-violet-300/80">
+                      {result.kandidat_diagnosis?.length ?? 0} kandidat diagnosis terdeteksi (Status: {result.status})
                     </p>
                   </div>
-                  <div className="p-4">
+                  <div className="p-5">
                     <CdssResultsView result={result} compact />
                   </div>
                 </section>
@@ -258,14 +254,13 @@ function CDSSModalContent({
             </div>
           </div>
 
-          {/* Footer — tetap di bawah */}
-          <div className="shrink-0 border-t border-slate-200 bg-white px-5 py-3 dark:border-zinc-800 dark:bg-[#1e1f20]">
+          <div className="shrink-0 border-t border-slate-200 bg-slate-50/50 px-5 py-4 dark:border-zinc-800 dark:bg-[#131314]/50">
             <button
               type="button"
               onClick={onClose}
-              className="w-full rounded-lg bg-slate-100 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 sm:w-auto sm:px-6 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+              className="w-full rounded-xl bg-white border border-slate-200 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 sm:w-auto sm:px-8 dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800"
             >
-              Tutup
+              Tutup Panel
             </button>
           </div>
         </div>

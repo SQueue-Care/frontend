@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import apiClient from '../../lib/apiClient'
 import { getErrorMessage } from '../../lib/errors'
 import {
   getAllowedQueueTransitions,
   isValidQueueTransition,
-  QUEUE_TRANSITION_CLASSES,
   QUEUE_TRANSITION_LABELS,
   QUEUE_TRANSITION_TITLES,
 } from '../../lib/queueStateMachine'
@@ -29,7 +30,6 @@ const STATUS_LABEL: Record<QueueStatus, string> = {
   [QueueStatus.CANCELLED]: 'Dibatalkan',
 }
 
-// REVISI: Perbaikan warna mode gelap yang bocor
 const STATUS_CLASSES: Record<QueueStatus, string> = {
   [QueueStatus.WAITING]: 'bg-slate-50 border-slate-200 text-slate-700 dark:bg-[#131314] dark:border-zinc-800 dark:text-zinc-300',
   [QueueStatus.CALLED]: 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-500/10 dark:border-blue-500/20 dark:text-blue-400',
@@ -140,9 +140,12 @@ export default function DoctorQueueManagement() {
       return
     }
 
+    if (!window.confirm('Apakah Anda yakin ingin membatalkan antrean ini?')) return
+
     try {
       await apiClient.post(`/queues/${queueId}/cancel`)
       refreshDepartmentQueues()
+      showAlert('Antrean berhasil dibatalkan.', 'success')
     } catch (error: unknown) {
       showAlert(getErrorMessage(error, 'Gagal membatalkan antrean.'), 'error')
     }
@@ -182,7 +185,7 @@ export default function DoctorQueueManagement() {
         </div>
       )}
 
-      {/* REVISI TABEL ENTERPRISE (P-6, STICKY RIGHT) */}
+      {/* TABEL ANTREAN GAYA ENTERPRISE */}
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         <div className="flex items-center justify-between border-b border-slate-100 p-6 dark:border-zinc-800">
           <div>
@@ -209,12 +212,12 @@ export default function DoctorQueueManagement() {
         ) : (
           <div className="no-scrollbar relative overflow-x-auto">
             <table className="w-full min-w-[900px] border-collapse text-left">
-              <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
+              <thead className="border-b border-slate-100 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:text-zinc-500">
                 <tr>
                   <th className="p-6 pl-8">No. Antrean</th>
                   <th className="p-6">Nama Pasien</th>
                   <th className="p-6">Status</th>
-                  <th className="sticky right-0 z-20 border-l border-slate-100 bg-slate-50/95 p-6 pr-8 text-right shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] backdrop-blur-sm dark:border-zinc-800/50 dark:bg-[#131314]/95 dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)]">
+                  <th className="sticky right-0 z-20 p-6 pr-8 text-right">
                     Aksi
                   </th>
                 </tr>
@@ -233,10 +236,11 @@ export default function DoctorQueueManagement() {
                     <tr
                       key={queue.id}
                       style={{ zIndex: departmentQueues.length - index }}
-                      className={`group relative transition-all duration-200 ${
+                      /* PENYESUAIAN: Pemindahan warna background solid ke TR secara eksplisit */
+                      className={`group relative transition-colors duration-200 ${
                         isCurrent
-                          ? 'bg-indigo-50/80 ring-1 ring-inset ring-indigo-100 dark:bg-indigo-500/10 dark:ring-indigo-500/20'
-                          : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/30'
+                          ? 'bg-indigo-50 ring-1 ring-inset ring-indigo-100 dark:bg-[#252636] dark:ring-indigo-500/20'
+                          : 'bg-white hover:bg-slate-50 dark:bg-[#1e1f20] dark:hover:bg-[#252628]'
                       }`}
                     >
                       <td className="p-6 pl-8 align-top">
@@ -250,21 +254,24 @@ export default function DoctorQueueManagement() {
                         </div>
                       </td>
                       <td className="p-6 align-top">
-                        <div className="font-medium uppercase text-zinc-900 dark:text-zinc-100">
+                        <div className="font-medium uppercase text-zinc-900 transition-colors group-hover:text-teal-600 dark:text-zinc-100">
                           {queue.patient?.user?.name || '-'}
                         </div>
                       </td>
                       <td className="p-6 align-top">
                         <span
-                          className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase ${STATUS_CLASSES[queue.status]}`}
+                          className={`inline-flex min-w-[100px] items-center justify-center rounded-lg border px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase ${STATUS_CLASSES[queue.status]}`}
                         >
                           {STATUS_LABEL[queue.status]}
                         </span>
                       </td>
+                      
+                      {/* PENYESUAIAN: Menggunakan bg-inherit agar selaras sempurna dengan background row */}
                       <td
-                        className="sticky right-0 border-l border-slate-100 bg-white p-6 pr-8 text-right shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-slate-50/80 group-hover:z-50 dark:border-zinc-800/50 dark:bg-[#1e1f20] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)] dark:group-hover:bg-[#252628]"
+                        className="sticky right-0 bg-inherit p-6 pr-8 text-right shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.3)]"
                       >
                         <div className="flex flex-wrap items-center justify-end gap-2">
+                          
                           {ACTIVE_STATUSES.includes(queue.status) && (
                             <button
                               type="button"
@@ -291,48 +298,79 @@ export default function DoctorQueueManagement() {
                             </button>
                           )}
 
-                          {getAllowedQueueTransitions(queue.status)
-                            .filter((nextStatus) => nextStatus !== QueueStatus.CANCELLED)
-                            .map((nextStatus) => {
-                              const blocked = isBlocked && ACTIVE_STATUSES.includes(nextStatus)
-                              return (
-                                <button
-                                  key={nextStatus}
-                                  type="button"
-                                  disabled={blocked}
-                                  onClick={() =>
-                                    handleUpdateQueueStatus(queue.id, queue.status, nextStatus)
-                                  }
-                                  className={`${QUEUE_TRANSITION_CLASSES[nextStatus]} rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all disabled:cursor-not-allowed disabled:opacity-40`}
-                                  title={
-                                    blocked
-                                      ? 'Selesaikan pasien saat ini terlebih dahulu'
-                                      : QUEUE_TRANSITION_TITLES[nextStatus]
-                                  }
-                                >
-                                  {QUEUE_TRANSITION_LABELS[nextStatus]}
-                                </button>
-                              )
-                            })}
-
-                          {(
-                            [
-                              QueueStatus.WAITING,
-                              QueueStatus.CALLED,
-                              QueueStatus.SKIPPED,
-                            ] as QueueStatus[]
-                          ).includes(queue.status) && (
-                            <button
-                              type="button"
-                              onClick={() => handleCancelQueue(queue.id, queue.status)}
-                              className="rounded-lg border border-transparent p-2 text-slate-400 transition-all hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-zinc-500 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
-                              title="Batalkan antrean"
+                          <Menu as="div" className="relative inline-block text-left">
+                            <div>
+                              <MenuButton className="flex items-center justify-center rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-700 focus:outline-none dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-300">
+                                <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
+                              </MenuButton>
+                            </div>
+                            <Transition
+                              as={Fragment}
+                              enter="transition ease-out duration-100"
+                              enterFrom="transform opacity-0 scale-95"
+                              enterTo="transform opacity-100 scale-100"
+                              leave="transition ease-in duration-75"
+                              leaveFrom="transform opacity-100 scale-100"
+                              leaveTo="transform opacity-0 scale-95"
                             >
-                              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          )}
+                              <MenuItems className="absolute right-0 z-50 mt-2 w-max min-w-[180px] origin-top-right divide-y divide-slate-100 rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-zinc-800 dark:bg-[#1e1f20] dark:ring-white/10">
+                                <div className="py-1">
+                                  {getAllowedQueueTransitions(queue.status)
+                                    .filter((nextStatus) => nextStatus !== QueueStatus.CANCELLED)
+                                    .map((nextStatus) => {
+                                      const blocked = isBlocked && ACTIVE_STATUSES.includes(nextStatus)
+                                      return (
+                                        <MenuItem key={nextStatus}>
+                                          {({ active }) => (
+                                            <button
+                                              disabled={blocked}
+                                              onClick={(e) => {
+                                                e.stopPropagation()
+                                                void handleUpdateQueueStatus(queue.id, queue.status, nextStatus)
+                                              }}
+                                              title={blocked ? 'Selesaikan pasien saat ini terlebih dahulu' : QUEUE_TRANSITION_TITLES[nextStatus]}
+                                              className={`${
+                                                active
+                                                  ? 'bg-slate-50 text-teal-600 dark:bg-zinc-800 dark:text-teal-400'
+                                                  : 'text-slate-700 dark:text-zinc-300'
+                                              } group flex w-full items-center px-4 py-2.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40`}
+                                            >
+                                              {QUEUE_TRANSITION_LABELS[nextStatus]}
+                                            </button>
+                                          )}
+                                        </MenuItem>
+                                      )
+                                    })}
+                                    
+                                  {(
+                                    [
+                                      QueueStatus.WAITING,
+                                      QueueStatus.CALLED,
+                                      QueueStatus.SKIPPED,
+                                    ] as QueueStatus[]
+                                  ).includes(queue.status) && (
+                                    <MenuItem>
+                                      {({ active }) => (
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            void handleCancelQueue(queue.id, queue.status)
+                                          }}
+                                          className={`${
+                                            active
+                                              ? 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'
+                                              : 'text-rose-600 dark:text-rose-400'
+                                          } group flex w-full items-center px-4 py-2.5 text-sm transition-colors`}
+                                        >
+                                          Batalkan Antrean
+                                        </button>
+                                      )}
+                                    </MenuItem>
+                                  )}
+                                </div>
+                              </MenuItems>
+                            </Transition>
+                          </Menu>
                         </div>
                       </td>
                     </tr>
