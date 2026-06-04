@@ -239,8 +239,8 @@ export default function PatientPortalLayout() {
         onNavigate={(id) => navigate(`/portal/${id}`)}
         user={user ? { name: user.name, email: user.email } : null}
         onLogout={handleLogout}
-        logoLabel="Portal"
-        logoAccent="Pasien"
+        logoLabel="Patient"
+        logoAccent="Portal"
         pageTitle={PAGE_TITLES[activeView]}
         supportsTheme
         onProfileClick={() => navigate('/portal/profile')}
