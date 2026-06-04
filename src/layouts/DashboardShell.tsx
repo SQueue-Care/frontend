@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import CustomAlert from '../components/ui/CustomAlert'
 import { useThemeStore } from '../store/themeStore'
+import SQueue from '../components/SQueue'
 
 export interface NavSubItem {
   id: string
@@ -143,11 +144,15 @@ export default function DashboardShell({
             </svg>
           </button>
 
+          {/* IMPLEMENTASI LOGO BARU */}
           {isSidebarOpen && (
-            <span className="animate-in fade-in ml-3 font-['Manrope'] text-base tracking-tight text-zinc-950 duration-200 dark:text-white">
-              {logoLabel}
-              {logoAccent && <span className="text-teal-600 dark:text-teal-400">{logoAccent}</span>}
-            </span>
+            <div className="animate-in fade-in ml-3 flex items-center gap-2 duration-200">
+              <SQueue className="h-7 w-7 drop-shadow-sm transition-transform duration-500 hover:scale-105" />
+              <span className="font-['Manrope'] text-base font-bold tracking-tight text-zinc-950 dark:text-white">
+                {logoLabel}
+                {logoAccent && <span className="text-teal-600 dark:text-teal-400">{logoAccent}</span>}
+              </span>
+            </div>
           )}
         </header>
 
