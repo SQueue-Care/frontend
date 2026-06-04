@@ -250,6 +250,7 @@ export interface Queue {
   notes?: string | null
   doctorNotes?: DoctorNotes | null
   currentServingNumber?: number | null
+  waitingAhead?: number | null
   actualWaitMinutes?: number | null
   estimatedWaitMinutes?: number | null
   sessionStartAt?: string | null

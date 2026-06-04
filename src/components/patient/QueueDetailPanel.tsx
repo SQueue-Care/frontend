@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import QueueVisitFlow from './QueueVisitFlow'
+import PatientQueueSummary from './PatientQueueSummary'
 import QueueWaitTimePanel from './QueueWaitTimePanel'
 import { DoctorNotesSection } from '../shared/DoctorNotesDisplay'
 import apiClient from '../../lib/apiClient'
@@ -16,41 +17,6 @@ interface QueueDetailPanelProps {
     nik: string
     address: string
   } | null
-}
-
-const getQueueStatusStyle = (status: string) => {
-  switch (status) {
-    case 'WAITING':
-      return 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20'
-    case 'CALLED':
-    case 'IN_PROGRESS':
-      return 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
-    case 'DONE':
-    case 'SKIPPED':
-    case 'CANCELLED':
-      return 'bg-slate-50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-700'
-    default:
-      return 'bg-slate-50 dark:bg-zinc-800/50 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-700'
-  }
-}
-
-const getQueueStatusText = (status: string) => {
-  switch (status) {
-    case 'WAITING':
-      return 'Menunggu'
-    case 'CALLED':
-      return 'Giliran Anda'
-    case 'IN_PROGRESS':
-      return 'Diperiksa'
-    case 'DONE':
-      return 'Selesai'
-    case 'SKIPPED':
-      return 'Dilewati'
-    case 'CANCELLED':
-      return 'Dibatalkan'
-    default:
-      return status
-  }
 }
 
 export default function QueueDetailPanel({
@@ -99,8 +65,8 @@ export default function QueueDetailPanel({
             {/* Header Panel */}
             <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b border-slate-100 bg-slate-50/50 p-6 transition-colors md:p-8 dark:border-zinc-800 dark:bg-[#131314]/50">
               <div>
-                <h3 className="font-['Manrope'] text-2xl tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
-                  Detail Kunjungan
+                <h3 className="font-['Manrope'] text-xl font-bold text-zinc-950 dark:text-zinc-100">
+                  Status Antrean
                 </h3>
                 <p className="mt-1 font-mono text-xs font-medium tracking-widest text-slate-500 uppercase transition-colors dark:text-zinc-400">
                   ID: {queue.id?.substring(0, 8) || 'XXX'}
@@ -122,30 +88,12 @@ export default function QueueDetailPanel({
             </div>
 
             {/* Konten Utama */}
-            <div className="no-scrollbar flex-1 space-y-6 overflow-y-auto p-6 md:p-8">
-              {/* Box Nomor Antrean & Status */}
-              <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">
-                <div>
-                  <p className="mb-1 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
-                    Nomor Urut
-                  </p>
-                  <span className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 font-mono text-xl text-zinc-900 shadow-sm transition-colors dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-100">
-                    {queue.queueNumber}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <p className="mb-1.5 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
-                    Status Antrean
-                  </p>
-                  <span
-                    className={`inline-flex rounded-lg border px-3.5 py-1.5 text-[10px] tracking-widest uppercase transition-colors ${getQueueStatusStyle(queue.status)}`}
-                  >
-                    {getQueueStatusText(queue.status)}
-                  </span>
-                </div>
-              </div>
+            <div className="no-scrollbar flex-1 space-y-5 overflow-y-auto p-5 md:p-6">
+              {displayQueue && (
+                <PatientQueueSummary queue={displayQueue} liveEstimate={liveEstimate} />
+              )}
 
-              {showWaitPanel && displayQueue && (
+              {showWaitPanel && displayQueue && displayQueue.status !== 'WAITING' && (
                 <>
                   {isLoadingEstimate && !buildWaitTimeContext(displayQueue, liveEstimate) ? (
                     <div className="rounded-2xl border border-teal-200/80 bg-teal-50/50 p-4 text-center dark:border-teal-900/40 dark:bg-teal-500/10">

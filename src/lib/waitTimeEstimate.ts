@@ -72,6 +72,29 @@ export function getQueueWaitMinutes(
   return minutes
 }
 
+export function getQueueWaitingAhead(
+  queue: Pick<Queue, 'status' | 'waitingAhead' | 'prediction'>,
+  liveEstimate?: WaitTimeEstimate | null,
+): number | null {
+  if (queue.status !== 'WAITING') return null
+
+  if (queue.waitingAhead != null) return queue.waitingAhead
+
+  if (liveEstimate?.waitingAhead != null) return liveEstimate.waitingAhead
+
+  const stored = queue.prediction?.features?.waitingAhead
+  if (typeof stored === 'number') return stored
+
+  return null
+}
+
+export function formatWaitingAheadLabel(count: number | null): string | null {
+  if (count == null) return null
+  if (count === 0) return 'Anda berikutnya'
+  if (count === 1) return '1 pasien lagi sebelum giliran Anda'
+  return `${count} pasien lagi sebelum giliran Anda`
+}
+
 export function getWaitStartedAt(
   queue: WaitQueueInput,
   liveEstimate?: WaitTimeEstimate | null,
@@ -134,7 +157,6 @@ export function buildWaitTimeContext(
   const targetAt = getWaitTargetAt(queue, liveEstimate)
   if (!startedAt || !targetAt) return null
 
-  const features = queue.prediction?.features
   const sessionStartTime =
     queue.sessionStartTime ?? queue.schedule?.startTime ?? liveEstimate?.sessionStartTime ?? null
 
@@ -143,12 +165,11 @@ export function buildWaitTimeContext(
     kategori: queue.prediction?.kategori ?? liveEstimate?.kategori,
     source: queue.prediction?.source ?? liveEstimate?.source,
     waitingAhead:
-      typeof features?.waitingAhead === 'number'
-        ? features.waitingAhead
-        : liveEstimate?.waitingAhead,
+      getQueueWaitingAhead(queue, liveEstimate) ??
+      undefined,
     startedAt,
     targetAt,
-    startedLabel: sessionStartTime ?? formatClockLabel(startedAt),
+    startedLabel: formatClockLabel(startedAt),
     targetLabel: formatClockLabel(targetAt),
     sessionStartTime,
   }

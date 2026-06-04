@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import apiClient from '../../lib/apiClient'
+import apiClient, { AI_API_TIMEOUT_MS } from '../../lib/apiClient'
 import { isCdssAvailable, normalizeCdssResult } from '../../lib/cdssUtils'
 import { getErrorMessage } from '../../lib/errors'
 import type { CdssHealthResponse, CdssRecommendResponse, Queue } from '../../lib/types'
@@ -43,7 +43,7 @@ function CDSSModalContent({
       try {
         const [existingRes, healthRes] = await Promise.all([
           apiClient.get(`/cdss/by-queue/${queue.id}`),
-          apiClient.get('/cdss/health'),
+          apiClient.get('/cdss/health', { timeout: AI_API_TIMEOUT_MS }),
         ])
         if (!cancelled) {
           const existing = existingRes.data?.data
@@ -59,7 +59,7 @@ function CDSSModalContent({
       } catch {
         if (!cancelled) {
           try {
-            const healthRes = await apiClient.get('/cdss/health')
+            const healthRes = await apiClient.get('/cdss/health', { timeout: AI_API_TIMEOUT_MS })
             setHealth(healthRes.data?.data ?? null)
           } catch {
             console.log('[CDSSModal] CDSS health unavailable')
@@ -83,11 +83,15 @@ function CDSSModalContent({
     setError(null)
     setSaveMessage(null)
     try {
-      const res = await apiClient.post('/cdss/recommend', {
-        gejala: trimmed,
-        patientId: queue.patient?.id,
-        queueId: queue.id,
-      })
+      const res = await apiClient.post(
+        '/cdss/recommend',
+        {
+          gejala: trimmed,
+          patientId: queue.patient?.id,
+          queueId: queue.id,
+        },
+        { timeout: AI_API_TIMEOUT_MS },
+      )
       const normalized = normalizeCdssResult(res.data.data)
       const savedGejala = gejalaFromResult(normalized) || trimmed
       setResult(normalized)

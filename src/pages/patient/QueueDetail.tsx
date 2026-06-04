@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import QueueVisitFlow from '../../components/patient/QueueVisitFlow'
+import PatientQueueSummary from '../../components/patient/PatientQueueSummary'
 import QueueWaitTimePanel from '../../components/patient/QueueWaitTimePanel'
 import { DoctorNotesSection } from '../../components/shared/DoctorNotesDisplay'
 import { useQueueLiveEstimate } from '../../hooks/useQueueLiveEstimate'
@@ -12,24 +13,10 @@ import type { Queue } from '../../lib/types'
 
 const POLL_INTERVAL_MS = 7000
 
-const STATUS_STYLE: Record<string, string> = {
-  WAITING:
-    'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20',
-  CALLED:
-    'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
-  IN_PROGRESS:
-    'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
-  DONE: 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20',
-  SKIPPED:
-    'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20',
-  CANCELLED:
-    'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20',
-}
-
 const STATUS_LABEL: Record<string, string> = {
-  WAITING: 'Menunggu',
+  WAITING: 'Menunggu giliran',
   CALLED: 'Giliran Anda',
-  IN_PROGRESS: 'Diperiksa',
+  IN_PROGRESS: 'Sedang diperiksa',
   DONE: 'Selesai',
   SKIPPED: 'Dilewati',
   CANCELLED: 'Dibatalkan',
@@ -47,10 +34,10 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:text-zinc-500">
+      <h4 className="mb-3 border-b border-slate-200 pb-2 text-sm font-semibold text-slate-700 dark:border-zinc-800 dark:text-zinc-300">
         {title}
       </h4>
-      <div className="space-y-2.5">{children}</div>
+      <div className="space-y-3">{children}</div>
     </div>
   )
 }
@@ -169,18 +156,13 @@ export default function PatientQueueDetail() {
           Kembali
         </button>
         <div>
-          <h1 className="font-['Manrope'] text-3xl font-extrabold tracking-tighter text-zinc-950 dark:text-white">
-            Detail Kunjungan
+          <h1 className="font-['Manrope'] text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-3xl dark:text-white">
+            Status Antrean
           </h1>
-          {queue && (
-            <p className="mt-1 font-mono text-xs font-medium tracking-widest text-slate-400 uppercase dark:text-zinc-500">
-              ID: {queue.id.substring(0, 8)}
-              {isLive && (
-                <span className="ml-3 inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-                  Live
-                </span>
-              )}
+          {queue && isLive && (
+            <p className="mt-1 flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              Diperbarui otomatis
             </p>
           )}
         </div>
@@ -214,34 +196,16 @@ export default function PatientQueueDetail() {
       {/* Content */}
       {!isLoading && queue && (
         <div className="grid gap-5 lg:grid-cols-3">
-          {/* Queue number + status card */}
-          <div className="flex items-center justify-between rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20] lg:col-span-3">
-            <div>
-              <p className="mb-2 text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
-                Nomor Urut Antrean
-              </p>
-              <span className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-6 py-3 font-mono text-4xl text-zinc-900 shadow-sm dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-100">
-                {queue.queueNumber}
-              </span>
-            </div>
-            <div className="text-right">
-              <p className="mb-2 text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">
-                Status
-              </p>
-              <span
-                className={`inline-flex rounded-xl border px-5 py-2.5 text-[11px] tracking-widest uppercase ${STATUS_STYLE[queue.status] ?? 'border-slate-200 bg-slate-50 text-slate-500'}`}
-              >
-                {STATUS_LABEL[queue.status] ?? queue.status}
-              </span>
-            </div>
+          <div className="lg:col-span-3">
+            <PatientQueueSummary queue={queue} liveEstimate={liveEstimate} />
           </div>
 
-          {showWaitPanel && queue && (
+          {showWaitPanel && queue.status !== 'WAITING' && (
             <div className="lg:col-span-3">
               {isLoadingEstimate && !buildWaitTimeContext(queue, liveEstimate) ? (
-                <div className="rounded-2xl border border-teal-200/80 bg-teal-50/50 p-6 text-center dark:border-teal-900/40 dark:bg-teal-500/10">
-                  <p className="text-xs tracking-widest text-teal-700 uppercase dark:text-teal-400">
-                    Menghitung prediksi waktu tunggu...
+                <div className="rounded-2xl border-2 border-teal-200 bg-teal-50/50 p-6 text-center dark:border-teal-900/40 dark:bg-teal-500/10">
+                  <p className="text-base text-teal-800 dark:text-teal-300">
+                    Menghitung perkiraan waktu...
                   </p>
                 </div>
               ) : (

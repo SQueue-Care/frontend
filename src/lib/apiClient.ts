@@ -12,6 +12,9 @@ const apiClient = axios.create({
   withCredentials: true,
 })
 
+/** Timeout untuk endpoint AI/CDSS — harus >= backend ML_SERVICE_TIMEOUT_MS */
+export const AI_API_TIMEOUT_MS = 120_000
+
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('access_token')

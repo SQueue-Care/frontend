@@ -1,5 +1,12 @@
-// src/components/patient/BookingPanel.tsx
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  formatBookingDateLabel,
+  formatScheduleTimeRange,
+  getDayOfWeekFromDateKey,
+  isScheduleAvailable,
+  pickFirstAvailableSchedule,
+  toDateKey,
+} from '../../lib/bookingFlow'
 import { getErrorMessage } from '../../lib/errors'
 import { toQueueWaitDisplay } from '../../lib/waitTimeEstimate'
 import { useAlertStore } from '../../store/alertStore'
@@ -34,8 +41,14 @@ interface BookingPanelProps {
   hasActiveQueue?: boolean
 }
 
-const generateNextDays = (daysCount: number) => {
-  const dates = []
+const BOOKING_STEPS = [
+  { id: 1, label: 'Dokter & jadwal' },
+  { id: 2, label: 'Periksa data' },
+  { id: 3, label: 'Selesai' },
+]
+
+function generateNextDays(daysCount: number) {
+  const dates: Date[] = []
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   for (let i = 0; i < daysCount; i++) {
@@ -44,6 +57,17 @@ const generateNextDays = (daysCount: number) => {
     dates.push(date)
   }
   return dates
+}
+
+function StepHeader({ title, description }: { title: string; description?: string }) {
+  return (
+    <div className="mb-3">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{title}</h3>
+      {description && (
+        <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-zinc-400">{description}</p>
+      )}
+    </div>
+  )
 }
 
 export default function BookingPanel({
@@ -67,6 +91,7 @@ export default function BookingPanel({
     fetchDoctorsByDepartment,
     fetchSchedulesByDoctor,
     fetchDepartmentAvailability,
+    resolveFirstAvailableSlot,
     submitBooking,
     resetBookingState,
   } = useBookingStore()
@@ -78,20 +103,25 @@ export default function BookingPanel({
     fetchWaitTime,
     clearWaitTime,
   } = usePredictionStore()
+
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null)
-  const [selectedDate, setSelectedDate] = useState<string>('')
+  const [selectedDate, setSelectedDate] = useState('')
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null)
-  const [notes, setNotes] = useState<string>('')
+  const [notes, setNotes] = useState('')
   const [queueResult, setQueueResult] = useState<BookingResult | null>(null)
+  const [isResolvingSlot, setIsResolvingSlot] = useState(false)
+  const skipScheduleFetchRef = useRef(false)
 
   const availableDates = useMemo(() => generateNextDays(14), [])
+  const dateKeys = useMemo(() => availableDates.map(toDateKey), [availableDates])
 
   const isTodayBooking = useMemo(() => {
     if (!selectedDate) return false
-    const now = new Date()
-    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-    return selectedDate.split('T')[0] === today
+    return selectedDate === toDateKey(new Date())
   }, [selectedDate])
+
+  const selectedDoctor = departmentDoctors.find((d) => d.id === selectedDoctorId)
+  const selectedSchedule = doctorSchedules.find((s) => s.id === selectedScheduleId)
 
   const previewEstimate = waitTimeEstimate ? toQueueWaitDisplay(waitTimeEstimate) : null
   const successEstimate =
@@ -104,6 +134,8 @@ export default function BookingPanel({
         }
       : null
 
+  const isScheduleStepLoading = isResolvingSlot || isLoadingSchedules
+
   useEffect(() => {
     if (isOpen && selectedDept) {
       fetchDoctorsByDepartment(selectedDept.id)
@@ -111,23 +143,41 @@ export default function BookingPanel({
   }, [isOpen, selectedDept, fetchDoctorsByDepartment])
 
   useEffect(() => {
-    if (selectedDoctorId && selectedDate) {
-      const [year, month, day] = selectedDate.split('-').map(Number)
-      const localDateObj = new Date(year, month - 1, day)
-
-      const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
-      const dayOfWeek = days[localDateObj.getDay()]
-      fetchSchedulesByDoctor(selectedDoctorId, dayOfWeek, selectedDate)
-      if (selectedDept) {
-        fetchDepartmentAvailability(selectedDept.id, selectedDate, selectedDoctorId)
-      }
+    if (!selectedDoctorId || !selectedDate || !selectedDept) return
+    if (skipScheduleFetchRef.current) {
+      skipScheduleFetchRef.current = false
+      return
     }
+
+    const dayOfWeek = getDayOfWeekFromDateKey(selectedDate)
+    void fetchSchedulesByDoctor(selectedDoctorId, dayOfWeek, selectedDate)
+    void fetchDepartmentAvailability(selectedDept.id, selectedDate, selectedDoctorId)
   }, [
     selectedDoctorId,
     selectedDate,
     selectedDept,
     fetchSchedulesByDoctor,
     fetchDepartmentAvailability,
+  ])
+
+  useEffect(() => {
+    if (isResolvingSlot || isLoadingSchedules || !selectedDoctorId || !selectedDate) return
+
+    const current = selectedScheduleId
+      ? doctorSchedules.find((schedule) => schedule.id === selectedScheduleId)
+      : null
+    if (current && isScheduleAvailable(current, departmentAvailability)) return
+
+    const picked = pickFirstAvailableSchedule(doctorSchedules, departmentAvailability)
+    setSelectedScheduleId(picked?.id ?? null)
+  }, [
+    doctorSchedules,
+    departmentAvailability,
+    isLoadingSchedules,
+    isResolvingSlot,
+    selectedDoctorId,
+    selectedDate,
+    selectedScheduleId,
   ])
 
   useEffect(() => {
@@ -141,6 +191,7 @@ export default function BookingPanel({
       doctorId: selectedDoctorId,
       patientId,
       scheduleId: selectedScheduleId ?? undefined,
+      queueDate: selectedDate,
     })
   }, [
     step,
@@ -148,6 +199,7 @@ export default function BookingPanel({
     selectedDept?.id,
     selectedDoctorId,
     selectedScheduleId,
+    selectedDate,
     patientId,
     fetchWaitTime,
     clearWaitTime,
@@ -159,25 +211,35 @@ export default function BookingPanel({
     setSelectedScheduleId(null)
     setNotes('')
     setQueueResult(null)
+    setIsResolvingSlot(false)
     clearWaitTime()
     resetBookingState()
     onClose()
   }
 
-  const getSelectedDoctorName = () => {
-    const doc = departmentDoctors.find((d) => d.id === selectedDoctorId)
-    return doc ? doc.user.name.toUpperCase() : '-'
+  const handleSelectDoctor = async (doctorId: string) => {
+    if (!selectedDept || doctorId === selectedDoctorId) return
+
+    setSelectedDoctorId(doctorId)
+    setSelectedScheduleId(null)
+    setSelectedDate('')
+    setIsResolvingSlot(true)
+
+    try {
+      const result = await resolveFirstAvailableSlot(doctorId, selectedDept.id, dateKeys)
+      if (result) {
+        skipScheduleFetchRef.current = true
+        setSelectedDate(result.date)
+        setSelectedScheduleId(result.scheduleId)
+      }
+    } finally {
+      setIsResolvingSlot(false)
+    }
   }
 
-  const getSelectedScheduleDetail = () => {
-    const sched = doctorSchedules.find((s) => s.id === selectedScheduleId)
-    if (!sched || !selectedDate) return '-'
-    const formattedDate = new Date(selectedDate).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
-    return `${formattedDate} | ${sched.startTime} - ${sched.endTime}`
+  const handleSelectDate = (dateKey: string) => {
+    setSelectedDate(dateKey)
+    setSelectedScheduleId(null)
   }
 
   const handleConfirmBooking = async () => {
@@ -188,7 +250,7 @@ export default function BookingPanel({
         doctorId: selectedDoctorId,
         scheduleId: selectedScheduleId,
         date: `${selectedDate}T12:00:00.000Z`,
-        notes: notes,
+        notes,
       })
       setQueueResult(result)
       onNext()
@@ -197,128 +259,124 @@ export default function BookingPanel({
         onBookingSuccess(result.id, result.isAppointment)
       }
     } catch (err: unknown) {
-      const msg = getErrorMessage(
-        err,
-        'Terjadi kesalahan saat mendaftar. Silakan coba lagi atau pilih waktu lain.',
+      showAlert(
+        getErrorMessage(err, 'Gagal mendaftar. Silakan coba lagi atau pilih jadwal lain.'),
+        'error',
       )
-      showAlert(msg, 'error')
     }
   }
+
+  const canContinueStep1 = Boolean(selectedDoctorId && selectedDate && selectedScheduleId)
 
   return (
     <>
       <div
-        className={`fixed inset-0 z-80 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${isOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'}`}
+        className={`fixed inset-0 z-80 bg-black/30 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'}`}
         onClick={step === 3 ? handleClose : undefined}
       />
 
       <div
-        className={`fixed inset-y-0 right-0 z-90 flex w-full flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-500 ease-in-out sm:max-w-md md:w-[500px] dark:border-zinc-800 dark:bg-[#1e1f20] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed inset-y-0 right-0 z-90 flex w-full flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-500 ease-in-out sm:max-w-lg dark:border-zinc-800 dark:bg-[#1e1f20] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
-        {/* Header Panel */}
-        <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b border-slate-100 bg-slate-50/50 p-6 transition-colors md:p-8 dark:border-zinc-800 dark:bg-[#131314]/50">
-          <div>
-            <h2 className="font-['Manrope'] text-2xl font-extrabold tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
-              Reservasi Antrean
-            </h2>
-            <p className="mt-0.5 text-sm text-teal-600 transition-colors dark:text-teal-400">
-              {selectedDept?.name || 'Poliklinik'}
-            </p>
+        <div className="shrink-0 border-b border-slate-100 bg-slate-50/80 px-5 py-5 dark:border-zinc-800 dark:bg-[#131314]/50 sm:px-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="font-['Manrope'] text-xl font-bold text-zinc-950 sm:text-2xl dark:text-zinc-100">
+                Ambil Antrean
+              </h2>
+              <p className="mt-1 text-sm text-teal-700 dark:text-teal-400">
+                {selectedDept?.name ?? 'Poliklinik'}
+              </p>
+            </div>
+            {step !== 3 && (
+              <button
+                type="button"
+                onClick={handleClose}
+                aria-label="Tutup"
+                className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 hover:bg-slate-100 dark:border-zinc-700 dark:bg-[#1e1f20] dark:hover:bg-zinc-800"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
-          {step !== 3 && (
-            <button
-              onClick={handleClose}
-              className="rounded-xl border border-slate-200 bg-white p-2 text-slate-400 shadow-sm transition-all hover:bg-slate-100 hover:text-slate-700 focus:ring-2 focus:ring-slate-200 focus:outline-none dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 dark:focus:ring-zinc-700"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
+
+          {step < 3 && (
+            <div className="mt-5 flex items-center gap-2">
+              {BOOKING_STEPS.slice(0, 2).map((item, index) => {
+                const active = step >= item.id
+                return (
+                  <div key={item.id} className="flex min-w-0 flex-1 items-center gap-2">
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                        active
+                          ? 'bg-teal-600 text-white'
+                          : 'bg-slate-100 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500'
+                      }`}
+                    >
+                      {item.id}
+                    </div>
+                    <span
+                      className={`truncate text-sm font-medium ${
+                        active ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-400 dark:text-zinc-500'
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                    {index === 0 && <div className="mx-1 h-px flex-1 bg-slate-200 dark:bg-zinc-700" />}
+                  </div>
+                )
+              })}
+            </div>
           )}
         </div>
 
-        {/* Progress Indicator */}
-        {step < 3 && (
-          <div className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-white px-8 py-4 text-[10px] tracking-widest uppercase transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
-            <div className="flex items-center gap-2.5">
-              <div
-                className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${step >= 1 ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400 dark:bg-[#131314] dark:text-zinc-600'}`}
-              >
-                1
-              </div>
-              <span
-                className={`transition-colors ${step >= 1 ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-400 dark:text-zinc-600'}`}
-              >
-                Jadwal
-              </span>
-            </div>
-            <div className="mx-4 h-px flex-1 bg-slate-200 transition-colors dark:bg-zinc-800" />
-            <div className="flex items-center gap-2.5">
-              <div
-                className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${step >= 2 ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400 dark:bg-[#131314] dark:text-zinc-600'}`}
-              >
-                2
-              </div>
-              <span
-                className={`transition-colors ${step >= 2 ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-400 dark:text-zinc-600'}`}
-              >
-                Konfirmasi
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div className="flex-1 scrollbar-none overflow-y-auto p-6 [-ms-overflow-style:none] md:p-8 [&::-webkit-scrollbar]:hidden">
-          {/* STEP 1: PILIH DOKTER, TANGGAL, & JADWAL */}
+        <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-6">
           {step === 1 && (
-            <div className="animate-in fade-in slide-in-from-right-4 space-y-8 duration-300">
+            <div className="space-y-8">
               <section>
-                <label className="mb-3 block text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
-                  Pilih Dokter Spesialis
-                </label>
+                <StepHeader
+                  title="1. Pilih dokter"
+                  description="Setelah memilih dokter, tanggal dan jam praktik pertama yang tersedia akan dipilih otomatis."
+                />
                 {isLoadingDoctors ? (
-                  <div className="animate-pulse rounded-2xl border-2 border-dashed border-slate-200 p-4 text-center text-sm text-slate-400 transition-colors dark:border-zinc-800 dark:text-zinc-500">
+                  <p className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500 dark:border-zinc-700">
                     Memuat daftar dokter...
-                  </div>
+                  </p>
                 ) : departmentDoctors.length === 0 ? (
-                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center text-sm font-medium text-slate-500 transition-colors dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-400">
+                  <p className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-600 dark:border-zinc-800 dark:bg-[#131314]">
                     Belum ada dokter di poliklinik ini.
-                  </div>
+                  </p>
                 ) : (
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="space-y-2">
                     {departmentDoctors.map((doc) => {
                       const isSelected = selectedDoctorId === doc.id
                       return (
                         <button
                           key={doc.id}
-                          onClick={() => {
-                            setSelectedDoctorId(doc.id)
-                            setSelectedScheduleId(null)
-                          }}
-                          className={`group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border-2 p-4 text-left transition-all duration-300 outline-none ${isSelected ? 'border-teal-500 bg-teal-50/50 shadow-sm dark:bg-teal-900/20' : 'border-slate-100 bg-white hover:border-teal-200 dark:border-zinc-800 dark:bg-[#131314] dark:hover:border-teal-900/50'}`}
+                          type="button"
+                          onClick={() => void handleSelectDoctor(doc.id)}
+                          className={`flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all ${
+                            isSelected
+                              ? 'border-teal-500 bg-teal-50/60 dark:bg-teal-900/20'
+                              : 'border-slate-200 bg-white hover:border-teal-200 dark:border-zinc-800 dark:bg-[#131314]'
+                          }`}
                         >
-                          {isSelected && (
-                            <div className="animate-in slide-in-from-left-1 absolute top-0 left-0 h-full w-1.5 bg-teal-500" />
-                          )}
                           <div
-                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg transition-colors ${isSelected ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-600 dark:bg-[#1e1f20] dark:text-zinc-500 dark:group-hover:bg-teal-900/40 dark:group-hover:text-teal-400'}`}
+                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-semibold ${
+                              isSelected
+                                ? 'bg-teal-600 text-white'
+                                : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300'
+                            }`}
                           >
                             {doc.user.name.charAt(0)}
                           </div>
-                          <div>
-                            <div
-                              className={`text-sm uppercase transition-colors ${isSelected ? 'text-teal-800 dark:text-teal-400' : 'text-zinc-900 dark:text-zinc-100'}`}
-                            >
+                          <div className="min-w-0">
+                            <p className="truncate text-base font-semibold text-zinc-900 dark:text-zinc-100">
                               {doc.user.name}
-                            </div>
-                            <div className="mt-0.5 text-xs font-medium text-slate-500 transition-colors dark:text-zinc-400">
-                              {doc.specialization}
-                            </div>
+                            </p>
+                            <p className="text-sm text-slate-500 dark:text-zinc-400">{doc.specialization}</p>
                           </div>
                         </button>
                       )
@@ -328,43 +386,32 @@ export default function BookingPanel({
               </section>
 
               {selectedDoctorId && (
-                <section className="animate-in fade-in slide-in-from-bottom-4">
-                  <label className="mb-3 block text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
-                    Pilih Tanggal Kunjungan
-                  </label>
-                  <div className="flex snap-x scrollbar-none gap-3 overflow-x-auto px-1 pt-1 pb-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                <section>
+                  <StepHeader
+                    title="2. Pilih tanggal"
+                    description="Geser untuk melihat tanggal lain jika jadwal pilihan penuh."
+                  />
+                  <div className="flex snap-x gap-2 overflow-x-auto pb-2">
                     {availableDates.map((date) => {
-                      const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-                        .toISOString()
-                        .split('T')[0]
-                      const isSelected = selectedDate === dateString
-                      const dayName = date.toLocaleDateString('id-ID', { weekday: 'short' })
-                      const dateNum = date.getDate()
-                      const monthName = date.toLocaleDateString('id-ID', { month: 'short' })
-
+                      const dateKey = toDateKey(date)
+                      const isSelected = selectedDate === dateKey
                       return (
                         <button
-                          key={dateString}
-                          onClick={() => {
-                            setSelectedDate(dateString)
-                            setSelectedScheduleId(null)
-                          }}
-                          className={`flex w-20 shrink-0 snap-center flex-col items-center justify-center gap-1 rounded-2xl border-2 py-3 transition-all duration-300 outline-none ${isSelected ? 'scale-105 border-teal-500 bg-teal-500 text-white shadow-lg shadow-teal-500/30' : 'border-slate-100 bg-white text-zinc-600 hover:border-teal-200 hover:bg-teal-50 dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-400 dark:hover:border-teal-900/50 dark:hover:bg-teal-900/20'}`}
+                          key={dateKey}
+                          type="button"
+                          onClick={() => handleSelectDate(dateKey)}
+                          className={`flex w-[4.75rem] shrink-0 snap-center flex-col items-center rounded-2xl border-2 py-3 transition-all ${
+                            isSelected
+                              ? 'border-teal-500 bg-teal-600 text-white shadow-md'
+                              : 'border-slate-200 bg-white text-zinc-700 dark:border-zinc-700 dark:bg-[#131314]'
+                          }`}
                         >
-                          <span
-                            className={`text-[10px] tracking-wider uppercase transition-colors ${isSelected ? 'text-teal-100' : 'text-slate-400 dark:text-zinc-500'}`}
-                          >
-                            {dayName}
+                          <span className={`text-xs ${isSelected ? 'text-teal-100' : 'text-slate-500'}`}>
+                            {date.toLocaleDateString('id-ID', { weekday: 'short' })}
                           </span>
-                          <span
-                            className={`text-2xl transition-colors ${isSelected ? 'text-white' : 'text-zinc-900 dark:text-zinc-100'}`}
-                          >
-                            {dateNum}
-                          </span>
-                          <span
-                            className={`text-[10px] uppercase transition-colors ${isSelected ? 'text-teal-100' : 'text-slate-400 dark:text-zinc-500'}`}
-                          >
-                            {monthName}
+                          <span className="text-2xl font-bold tabular-nums">{date.getDate()}</span>
+                          <span className={`text-xs ${isSelected ? 'text-teal-100' : 'text-slate-500'}`}>
+                            {date.toLocaleDateString('id-ID', { month: 'short' })}
                           </span>
                         </button>
                       )
@@ -374,69 +421,58 @@ export default function BookingPanel({
               )}
 
               {selectedDoctorId && selectedDate && (
-                <section className="animate-in fade-in slide-in-from-bottom-4">
+                <section>
+                  <StepHeader title="3. Pilih jam praktik" />
                   {departmentAvailability && (
-                    <div
-                      className={`mb-4 rounded-2xl border p-3 text-center text-xs ${ departmentAvailability.quota.isFull ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400' : 'border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/20 dark:text-teal-400' }`}
+                    <p
+                      className={`mb-3 rounded-xl border px-4 py-3 text-sm ${
+                        departmentAvailability.quota.isFull
+                          ? 'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300'
+                          : 'border-teal-200 bg-teal-50 text-teal-900 dark:border-teal-900/40 dark:bg-teal-500/10 dark:text-teal-200'
+                      }`}
                     >
-                      Kuota poli hari ini: {departmentAvailability.quota.remaining}/
-                      {departmentAvailability.quota.total} tersisa
-                    </div>
+                      Kuota poli: {departmentAvailability.quota.remaining} dari{' '}
+                      {departmentAvailability.quota.total} slot masih tersedia
+                    </p>
                   )}
-                  <label className="mb-3 block text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
-                    Pilih Sesi Waktu
-                  </label>
-                  {isLoadingSchedules ? (
-                    <div className="animate-pulse rounded-2xl border-2 border-dashed border-slate-200 p-4 text-center text-sm text-slate-400 transition-colors dark:border-zinc-800 dark:text-zinc-500">
-                      Sinkronisasi jadwal...
-                    </div>
+                  {isScheduleStepLoading ? (
+                    <p className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500">
+                      Mencari jadwal tersedia...
+                    </p>
                   ) : doctorSchedules.length === 0 ? (
-                    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center text-sm font-medium text-slate-500 transition-colors dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-400">
-                      Tidak ada sesi praktik pada tanggal yang dipilih.
-                    </div>
+                    <p className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-600 dark:border-zinc-800 dark:bg-[#131314]">
+                      Tidak ada jadwal dokter pada tanggal ini. Silakan pilih tanggal lain.
+                    </p>
                   ) : (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {doctorSchedules.map((sched) => {
-                        const dayNames: Record<string, string> = {
-                          MONDAY: 'Senin',
-                          TUESDAY: 'Selasa',
-                          WEDNESDAY: 'Rabu',
-                          THURSDAY: 'Kamis',
-                          FRIDAY: 'Jumat',
-                          SATURDAY: 'Sabtu',
-                          SUNDAY: 'Minggu',
-                        }
-                        const dayNameIndo = dayNames[sched.dayOfWeek] || sched.dayOfWeek
                         const isSelected = selectedScheduleId === sched.id
-                        const isFull =
-                          sched.isFull ||
-                          departmentAvailability?.quota.isFull ||
-                          (sched.remaining !== undefined && sched.remaining <= 0)
+                        const isFull = !isScheduleAvailable(sched, departmentAvailability)
                         const remaining = sched.remaining ?? sched.capacity
-
                         return (
                           <button
                             key={sched.id}
                             type="button"
                             disabled={isFull}
                             onClick={() => !isFull && setSelectedScheduleId(sched.id)}
-                            className={`relative flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-4 transition-all duration-300 outline-none ${ isFull ? 'cursor-not-allowed border-slate-100 bg-slate-50 opacity-60 dark:border-zinc-800 dark:bg-[#131314]' : isSelected ? 'scale-[1.02] border-teal-500 bg-teal-50/50 shadow-sm dark:bg-teal-900/20' : 'border-slate-100 bg-white hover:border-teal-200 hover:bg-slate-50 dark:border-zinc-800 dark:bg-[#131314] dark:hover:border-teal-900/50 dark:hover:bg-zinc-800/80' }`}
+                            className={`rounded-2xl border-2 p-4 text-left transition-all ${
+                              isFull
+                                ? 'cursor-not-allowed border-slate-100 opacity-60 dark:border-zinc-800'
+                                : isSelected
+                                  ? 'border-teal-500 bg-teal-50/70 dark:bg-teal-900/20'
+                                  : 'border-slate-200 bg-white hover:border-teal-200 dark:border-zinc-800 dark:bg-[#131314]'
+                            }`}
                           >
-                            <span
-                              className={`text-[10px] tracking-wider uppercase transition-colors ${isSelected ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-zinc-500'}`}
+                            <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                              {formatScheduleTimeRange(sched)}
+                            </p>
+                            <p
+                              className={`mt-1 text-sm ${
+                                isFull ? 'text-rose-600 dark:text-rose-400' : 'text-slate-600 dark:text-zinc-400'
+                              }`}
                             >
-                              {dayNameIndo}
-                            </span>
-                            <span
-                              className={`text-base transition-colors ${isSelected ? 'text-zinc-900 dark:text-zinc-100' : 'text-slate-700 dark:text-zinc-300'}`}
-                            >
-                              {sched.startTime} - {sched.endTime}
-                            </span>
-                            <div
-                              className={`mt-1 rounded-full border px-2.5 py-0.5 text-[10px] transition-colors ${ isFull ? 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-800/50 dark:bg-rose-900/30 dark:text-rose-400' : isSelected ? 'border-teal-200 bg-teal-100 text-teal-700 dark:border-teal-800/50 dark:bg-teal-900/40 dark:text-teal-400' : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-zinc-700 dark:bg-[#1e1f20] dark:text-zinc-400' }`}
-                            >
-                              {isFull ? 'Penuh' : `Tersisa: ${remaining}/${sched.capacity}`}
-                            </div>
+                              {isFull ? 'Penuh' : `Tersisa ${remaining} slot`}
+                            </p>
                           </button>
                         )
                       })}
@@ -445,114 +481,104 @@ export default function BookingPanel({
                 </section>
               )}
 
-              {selectedScheduleId && (
-                <section className="animate-in fade-in slide-in-from-bottom-4">
-                  <label className="mb-3 block text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
-                    Keluhan atau Catatan Medis
-                  </label>
+              {selectedDoctor && selectedDate && selectedSchedule && (
+                <section className="rounded-2xl border border-teal-200 bg-teal-50/60 p-4 dark:border-teal-900/40 dark:bg-teal-500/10">
+                  <p className="text-sm font-semibold text-teal-900 dark:text-teal-200">Ringkasan pilihan</p>
+                  <ul className="mt-2 space-y-1 text-sm text-teal-950 dark:text-teal-100">
+                    <li>Dokter: {selectedDoctor.user.name}</li>
+                    <li>Tanggal: {formatBookingDateLabel(selectedDate)}</li>
+                    <li>Jam: {formatScheduleTimeRange(selectedSchedule)}</li>
+                  </ul>
+                </section>
+              )}
+
+              {selectedDoctorId && (
+                <section>
+                  <StepHeader
+                    title="4. Keluhan (opsional)"
+                    description="Tuliskan gejala utama agar dokter lebih siap saat pemeriksaan."
+                  />
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Tuliskan gejala yang dialami..."
-                    rows={3}
-                    className="w-full resize-none rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-sm font-medium text-zinc-900 shadow-sm transition-all placeholder:text-slate-400 hover:border-teal-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 focus:outline-none dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-100 dark:placeholder:text-zinc-600 dark:hover:border-teal-900/50"
+                    placeholder="Contoh: demam 2 hari, batuk berdahak..."
+                    rows={4}
+                    className="w-full resize-none rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-base text-zinc-900 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-100"
                   />
                 </section>
               )}
             </div>
           )}
 
-          {/* STEP 2: KONFIRMASI */}
           {step === 2 && (
-            <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
-              <div className="space-y-6 rounded-3xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-zinc-800 dark:bg-[#131314]">
+            <div className="space-y-6">
+              <StepHeader
+                title="Periksa data pendaftaran"
+                description="Pastikan informasi di bawah sudah benar sebelum menyelesaikan pendaftaran."
+              />
+
+              <div className="space-y-5 rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-zinc-800 dark:bg-[#131314]">
                 <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
-                    Informasi Pasien
-                  </h4>
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
-                        Nama
-                      </span>
-                      <span className="text-zinc-950 uppercase transition-colors dark:text-zinc-100">
-                        {patientProfile?.name || '-'}
-                      </span>
+                  <p className="mb-2 text-sm font-semibold text-slate-700 dark:text-zinc-300">Data pasien</p>
+                  <dl className="space-y-2 text-sm">
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-slate-500">Nama</dt>
+                      <dd className="text-right font-medium text-zinc-900 dark:text-zinc-100">
+                        {patientProfile?.name ?? '-'}
+                      </dd>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
-                        NIK
-                      </span>
-                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-slate-500">NIK</dt>
+                      <dd className="text-right text-zinc-900 dark:text-zinc-100">
                         {patientProfile?.nik || 'Belum diatur'}
-                      </span>
+                      </dd>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
-                        Tgl Lahir
-                      </span>
-                      <span className="text-zinc-950 transition-colors dark:text-zinc-100">
-                        {patientProfile?.birthDate
-                          ? new Date(patientProfile.birthDate).toLocaleDateString('id-ID')
-                          : '-'}
-                      </span>
-                    </div>
-                  </div>
+                  </dl>
                 </div>
 
-                <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
-                    Detail Kunjungan
-                  </h4>
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
-                        Layanan
-                      </span>
-                      <span className="text-teal-700 transition-colors dark:text-teal-400">
+                <div className="border-t border-slate-200 pt-4 dark:border-zinc-700">
+                  <p className="mb-2 text-sm font-semibold text-slate-700 dark:text-zinc-300">Jadwal kunjungan</p>
+                  <dl className="space-y-2 text-sm">
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-slate-500">Poliklinik</dt>
+                      <dd className="text-right font-medium text-teal-800 dark:text-teal-300">
                         {selectedDept?.name}
-                      </span>
+                      </dd>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
-                        Dokter
-                      </span>
-                      <span className="text-zinc-950 uppercase transition-colors dark:text-zinc-100">
-                        {getSelectedDoctorName()}
-                      </span>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-slate-500">Dokter</dt>
+                      <dd className="text-right font-medium text-zinc-900 dark:text-zinc-100">
+                        {selectedDoctor?.user.name ?? '-'}
+                      </dd>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-500 transition-colors dark:text-zinc-400">
-                        Jadwal
-                      </span>
-                      <span className="text-right text-zinc-950 transition-colors dark:text-zinc-100">
-                        {getSelectedScheduleDetail()}
-                      </span>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-slate-500">Tanggal</dt>
+                      <dd className="text-right text-zinc-900 dark:text-zinc-100">
+                        {selectedDate ? formatBookingDateLabel(selectedDate) : '-'}
+                      </dd>
                     </div>
-                  </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-slate-500">Jam</dt>
+                      <dd className="text-right text-zinc-900 dark:text-zinc-100">
+                        {selectedSchedule ? formatScheduleTimeRange(selectedSchedule) : '-'}
+                      </dd>
+                    </div>
+                  </dl>
                 </div>
 
-                <div>
-                  <h4 className="mb-3 border-b border-slate-200 pb-2 text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:border-zinc-800 dark:text-zinc-500">
-                    Catatan Keluhan Awal
-                  </h4>
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-zinc-800 dark:bg-[#1e1f20]">
-                    <p className="text-sm leading-relaxed font-medium whitespace-pre-wrap text-zinc-700 transition-colors dark:text-zinc-300">
-                      {notes.trim() || (
-                        <span className="text-slate-400 italic dark:text-zinc-600">
-                          Tidak ada catatan keluhan tambahan.
-                        </span>
-                      )}
-                    </p>
+                {notes.trim() && (
+                  <div className="border-t border-slate-200 pt-4 dark:border-zinc-700">
+                    <p className="mb-2 text-sm font-semibold text-slate-700 dark:text-zinc-300">Keluhan</p>
+                    <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">{notes.trim()}</p>
                   </div>
-                </div>
+                )}
               </div>
 
               {isTodayBooking && (
-                <div className="space-y-2">
+                <div>
                   {isLoadingEstimate && (
-                    <p className="text-center text-xs tracking-widest text-teal-700 uppercase dark:text-teal-500">
-                      Menghitung estimasi tunggu...
+                    <p className="text-center text-sm text-teal-700 dark:text-teal-400">
+                      Menghitung perkiraan waktu tunggu...
                     </p>
                   )}
                   {previewEstimate && !isLoadingEstimate && (
@@ -561,128 +587,95 @@ export default function BookingPanel({
                 </div>
               )}
 
-              <p className="text-center text-[10px] leading-relaxed tracking-wide text-slate-500 uppercase italic transition-colors dark:text-zinc-500">
-                *Data di atas akan masuk ke dalam rekam medis sistem.
-              </p>
+              {!isTodayBooking && (
+                <p className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-500/10 dark:text-sky-200">
+                  Kunjungan di hari lain akan disimpan sebagai reservasi. Anda perlu check-in pada hari
+                  H untuk masuk antrean.
+                </p>
+              )}
             </div>
           )}
 
-          {/* STEP 3: TIKET BERHASIL */}
           {step === 3 && queueResult && (
-            <div className="animate-in zoom-in-95 flex flex-col items-center justify-center py-6 text-center duration-500">
-              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50 shadow-sm transition-colors dark:border-emerald-500/20 dark:bg-emerald-500/10">
-                <svg
-                  className="h-10 w-10 text-emerald-600 dark:text-emerald-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    d="M5 13l4 4L19 7"
-                  ></path>
+            <div className="flex flex-col items-center py-4 text-center">
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/20">
+                <svg className="h-8 w-8 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="font-['Manrope'] text-2xl tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
-                Reservasi Berhasil!
+              <h3 className="font-['Manrope'] text-2xl font-bold text-zinc-950 dark:text-zinc-100">
+                Pendaftaran berhasil
               </h3>
-              <p className="mt-2 mb-8 text-sm font-medium text-slate-500 transition-colors dark:text-zinc-400">
+              <p className="mt-2 max-w-sm text-base text-slate-600 dark:text-zinc-400">
                 {queueResult.isAppointment
-                  ? 'Jadwal kunjungan Anda telah dikonfirmasi.'
-                  : 'Nomor antrean Anda telah diterbitkan secara digital.'}
+                  ? 'Reservasi Anda tercatat. Jangan lupa check-in pada hari kunjungan.'
+                  : 'Nomor antrean Anda sudah aktif. Silakan menunggu di ruang tunggu.'}
               </p>
 
-              <div className="mb-6 w-full rounded-3xl border-2 border-slate-200 bg-slate-50 p-8 shadow-sm transition-colors dark:border-zinc-800 dark:bg-[#131314]">
-                <span className="text-[10px] tracking-widest text-slate-400 uppercase transition-colors dark:text-zinc-500">
-                  Nomor Urut Pendaftaran
-                </span>
-                <div className="my-2 font-mono text-6xl tracking-tighter text-teal-600 transition-colors dark:text-teal-400">
+              <div className="mt-8 w-full rounded-2xl border-2 border-teal-200 bg-teal-50/50 p-6 dark:border-teal-900/40 dark:bg-teal-500/10">
+                <p className="text-sm font-medium text-slate-600 dark:text-zinc-400">Nomor antrean Anda</p>
+                <p className="mt-2 font-mono text-6xl font-bold tabular-nums text-teal-700 dark:text-teal-400">
                   {queueResult.queueNumber}
-                </div>
+                </p>
               </div>
 
               {successEstimate && (
-                <WaitTimeEstimateCard estimate={successEstimate} variant="prominent" />
+                <div className="mt-4 w-full">
+                  <WaitTimeEstimateCard estimate={successEstimate} variant="prominent" />
+                </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Footer Aksi */}
-        <div className="shrink-0 border-t border-slate-100 bg-slate-50/50 p-6 transition-colors dark:border-zinc-800 dark:bg-[#131314]/50">
+        <div className="shrink-0 border-t border-slate-100 bg-white p-5 dark:border-zinc-800 dark:bg-[#1e1f20] sm:px-6">
           {step === 1 && (
             <button
+              type="button"
               onClick={onNext}
-              disabled={!selectedDoctorId || !selectedDate || !selectedScheduleId}
-              className="w-full rounded-xl bg-teal-600 py-4 text-white shadow-lg shadow-teal-600/20 transition-all outline-none hover:bg-teal-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none dark:bg-teal-700 dark:hover:bg-teal-600"
+              disabled={!canContinueStep1 || isScheduleStepLoading}
+              className="min-h-12 w-full rounded-xl bg-teal-600 text-base font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-700"
             >
-              Lanjutkan Konfirmasi
+              Lanjut periksa data
             </button>
           )}
-          {step === 2 && (
-            <div className="flex w-full flex-col gap-3">
-              {hasActiveQueue && (
-                <div className="animate-in fade-in slide-in-from-bottom-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-center text-xs text-rose-700 transition-colors dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
-                  Peringatan: Anda tidak dapat melanjutkan karena saat ini Anda sedang dalam
-                  antrean.
-                </div>
-              )}
 
-              <div className="flex w-full gap-3">
+          {step === 2 && (
+            <div className="space-y-3">
+              {hasActiveQueue && (
+                <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
+                  Anda masih punya antrean aktif. Selesaikan atau batalkan antrean tersebut terlebih
+                  dahulu.
+                </p>
+              )}
+              <div className="flex gap-3">
                 <button
+                  type="button"
                   onClick={onPrev}
                   disabled={isSubmitting}
-                  className="flex-1 rounded-xl border border-slate-200 bg-white py-4 text-slate-600 shadow-sm transition-colors outline-none hover:bg-slate-50 disabled:opacity-50 dark:border-zinc-800 dark:bg-[#1e1f20] dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  className="min-h-12 flex-1 rounded-xl border border-slate-200 bg-white text-base font-medium text-slate-700 dark:border-zinc-700 dark:bg-[#131314] dark:text-zinc-300"
                 >
                   Kembali
                 </button>
-
                 <button
-                  onClick={handleConfirmBooking}
+                  type="button"
+                  onClick={() => void handleConfirmBooking()}
                   disabled={isSubmitting || hasActiveQueue}
-                  className={`flex flex-2 items-center justify-center gap-2 rounded-xl py-4 transition-all outline-none ${ hasActiveQueue ? 'cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400 shadow-none dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-600' : 'bg-teal-600 text-white shadow-lg shadow-teal-600/20 hover:bg-teal-700 active:scale-95 disabled:opacity-50 dark:bg-teal-700 dark:hover:bg-teal-600' }`}
+                  className="min-h-12 flex-[1.4] rounded-xl bg-teal-600 text-base font-semibold text-white hover:bg-teal-700 disabled:opacity-50 dark:bg-teal-700"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <svg
-                        className="h-5 w-5 animate-spin text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Memproses...
-                    </>
-                  ) : hasActiveQueue ? (
-                    'Anda Sudah Dalam Antrean'
-                  ) : (
-                    'Konfirmasi Registrasi'
-                  )}
+                  {isSubmitting ? 'Memproses...' : hasActiveQueue ? 'Antrean masih aktif' : 'Daftar sekarang'}
                 </button>
               </div>
             </div>
           )}
+
           {step === 3 && (
             <button
+              type="button"
               onClick={handleClose}
-              className="w-full rounded-xl border-2 border-teal-600 bg-white py-4 text-teal-700 shadow-sm transition-colors outline-none hover:bg-teal-50 dark:bg-[#1e1f20] dark:text-teal-400 dark:hover:bg-teal-900/20"
+              className="min-h-12 w-full rounded-xl border-2 border-teal-600 bg-white text-base font-semibold text-teal-700 dark:bg-[#1e1f20] dark:text-teal-400"
             >
-              Selesai & Tutup
+              Selesai
             </button>
           )}
         </div>

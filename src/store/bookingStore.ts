@@ -2,6 +2,7 @@
 import { create } from 'zustand'
 import { isAxiosError } from 'axios'
 import apiClient from '../lib/apiClient'
+import { getDayOfWeekFromDateKey, pickFirstAvailableSchedule } from '../lib/bookingFlow'
 import { getErrorMessage } from '../lib/errors'
 import type { BookingSchedule, DepartmentAvailability, DepartmentDoctor } from '../lib/types'
 
@@ -36,6 +37,11 @@ interface BookingState {
   fetchDoctorsByDepartment: (departmentId: string) => Promise<void>
   fetchSchedulesByDoctor: (doctorId: string, dayOfWeek: string, date: string) => Promise<void>
   fetchDepartmentAvailability: (departmentId: string, date: string, doctorId?: string) => Promise<void>
+  resolveFirstAvailableSlot: (
+    doctorId: string,
+    departmentId: string,
+    dateKeys: string[],
+  ) => Promise<{ date: string; scheduleId: string | null } | null>
 
   submitBooking: (payload: {
     departmentId: string
@@ -103,6 +109,45 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         isLoadingSchedules: false,
       })
     }
+  },
+
+  resolveFirstAvailableSlot: async (doctorId, departmentId, dateKeys) => {
+    set({ isLoadingSchedules: true, error: null, doctorSchedules: [], departmentAvailability: null })
+
+    for (const dateKey of dateKeys) {
+      const dayOfWeek = getDayOfWeekFromDateKey(dateKey)
+      try {
+        const params = new URLSearchParams({ date: dateKey, doctorId })
+        const [scheduleRes, availabilityRes] = await Promise.all([
+          apiClient.get(`/schedules?doctorId=${doctorId}&dayOfWeek=${dayOfWeek}&date=${dateKey}`),
+          apiClient.get(`/departments/${departmentId}/availability?${params}`),
+        ])
+
+        const schedules: BookingSchedule[] = scheduleRes.data.data || []
+        const availability: DepartmentAvailability | null = availabilityRes.data.data ?? null
+        const picked = pickFirstAvailableSchedule(schedules, availability)
+
+        if (picked) {
+          set({
+            doctorSchedules: schedules,
+            departmentAvailability: availability,
+            isLoadingSchedules: false,
+          })
+          return { date: dateKey, scheduleId: picked.id }
+        }
+      } catch {
+        /* coba tanggal berikutnya */
+      }
+    }
+
+    const fallbackDate = dateKeys[0] ?? null
+    if (fallbackDate) {
+      set({ doctorSchedules: [], departmentAvailability: null, isLoadingSchedules: false })
+      return { date: fallbackDate, scheduleId: null }
+    }
+
+    set({ isLoadingSchedules: false })
+    return null
   },
 
   submitBooking: async (payload) => {
