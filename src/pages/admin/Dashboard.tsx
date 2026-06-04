@@ -197,8 +197,8 @@ export default function AdminLayout() {
         onNavigate={(id) => navigate(`/admin/${id}`)}
         user={user ? { name: user.name, email: user.email } : null}
         onLogout={handleLogout}
-        logoLabel="Ethereal"
-        logoAccent="Admin"
+        logoLabel="Admin"
+        logoAccent="Portal"
         pageTitle={PAGE_TITLES[activeView]}
         headerExtras={headerExtras}
       >
