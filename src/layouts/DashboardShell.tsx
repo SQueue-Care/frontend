@@ -62,7 +62,6 @@ export default function DashboardShell({
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme, supportsTheme])
 
-  // Close sidebar and user menu whenever the active view changes
   const resolvedSections: NavSection[] =
     navSections ?? (navItems ? [{ title: '', items: navItems }] : [])
 
@@ -113,7 +112,6 @@ export default function DashboardShell({
     <div className="relative min-h-screen bg-slate-50 font-['Inter'] dark:bg-[#131314]">
       <CustomAlert />
 
-      {/* Sidebar Focus Overlay */}
       <div
         className={`fixed inset-0 z-60 bg-white/40 backdrop-blur-sm transition-all duration-300 dark:bg-[#131314]/80 ${ isSidebarOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0' }`}
         onClick={() => setIsSidebarOpen(false)}
@@ -144,7 +142,6 @@ export default function DashboardShell({
             </svg>
           </button>
 
-          {/* IMPLEMENTASI LOGO BARU */}
           {isSidebarOpen && (
             <div className="animate-in fade-in ml-3 flex items-center gap-2 duration-200">
               <SQueue className="h-7 w-7 drop-shadow-sm transition-transform duration-500 hover:scale-105" />
@@ -348,7 +345,6 @@ export default function DashboardShell({
       {/* MAIN CONTENT WRAPPER                        */}
       {/* ========================================== */}
       <div className="flex min-w-0 flex-1 flex-col transition-all duration-300 lg:pl-[76px]">
-        {/* Ambient background decorations */}
         <div className="pointer-events-none fixed -top-48 -left-48 h-96 w-96 rounded-full bg-teal-100 opacity-60 blur-[120px] transition-colors dark:bg-teal-900/40 dark:opacity-40" />
         <div className="pointer-events-none fixed -right-48 -bottom-48 h-96 w-96 rounded-full bg-blue-100 opacity-60 blur-[120px] transition-colors dark:bg-blue-900/40 dark:opacity-40" />
 

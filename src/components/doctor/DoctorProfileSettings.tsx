@@ -30,7 +30,6 @@ export default function DoctorProfileSettings() {
 
   const doctorId = user?.doctor?.id ?? (user?.role === 'DOCTOR' ? user.id : null)
 
-  // Ambil data profil dan jadwal jika belum ada
   useEffect(() => {
     if (doctorId) {
       fetchProfile(doctorId)
@@ -219,7 +218,6 @@ export default function DoctorProfileSettings() {
             </div>
           )}
         </div>
-        {/* REVISI: Perbaikan warna gradient mode gelap agar tidak menjadi kabut putih */}
         <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-20 rounded-b-3xl bg-gradient-to-t from-white via-white/90 to-transparent dark:from-[#1e1f20] dark:via-[#1e1f20]/90 dark:to-transparent" />
       </div>
     </div>

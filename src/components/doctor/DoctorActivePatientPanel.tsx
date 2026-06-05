@@ -163,8 +163,6 @@ export default function DoctorActivePatientPanel({
             Catatan Dokter
           </button>
           
-          {/* Untuk tombol nextStatus, karena class berasal dari file antarmuka statis QUEUE_TRANSITION_CLASSES, 
-              pastikan variabel tersebut pada lib/queueStateMachine.ts juga mendukung utilitas dark mode */}
           {allowedTransitions.map((nextStatus) => (
             <button
               key={nextStatus}

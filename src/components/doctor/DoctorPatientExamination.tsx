@@ -62,7 +62,6 @@ export default function DoctorPatientExamination({
         />
       </div>
       
-      {/* REVISI: Trik Wrapper Absolut (Memaksa tinggi mengikuti panel kiri) */}
       <div className="relative min-h-[400px] lg:min-h-0">
         <div className="h-full w-full lg:absolute lg:inset-0">
           <DoctorMedicalHistoryPanel

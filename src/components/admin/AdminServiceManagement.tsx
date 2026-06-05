@@ -48,7 +48,6 @@ export default function AdminServiceManagement() {
     capacity: 10,
   })
 
-  // Sinkronisasi Data Awal
   useEffect(() => {
     fetchDepartments()
   }, [fetchDepartments])
@@ -75,7 +74,6 @@ export default function AdminServiceManagement() {
     }
   }, [servicesTab])
 
-  // Handler Departemen
   const handleOpenDeptModal = (mode: 'add' | 'edit', dept?: Department) => {
     setDeptFormMode(mode)
     if (mode === 'edit' && dept) {
@@ -126,7 +124,6 @@ export default function AdminServiceManagement() {
     }
   }
 
-  // Handler Jadwal
   const handleOpenScheduleModal = (mode: 'add' | 'edit', schedule?: ScheduleItem) => {
     setScheduleFormMode(mode)
     if (mode === 'edit' && schedule) {

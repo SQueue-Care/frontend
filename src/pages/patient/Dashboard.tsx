@@ -210,7 +210,7 @@ export default function PatientDashboard() {
         </div>
       </section>
 
-      {/* Active queue — prominent */}
+      {/* Active queue */}
       <LiveQueueTracker
         queueId={activeQueueId}
         onCancelSuccess={() => setActiveQueueOverride(null)}

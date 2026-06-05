@@ -19,16 +19,13 @@ export default function AdminAppointmentManagement() {
   const [appointments, setAppointments] = useState<AppointmentDetail[]>([])
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(true)
 
-  // State untuk Filter & Search
   const [appointmentSearchQuery, setAppointmentSearchQuery] = useState('')
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState('')
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('')
 
-  // State untuk Modal Detail
   const [isAptDetailModalOpen, setIsAptDetailModalOpen] = useState(false)
   const [selectedAptDetail, setSelectedAptDetail] = useState<AppointmentDetail | null>(null)
 
-  // Ambil Data Reservasi
   const fetchAppointments = async () => {
     try {
       const response = await apiClient.get('/appointments')
@@ -42,7 +39,6 @@ export default function AdminAppointmentManagement() {
   }
 
   useEffect(() => {
-    // PERBAIKAN 1: Panggil fetchDepartments secara eksplisit agar dropdown terisi
     fetchDepartments()
 
     let cancelled = false
@@ -62,7 +58,6 @@ export default function AdminAppointmentManagement() {
     }
   }, [fetchDepartments]) 
 
-  // Fungsi Pembaruan Status & Catatan Pembatalan
   const handleUpdateAppointmentStatus = async (appointmentId: string, newStatus: string) => {
     try {
       const payload: AppointmentStatusPayload = { status: newStatus }
@@ -85,7 +80,6 @@ export default function AdminAppointmentManagement() {
     }
   }
 
-  // Logika Penyaringan Data
   const filteredAppointments = appointments.filter((apt) => {
     const matchDept = !selectedDepartmentFilter || apt.department?.id === selectedDepartmentFilter
     const matchStatus = !selectedStatusFilter || apt.status === selectedStatusFilter
@@ -206,7 +200,6 @@ export default function AdminAppointmentManagement() {
                         }}
                         className="group relative cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
                       >
-                        {/* INI ADALAH KOLOM DATA YANG TERHAPUS SEBELUMNYA */}
                         <td className="p-6 pl-8 align-top">
                           <div className="font-medium text-zinc-950 dark:text-white uppercase transition-colors group-hover:text-teal-600">
                             {apt.patient?.user?.name || '-'}

@@ -244,7 +244,6 @@ export default function AnalyticsView() {
 
       {/* Filter Bar */}
       <div className="mb-8 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#1e1f20] p-6 shadow-sm">
-        {/* REVISI 1: Mengubah items-end menjadi items-center agar sejajar secara vertikal */}
         <div className="flex flex-wrap items-center gap-4">
           <div className="w-full md:w-64">
             <CustomDatePicker
@@ -261,7 +260,6 @@ export default function AnalyticsView() {
             />
           </div>
           
-          {/* REVISI 2: Menyesuaikan padding (py-2.5) dan rounded-xl agar selaras dengan input */}
           <button
             onClick={handleApplyFilter}
             disabled={loading}
@@ -270,7 +268,6 @@ export default function AnalyticsView() {
             {loading ? 'Memuat...' : 'Terapkan Filter'}
           </button>
           
-          {/* REVISI 3: Menyamakan warna tombol preset dengan tombol Terapkan Filter */}
           <div className="ml-auto flex flex-wrap items-center gap-2">
             <button
               onClick={() => setPresetDates(1)}

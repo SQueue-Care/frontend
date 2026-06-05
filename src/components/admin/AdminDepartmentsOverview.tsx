@@ -60,7 +60,6 @@ export default function AdminDepartmentsOverview() {
               key={dept.id}
               className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-xl dark:border-zinc-800 dark:bg-[#1e1f20] dark:hover:border-teal-800/50"
             >
-              {/* Background Accent Gradient */}
               <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-teal-50/50 blur-3xl transition-opacity group-hover:opacity-100 dark:bg-teal-900/10 opacity-0 duration-500"></div>
 
               <div>
@@ -91,7 +90,6 @@ export default function AdminDepartmentsOverview() {
                   )}
                 </div>
 
-                {/* REVISI: Lokasi - Bento Style Grid DENGAN TATA LETAK FLAT */}
                 <div className="mb-6 grid grid-cols-2 gap-3">
                   <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-colors group-hover:bg-slate-50 dark:border-zinc-800/80 dark:bg-[#131314]/50 dark:group-hover:bg-[#131314]">
                     <span className="mb-1 block text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">Gedung / Bangunan</span>
@@ -105,12 +103,10 @@ export default function AdminDepartmentsOverview() {
                     <span className="mb-1 block text-[10px] tracking-widest text-indigo-400/80 uppercase dark:text-indigo-500/80">R. Pemeriksaan</span>
                     <span className="block font-medium text-indigo-900 dark:text-indigo-300 text-sm leading-snug">{dept.examinationRoom || '—'}</span>
                   </div>
-                  {/* Kasir kini mendapatkan porsi 50% penuh di baris kedua */}
                   <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-colors group-hover:bg-slate-50 dark:border-zinc-800/80 dark:bg-[#131314]/50 dark:group-hover:bg-[#131314]">
                     <span className="mb-1 block text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">Kasir Admin</span>
                     <span className="block font-medium text-zinc-800 dark:text-zinc-200 text-sm leading-snug">{dept.adminCounter || '—'}</span>
                   </div>
-                  {/* Apotek kini membentang penuh 100% (col-span-2) di baris ketiga */}
                   <div className="col-span-2 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-colors group-hover:bg-slate-50 dark:border-zinc-800/80 dark:bg-[#131314]/50 dark:group-hover:bg-[#131314]">
                     <span className="mb-1 block text-[10px] tracking-widest text-slate-400 uppercase dark:text-zinc-500">Instalasi Farmasi / Apotek</span>
                     <span className="block font-medium text-zinc-800 dark:text-zinc-200 text-sm leading-snug">{dept.pharmacyLocation || '—'}</span>

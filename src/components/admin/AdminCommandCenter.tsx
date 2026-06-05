@@ -14,30 +14,22 @@ import CustomSelect from '../ui/CustomSelect'
 
 export default function AdminCommandCenter() {
   const [analyticsDays, setAnalyticsDays] = useState(1)
-  // KOREKSI 3: Panggil fetchDepartments
   const { departments, fetchDepartments } = useDepartmentStore()
   const { selectedDepartment, setSelectedDepartment } = useDashboardFilterStore()
-  // KOREKSI 4: Panggil fungsi fetch antrean dan statistik
   const { fetchQueues, fetchOverviewStats } = useQueueStore()
 
-  // KOREKSI 5: INJEKSI LOGIKA REAL-TIME POLLING & SINKRONISASI AWAL
   useEffect(() => {
-    // 1. Pastikan data master departemen ditarik agar grafik donat memiliki label
     fetchDepartments()
 
-    // 2. Tarik data analitik untuk mengisi overviewStats dan queues
     const fetchAllDashboardData = () => {
       if (typeof fetchQueues === 'function') fetchQueues()
       if (typeof fetchOverviewStats === 'function') fetchOverviewStats()
     }
 
-    // Eksekusi seketika saat halaman Command Center dibuka
     fetchAllDashboardData()
 
-    // Setup Polling: Sinkronisasi data setiap 15 detik
     const intervalId = setInterval(fetchAllDashboardData, 15000)
 
-    // Pembersihan (Cleanup)
     return () => clearInterval(intervalId)
   }, [fetchDepartments, fetchQueues, fetchOverviewStats])
 

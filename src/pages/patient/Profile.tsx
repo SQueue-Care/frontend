@@ -74,7 +74,6 @@ export default function PatientProfile() {
     if (patientId && !profile) fetchProfile(patientId)
   }, [patientId, profile, fetchProfile])
 
-  // Sync defaults into form when not editing
   useEffect(() => {
     if (!isEditing) {
       setTimeout(() => {
@@ -83,7 +82,6 @@ export default function PatientProfile() {
     }
   }, [profileFormDefaults, isEditing])
 
-  // Auto-start editing when redirected with ?editing=1 (from NIK warning)
   useEffect(() => {
     if (searchParams.get('editing') === '1' && profile && !isEditing) {
       setTimeout(() => {

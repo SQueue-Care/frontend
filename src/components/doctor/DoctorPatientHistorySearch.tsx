@@ -36,7 +36,6 @@ export default function DoctorPatientHistorySearch() {
         </p>
       </div>
 
-      {/* WADAH PENCARIAN: Lebar dikunci menggunakan grid yang sama dengan kolom kiri */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1">
           <CustomSearchBar
@@ -48,7 +47,6 @@ export default function DoctorPatientHistorySearch() {
         </div>
       </div>
 
-      {/* WADAH UTAMA: Kartu kiri dan kanan kini berada dalam satu baris grid agar sejajar di atas */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         
         {/* PANEL KIRI: DAFTAR PASIEN */}

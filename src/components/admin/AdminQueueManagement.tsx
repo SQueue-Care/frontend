@@ -24,7 +24,6 @@ export default function AdminQueueManagement() {
   const { departments, fetchDepartments } = useDepartmentStore()
   const showAlert = useAlertStore((s) => s.showAlert)
 
-  // STATE BARU: Untuk Search Bar & Filter Antrean (Sama persis dengan Reservasi)
   const [queueSearchQuery, setQueueSearchQuery] = useState('')
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState('')
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('')
@@ -66,7 +65,6 @@ export default function AdminQueueManagement() {
     return matchDept && matchStatus && matchSearch
   })
 
-  // LOGIKA PENGURUTAN (Aktif di atas, Selesai/Batal di bawah)
   const activeStatuses: QueueStatus[] = [
     QueueStatus.WAITING,
     QueueStatus.CALLED,
@@ -91,7 +89,7 @@ export default function AdminQueueManagement() {
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
-        {/* AREA FILTER & SEARCH (Identik dengan Reservasi) */}
+        {/* AREA FILTER & SEARCH */}
         <div className="relative z-[60] mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="w-full md:w-72">
             <CustomSearchBar

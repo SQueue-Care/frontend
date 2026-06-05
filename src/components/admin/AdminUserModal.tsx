@@ -95,7 +95,6 @@ function AdminUserModalInner({
           </button>
         </div>
 
-        {/* BODY BISA DIGULIR */}
         <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
           <div className="space-y-6">
             
@@ -188,7 +187,6 @@ function AdminUserModalInner({
                 Izin Autentikasi Pengguna
               </h3>
               <div className="grid grid-cols-2 gap-3">
-                {/* SARAN PERBAIKAN: Penambahan input radio tersembunyi (sr-only) agar interaksi klik pada label berfungsi mengubah state, serta pengurangan padding untuk merampingkan desain. */}
                 <label 
                   className={`relative flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-all ${
                     editForm.isActive 

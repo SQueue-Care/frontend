@@ -42,7 +42,6 @@ function normalizeKandidatList(items: unknown): CdssKandidatDiagnosis[] {
   )
 }
 
-/** Normalisasi record DB lama (format internal) ke struktur SmartQueue API */
 export function normalizeCdssResult(raw: unknown): CdssRecommendResponse {
   const data = raw as Record<string, unknown>
 

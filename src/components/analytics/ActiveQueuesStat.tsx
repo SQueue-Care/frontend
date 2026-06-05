@@ -14,7 +14,6 @@ export default function ActiveQueuesStat() {
   const { selectedDepartment } = useDashboardFilterStore()
 
   const activeQueuesCount = useMemo(() => {
-    // Kita filter antrean yang statusnya aktif (Waiting, Called, In Progress) dari manapun tanggalnya
     const activeStatuses: QueueStatus[] = [
       QueueStatus.WAITING,
       QueueStatus.CALLED,
@@ -30,7 +29,6 @@ export default function ActiveQueuesStat() {
     return result.length
   }, [queues, selectedDepartment])
 
-  // Loading state menggunakan indikator tabel karena 'queues' adalah sumber data kita sekarang
   if (isLoadingTable && queues.length === 0) {
     return (
       <StatCard

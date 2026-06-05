@@ -13,7 +13,6 @@ interface UserState {
   fetchUsers: (force?: boolean) => Promise<void>
   updateUser: (id: string, data: Partial<UserAccount>) => Promise<void>
   deleteUser: (id: string) => Promise<void>
-  // 1. Tambahkan definisi tipe untuk createUser
   createUser: (data: Record<string, string>) => Promise<void>
 }
 
@@ -51,7 +50,6 @@ export const useUserStore = create<UserState>((set, get) => ({
     })
   },
 
-  // 2. Implementasi fungsi createUser
   createUser: async (data) => {
     await apiClient.post('/auth/register', {
       name: data.name,

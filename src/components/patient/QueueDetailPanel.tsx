@@ -47,9 +47,6 @@ export default function QueueDetailPanel({
     }
   }, [fetchQueueId])
 
-  // ANIMATION FIX: Do not return null to allow the panel to stay in the DOM and transition properly.
-  // if (!queue) return null;
-
   return (
     <>
       <div

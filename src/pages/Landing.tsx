@@ -8,7 +8,7 @@ interface AnimatedElementProps {
   className?: string;
   delay?: number;
   animation?: 'fade-up' | 'slide-left' | 'slide-right' | 'pop-up' | 'flip-up';
-  rootMargin?: string; // Properti baru untuk kalibrasi batas layar
+  rootMargin?: string; 
 }
 
 function AnimatedElement({ children, className = '', delay = 0, animation = 'fade-up', rootMargin = '-20% 0px -20% 0px' }: AnimatedElementProps) {
@@ -20,7 +20,6 @@ function AnimatedElement({ children, className = '', delay = 0, animation = 'fad
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
       },
-      // Menggunakan rootMargin dinamis. Jika tidak diisi, ia kembali ke nilai default -20%
       { threshold: 0.1, rootMargin } 
     );
 
@@ -81,16 +80,13 @@ export default function Landing() {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    // Memperhalus batas rotasi maksimal menjadi 8 derajat agar lebih elegan
     const rotateX = ((y - centerY) / centerY) * -8;
     const rotateY = ((x - centerX) / centerX) * 8;
 
-    // Kalkulasi Vektor Bayangan (Berlawanan dengan arah kemiringan)
     const shadowX = rotateY * -4; 
-    const shadowY = (rotateX * 4) + 20; // +20 sebagai offset gravitasi dasar
+    const shadowY = (rotateX * 4) + 20; 
     
     mockupRef.current.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-    // Injeksi bayangan dinamis langsung ke DOM
     mockupRef.current.style.boxShadow = `${shadowX}px ${shadowY}px 50px rgba(0, 0, 0, 0.25)`;
     
     glowRef.current.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.12), transparent 40%)`;
@@ -99,13 +95,11 @@ export default function Landing() {
   const handleMockupMouseLeave = () => {
     if (!mockupRef.current || !glowRef.current) return;
     
-    // Kembalikan ke posisi statis 3D dan bayangan statis awal
     mockupRef.current.style.transform = `perspective(1200px) rotateY(-12deg) rotateX(6deg)`;
     mockupRef.current.style.boxShadow = `30px 30px 60px rgba(0, 0, 0, 0.15)`;
     glowRef.current.style.background = `transparent`;
   };
 
-  // Fungsi navigasi yang memastikan seksi berhenti tepat di ujung layar (block: 'start')
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -131,7 +125,6 @@ export default function Landing() {
       <header className={`fixed top-0 z-50 flex w-full justify-center border-b border-slate-200/50 dark:border-zinc-800/50 bg-white/70 dark:bg-[#131314]/70 backdrop-blur-xl transition-all duration-700 ease-out ${isMounted ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
         <div className="flex w-full max-w-7xl items-center justify-between px-6 py-4">
           
-          {/* SARAN REVISI: Blok logo telah dibersihkan dari div pembungkus berwarna dan teks SQ lama. Logo dirender murni sebagai vektor SVG. */}
           <div className="flex items-center gap-3">
             <SQueue className="w-10 h-10 transition-transform duration-500 hover:scale-105 drop-shadow-sm" />
             <span className="font-['Manrope'] text-xl font-bold text-zinc-900 dark:text-white tracking-tight transition-colors duration-500">
@@ -189,13 +182,10 @@ export default function Landing() {
           className="absolute inset-0 w-full h-full flex flex-col justify-center items-center pointer-events-none"
           style={{ opacity: heroOpacity, transform: `translateY(${heroTranslateY}px)` }}
         >
-          {/* Pembungkus Cahaya Terisolasi */}
           <div className={`absolute inset-0 z-0 overflow-hidden transition-opacity duration-1000 ${isMounted ? 'opacity-100' : 'opacity-0'}`}>
             
-            {/* Cahaya Kiri Atas (Teal) */}
             <div className="absolute top-[-10%] left-[-10%] h-[700px] w-[700px] rounded-full bg-teal-600/30 dark:bg-teal-500/20 blur-[120px] transition-colors duration-500 animate-ambient mix-blend-multiply dark:mix-blend-screen"></div>
             
-            {/* Cahaya Kanan Bawah (Blue) */}
             <div className="absolute bottom-[-10%] right-[-10%] h-[600px] w-[600px] rounded-full bg-blue-600/30 dark:bg-blue-500/20 blur-[120px] transition-colors duration-500 animate-ambient-reverse mix-blend-multiply dark:mix-blend-screen" style={{ animationDelay: '-5s' }}></div>
             
           </div>
@@ -240,15 +230,13 @@ export default function Landing() {
 
             <div className={`transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] delay-[500ms] w-full flex justify-center lg:justify-end ${isMounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
 
-              {/* Container Utama dengan Efek 3D */}
               <div 
                 ref={mockupRef}
                 onMouseMove={handleMockupMouseMove}
                 onMouseLeave={handleMockupMouseLeave}
-                style={{ boxShadow: '30px 30px 60px rgba(0, 0, 0, 0.15)' }} // Bayangan statis awal
+                style={{ boxShadow: '30px 30px 60px rgba(0, 0, 0, 0.15)' }} 
                 className="w-full max-w-[620px] bg-white dark:bg-[#1e1f20] border border-slate-200/80 dark:border-zinc-800/80 rounded-2xl overflow-hidden [transform:perspective(1200px)_rotateY(-12deg)_rotateX(6deg)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col relative group"
               >
-                {/* Lapisan Sorotan Cahaya Dinamis (Glare) */}
                 <div ref={glowRef} className="absolute inset-0 z-50 pointer-events-none transition-colors duration-200 mix-blend-overlay"></div>
                 <div className="w-full h-full pointer-events-none select-none relative z-10">
                   {/* Header Browser */}
@@ -264,7 +252,7 @@ export default function Landing() {
                 {/* Replika App Shell Pasien */}
                 <div className="flex h-[420px] bg-slate-50 dark:bg-[#131314]">
                   
-                  {/* Replika Sidebar (Collapsed) */}
+                  {/* Replika Sidebar */}
                   <div className="w-12 bg-white dark:bg-[#1e1f20] border-r border-slate-100 dark:border-zinc-800 flex flex-col items-center py-3 gap-4 relative">
                     <div className="w-6 h-6 flex items-center justify-center rounded-md border border-slate-200 dark:border-zinc-700 shadow-sm">
                       <SQueue className="w-4 h-4" />
@@ -386,7 +374,7 @@ export default function Landing() {
       </div>
       </section>
 
-      {/* 2. SEKSI PROSEDUR - Full Screen */}
+      {/* 2. SEKSI PROSEDUR */}
       <section 
         id="prosedur" 
         className="w-full min-h-screen flex flex-col justify-center items-center pt-24 pb-12 px-6 relative z-20 bg-slate-50 dark:bg-[#131314] overflow-hidden"
@@ -438,7 +426,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 3. SEKSI LIVE ANTREAN - Full Screen */}
+      {/* 3. SEKSI LIVE ANTREAN */}
       <section 
         id="live-queue" 
         className="w-full min-h-screen flex flex-col justify-center items-center pt-24 pb-12 px-6 relative z-20 bg-white dark:bg-[#1e1f20] border-y border-slate-200 dark:border-zinc-800 overflow-hidden"
@@ -502,7 +490,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 4. SEKSI JADWAL DOKTER - Full Screen */}
+      {/* 4. SEKSI JADWAL DOKTER */}
       <section 
         id="jadwal-dokter" 
         className="w-full min-h-screen flex flex-col justify-center items-center pt-24 pb-12 px-6 relative z-20 bg-slate-50 dark:bg-[#131314] overflow-hidden"
@@ -554,7 +542,7 @@ export default function Landing() {
          </div>
       </section>
 
-      {/* 5. SEKSI ARSITEKTUR - Full Screen */}
+      {/* 5. SEKSI ARSITEKTUR */}
       <section 
         id="arsitektur" 
         className="w-full min-h-screen flex flex-col justify-center items-center pt-24 pb-12 px-6 relative z-20 bg-white dark:bg-[#1e1f20] overflow-hidden"
@@ -648,7 +636,6 @@ export default function Landing() {
 
       {/* FOOTER */}
       <footer className="w-full border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#131314] transition-colors duration-500 py-12 px-6 relative z-20 overflow-hidden">
-        {/* Penambahan rootMargin="0px 0px 0px 0px" membebaskan footer dari jebakan margin layar */}
         <AnimatedElement animation="fade-up" rootMargin="0px 0px 0px 0px" className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8 w-full">
            
            <div className="flex flex-col items-start gap-2">

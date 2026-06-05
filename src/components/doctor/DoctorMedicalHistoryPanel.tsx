@@ -21,7 +21,6 @@ export default function DoctorMedicalHistoryPanel({
         <p className="text-xs text-slate-500 transition-colors dark:text-zinc-400">Kunjungan sebelumnya yang telah selesai</p>
       </div>
 
-      {/* PENYESUAIAN: Menambahkan no-scrollbar agar rapi */}
       <div className="no-scrollbar flex-1 overflow-y-auto p-4">
         {isLoading ? (
           <div className="flex justify-center py-10">

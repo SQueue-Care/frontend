@@ -7,7 +7,7 @@ interface CustomSelectProps {
   onChange: (val: string) => void
   options: { value: string; label: string }[]
   placeholder: string
-  disabled?: boolean // Penambahan properti opsional
+  disabled?: boolean 
 }
 
 export default function CustomSelect({

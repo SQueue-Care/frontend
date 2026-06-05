@@ -10,7 +10,6 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, user } = useAuthStore()
 
-  // 1. Tangani state loading saat aplikasi pertama kali dimuat atau direfresh
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 font-['Inter'] transition-colors dark:bg-[#131314]">
@@ -24,18 +23,15 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
     )
   }
 
-  // 2. Cegah akses jika pengguna belum login
   if (!isAuthenticated || !user) {
     return <Navigate to="/auth" replace />
   }
 
-  // 3. RBAC — redirect to the correct home route for this user's role
   if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     if (user.role === 'PATIENT') return <Navigate to="/portal" replace />
     if (user.role === 'DOCTOR') return <Navigate to="/doctor" replace />
     return <Navigate to="/admin" replace />
   }
 
-  // 4. Izinkan akses ke komponen anak (child routes) jika semua validasi lolos
   return <Outlet />
 }

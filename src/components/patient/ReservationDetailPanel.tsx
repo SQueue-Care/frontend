@@ -68,9 +68,6 @@ export default function ReservationDetailPanel({
 
   const isCheckInTime = computeCheckInAvailable(appointment)
 
-  // ANIMATION FIX: Do not return null to allow the panel to stay in the DOM and transition properly.
-  // if (!appointment) return null;
-
   const isCancelledOrCompleted =
     appointment?.status === 'CANCELLED' || appointment?.status === 'COMPLETED'
 
