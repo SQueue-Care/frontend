@@ -56,7 +56,7 @@ export default function DoctorPracticeOverview() {
         </p>
       </div>
 
-      {/* STATISTIK BENTO GRID */}
+      {/* STATISTIK */}
       <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
         <div className="flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
           <div className="mb-4 flex items-center gap-2.5">
@@ -96,7 +96,6 @@ export default function DoctorPracticeOverview() {
 
       {/* KARTU PASIEN AKTIF */}
       <div className="relative overflow-hidden rounded-3xl border border-indigo-100 bg-white p-8 shadow-sm dark:border-indigo-500/20 dark:bg-[#1e1f20]">
-        {/* Aksen Garis & Latar Blur */}
         <div className="absolute left-0 top-0 h-full w-1.5 bg-indigo-500 dark:bg-indigo-400"></div>
         <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-50/50 blur-3xl dark:bg-indigo-900/10"></div>
         

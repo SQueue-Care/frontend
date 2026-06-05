@@ -13,22 +13,19 @@ import CustomSearchBar from '../ui/CustomSearchBar'
 import CustomSelect from '../ui/CustomSelect'
 
 export default function AdminAppointmentManagement() {
-  const { departments } = useDepartmentStore()
+  const { departments, fetchDepartments } = useDepartmentStore()
   const showAlert = useAlertStore((s) => s.showAlert)
 
   const [appointments, setAppointments] = useState<AppointmentDetail[]>([])
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(true)
 
-  // State untuk Filter & Search
   const [appointmentSearchQuery, setAppointmentSearchQuery] = useState('')
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState('')
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('')
 
-  // State untuk Modal Detail
   const [isAptDetailModalOpen, setIsAptDetailModalOpen] = useState(false)
   const [selectedAptDetail, setSelectedAptDetail] = useState<AppointmentDetail | null>(null)
 
-  // Ambil Data Reservasi
   const fetchAppointments = async () => {
     try {
       const response = await apiClient.get('/appointments')
@@ -42,6 +39,8 @@ export default function AdminAppointmentManagement() {
   }
 
   useEffect(() => {
+    fetchDepartments()
+
     let cancelled = false
     void (async () => {
       try {
@@ -57,9 +56,8 @@ export default function AdminAppointmentManagement() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [fetchDepartments]) 
 
-  // Fungsi Pembaruan Status & Catatan Pembatalan
   const handleUpdateAppointmentStatus = async (appointmentId: string, newStatus: string) => {
     try {
       const payload: AppointmentStatusPayload = { status: newStatus }
@@ -82,7 +80,6 @@ export default function AdminAppointmentManagement() {
     }
   }
 
-  // Logika Penyaringan Data
   const filteredAppointments = appointments.filter((apt) => {
     const matchDept = !selectedDepartmentFilter || apt.department?.id === selectedDepartmentFilter
     const matchStatus = !selectedStatusFilter || apt.status === selectedStatusFilter
@@ -106,7 +103,7 @@ export default function AdminAppointmentManagement() {
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         {/* AREA FILTER & SEARCH */}
-        <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div className="relative z-[60] mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="w-full md:w-72">
             <CustomSearchBar
               label="Cari Reservasi"
@@ -161,7 +158,7 @@ export default function AdminAppointmentManagement() {
                 : 'Belum ada data reservasi yang sesuai dengan kriteria filter.'}
             </p>
           ) : (
-            <div className="no-scrollbar overflow-x-auto relative">
+            <div className="no-scrollbar overflow-x-auto relative min-h-[350px] pb-16">
               <table className="w-full min-w-[1000px] border-collapse text-left">
                 <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                   <tr>
@@ -176,7 +173,7 @@ export default function AdminAppointmentManagement() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
-                  {filteredAppointments.map((apt, index) => {
+                  {filteredAppointments.map((apt) => {
                     const statusClasses: Record<string, string> = {
                       BOOKED:
                         'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
@@ -201,10 +198,8 @@ export default function AdminAppointmentManagement() {
                           setSelectedAptDetail(apt)
                           setIsAptDetailModalOpen(true)
                         }}
-                        style={{ zIndex: filteredAppointments.length - index }}
                         className="group relative cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
                       >
-                        {/* INI ADALAH KOLOM DATA YANG TERHAPUS SEBELUMNYA */}
                         <td className="p-6 pl-8 align-top">
                           <div className="font-medium text-zinc-950 dark:text-white uppercase transition-colors group-hover:text-teal-600">
                             {apt.patient?.user?.name || '-'}
@@ -256,7 +251,6 @@ export default function AdminAppointmentManagement() {
                         {/* KOLOM AKSI (DROPDOWN) */}
                         <td
                           className="p-6 pr-8 text-right align-top sticky right-0 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors focus-within:z-50 group-hover:z-50"
-                          style={{ zIndex: filteredAppointments.length - index }}
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="flex items-center justify-end">

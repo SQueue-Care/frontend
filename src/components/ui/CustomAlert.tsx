@@ -15,9 +15,6 @@ export default function CustomAlert() {
     }
   }, [isOpen, hideAlert])
 
-  // PERHATIKAN: TIDAK ADA LAGI "if (!isOpen) return null;" DI SINI.
-  // Biarkan <Transition> yang mengurus kapan komponen harus hilang dari layar.
-
   const getAlertConfig = () => {
     switch (type) {
       case 'success':

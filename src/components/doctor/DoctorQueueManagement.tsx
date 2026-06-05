@@ -185,7 +185,7 @@ export default function DoctorQueueManagement() {
         </div>
       )}
 
-      {/* TABEL ANTREAN GAYA ENTERPRISE */}
+      {/* TABEL ANTREAN */}
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         <div className="flex items-center justify-between border-b border-slate-100 p-6 dark:border-zinc-800">
           <div>
@@ -236,7 +236,6 @@ export default function DoctorQueueManagement() {
                     <tr
                       key={queue.id}
                       style={{ zIndex: departmentQueues.length - index }}
-                      /* PENYESUAIAN: Pemindahan warna background solid ke TR secara eksplisit */
                       className={`group relative transition-colors duration-200 ${
                         isCurrent
                           ? 'bg-indigo-50 ring-1 ring-inset ring-indigo-100 dark:bg-[#252636] dark:ring-indigo-500/20'
@@ -266,7 +265,6 @@ export default function DoctorQueueManagement() {
                         </span>
                       </td>
                       
-                      {/* PENYESUAIAN: Menggunakan bg-inherit agar selaras sempurna dengan background row */}
                       <td
                         className="sticky right-0 bg-inherit p-6 pr-8 text-right shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.3)]"
                       >

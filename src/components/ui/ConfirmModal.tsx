@@ -1,5 +1,5 @@
 // src/components/ui/ConfirmModal.tsx
-import { createPortal } from 'react-dom' // INJEKSI MUTLAK: Import React Portal
+import { createPortal } from 'react-dom' 
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -24,7 +24,6 @@ export default function ConfirmModal({
   isLoading = false,
   type = 'danger',
 }: ConfirmModalProps) {
-  // Jika tidak open, jangan render apa-apa
   if (!isOpen) return null
 
   const themes = {
@@ -68,10 +67,8 @@ export default function ConfirmModal({
 
   const currentTheme = themes[type]
 
-  // EKSEKUSI PORTAL: Merender UI langsung ke document.body
   return createPortal(
     <div className="fixed inset-0 z-9999 flex items-center justify-center px-4">
-      {/* Latar Belakang Glassmorphism (Sekarang akan menutupi segalanya) */}
       <div
         className="animate-in fade-in absolute inset-0 bg-white/40 backdrop-blur-sm transition-opacity duration-300 dark:bg-[#131314]/80"
         onClick={!isLoading ? onCancel : undefined}
@@ -136,6 +133,6 @@ export default function ConfirmModal({
         </div>
       </div>
     </div>,
-    document.body // Target penempelan mutlak
+    document.body 
   )
 }

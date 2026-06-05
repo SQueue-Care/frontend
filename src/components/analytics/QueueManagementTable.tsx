@@ -4,7 +4,6 @@ import { useDashboardFilterStore } from '../../store/dashboardFilterStore'
 import { useQueueStore } from '../../store/queueStore'
 import CustomSearchBar from '../ui/CustomSearchBar'
 
-// Helper untuk styling status
 const statusClasses: Record<string, string> = {
   WAITING:
     'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
@@ -66,7 +65,6 @@ export default function QueueManagementTable() {
       })
     }
 
-    // Urutkan: Aktif (WAITING, CALLED, IN_PROGRESS) di atas
     const activeStatuses: QueueStatus[] = [
       QueueStatus.WAITING,
       QueueStatus.CALLED,
@@ -144,7 +142,7 @@ export default function QueueManagementTable() {
 
   return (
     <div className="flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
-      {/* HEADER & SEARCH BAR PREMIUM */}
+      {/* HEADER & SEARCH BAR */}
       <div className="flex flex-col justify-between gap-4 border-b border-slate-100 p-6 dark:border-zinc-800 md:flex-row md:items-center bg-white dark:bg-[#1e1f20]">
         <div>
           <h3 className="font-['Manrope'] text-lg font-extrabold text-zinc-950 dark:text-zinc-100 tracking-tight">

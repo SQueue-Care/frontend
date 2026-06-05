@@ -85,12 +85,10 @@ export default function QueuePerformanceChart({ days = 7 }: { days: number }) {
     )
   }
 
-  // Aggregate departments across all dates
   const allDepartments = Array.from(
     new Map(data.flatMap((d) => d.departments).map((dept) => [dept.departmentId, dept])).values()
   ).sort((a, b) => a.name.localeCompare(b.name))
 
-  // Prepare chart data
   const labels = data.map((d) => {
     const date = new Date(d.date)
     return date.toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })

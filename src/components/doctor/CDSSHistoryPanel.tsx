@@ -146,7 +146,6 @@ export default function CDSSHistoryPanel() {
         )}
       </div>
 
-      {/* REVISI: Z-Index 60, pt-24, max-h-[85dvh] agar tidak menabrak Navbar */}
       {selectedResult && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center p-0 pt-24 sm:items-center sm:p-4 sm:pt-24">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity" onClick={() => setSelectedResult(null)} />

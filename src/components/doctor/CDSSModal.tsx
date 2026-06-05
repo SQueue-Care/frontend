@@ -171,7 +171,6 @@ function CDSSModalContent({
 
                 {showInput && (
                   <div className="space-y-3 border-t border-slate-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-[#1e1f20]">
-                    {/* REVISI PADA TEXTAREA: penambahan dark:focus:bg-[#1e1f20] */}
                     <textarea
                       value={gejala}
                       onChange={(e) => setGejala(e.target.value)}

@@ -36,7 +36,6 @@ export default function CustomDatePicker({ label, value, onChange }: CustomDateP
 
   return (
     <div className="relative w-full pt-2">
-      {/* Penyelarasan Struktur Pembungkus */}
       <div className="relative">
         <button
           type="button"

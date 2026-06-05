@@ -115,7 +115,7 @@ export default function DoctorAppointmentManagement() {
         </p>
       </div>
 
-      {/* AREA PANEL KONTROL FILTER (Kini terpisah dari tabel) */}
+      {/* AREA PANEL KONTROL FILTER */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="w-full md:w-72">
@@ -239,7 +239,7 @@ export default function DoctorAppointmentManagement() {
                         </span>
                       </td>
 
-                      {/* KOLOM AKSI (DROPDOWN HEADLESS UI) */}
+                      {/* KOLOM AKSI */}
                       <td
                         className="p-6 pr-8 text-right align-top sticky right-0 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors focus-within:z-50 group-hover:z-50"
                       >

@@ -60,11 +60,9 @@ function DoctorNotesModalContent({
 
   return (
     <>
-      {/* REVISI: Z-index ditingkatkan menjadi 60 dan pt-24 disuntikkan agar tidak menabrak Navbar */}
       <div className="fixed inset-0 z-[60] flex items-end justify-center p-0 pt-24 sm:items-center sm:p-4 sm:pt-24">
         <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity" onClick={onClose} />
         
-        {/* REVISI: Struktur Flex-Col untuk mencegah modal melebihi layar */}
         <div className="relative z-10 flex max-h-[85dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl dark:border dark:border-zinc-800 dark:bg-[#1e1f20]">
           
           {/* HEADER MODAL */}
@@ -88,7 +86,7 @@ function DoctorNotesModalContent({
             </button>
           </div>
 
-          {/* BODY MODAL (SCROLLABLE) */}
+          {/* BODY MODAL */}
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 space-y-6">
             {!canEdit && (
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">

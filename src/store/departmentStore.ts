@@ -23,10 +23,8 @@ export const useDepartmentStore = create<DepartmentState>((set, get) => ({
 
     set({ isLoading: true, error: null })
     try {
-      // Endpoint disesuaikan dengan arsitektur backend Anda
       const response = await apiClient.get('/departments')
 
-      // Standar ApiResponse backend Anda membungkus hasil dalam properti 'data'
       set({ departments: response.data.data, isLoading: false })
     } catch (error: unknown) {
       set({

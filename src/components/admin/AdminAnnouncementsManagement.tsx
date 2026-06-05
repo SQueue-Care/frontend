@@ -138,7 +138,6 @@ export default function AdminAnnouncementsManagement() {
         </button>
       </div>
 
-      {/* PENYESUAIAN 1: Z-Index 60 dan pt-24 untuk menghindari tabrakan dengan Navbar */}
       {showForm && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4 pt-24 backdrop-blur-sm dark:bg-[#131314]/80">
           <div className="animate-in fade-in zoom-in-95 w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl bg-white p-8 shadow-2xl dark:border dark:border-zinc-800 dark:bg-[#1e1f20]">
@@ -268,7 +267,6 @@ export default function AdminAnnouncementsManagement() {
         </div>
       )}
 
-      {/* PENYESUAIAN 2: Relokasi Filter Pilihan ke atas area grid */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4 dark:border-zinc-800">
         <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50/80 p-1 dark:border-zinc-800 dark:bg-[#131314]">
           {(['active', 'all'] as const).map((f) => (

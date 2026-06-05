@@ -6,7 +6,6 @@ import type { AppointmentDetail, OverviewStats, Queue } from '../lib/types'
 export type { OverviewStats, Queue }
 
 interface QueueState {
-  // State untuk statistik
   overviewStats: OverviewStats | null
   isLoadingStats: boolean
   errorStats: string | null
@@ -16,7 +15,6 @@ interface QueueState {
   cancelQueue: (id: string) => Promise<void>
   markVisitStage: (id: string, action: 'ADMIN_ARRIVED' | 'PHARMACY_COMPLETE') => Promise<Queue | null>
 
-  // State untuk daftar antrean tabel
   queues: Queue[]
   isLoadingTable: boolean
   errorTable: string | null
@@ -37,7 +35,6 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   isLoadingStats: false,
   errorStats: null,
 
-  // Tabel
   queues: [],
   isLoadingTable: false,
   errorTable: null,
@@ -135,7 +132,6 @@ export const useQueueStore = create<QueueState>((set, get) => ({
       if (filters.departmentId) params.append('departmentId', filters.departmentId)
 
       if (filters.date) {
-        // Ambil YYYY-MM-DD sesuai zona waktu lokal klien
         const year = filters.date.getFullYear()
         const month = String(filters.date.getMonth() + 1).padStart(2, '0')
         const day = String(filters.date.getDate()).padStart(2, '0')

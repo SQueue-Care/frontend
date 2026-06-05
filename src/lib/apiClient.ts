@@ -12,7 +12,6 @@ const apiClient = axios.create({
   withCredentials: true,
 })
 
-/** Timeout untuk endpoint AI/CDSS — harus >= backend ML_SERVICE_TIMEOUT_MS */
 export const AI_API_TIMEOUT_MS = 120_000
 
 apiClient.interceptors.request.use(
@@ -57,8 +56,6 @@ apiClient.interceptors.response.use(
       console.error(`[API Response Error] ${error.config?.method?.toUpperCase()} ${error.config?.url}`, error.response?.data || error.message)
     }
 
-    // PERBAIKAN MUTLAK: 
-    // Jangan lakukan Auto-Refresh jika error 401 berasal dari endpoint Login atau Register!
     const isAuthEndpoint = originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/register')
 
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
@@ -95,8 +92,6 @@ apiClient.interceptors.response.use(
         processQueue(refreshError as AxiosError, null)
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
-        // Ini adalah eksekutor auto-refresh yang selama ini menjebak Anda.
-        // Sekarang, ini HANYA akan tereksekusi untuk user yang tokennya benar-benar mati, bukan saat login salah.
         window.location.href = '/auth'
         return Promise.reject(refreshError)
       } finally {
@@ -104,7 +99,6 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Standardisasi Error
     const responseData = error.response?.data as { message?: string; error?: { message?: string; code?: string } } | undefined
 
     const standardizedError = {
@@ -113,7 +107,6 @@ apiClient.interceptors.response.use(
       code: responseData?.error?.code || error.code,
     }
 
-    // Melempar error yang sudah distandardisasi ke authStore.ts dan Auth.tsx
     return Promise.reject(standardizedError)
   }
 )

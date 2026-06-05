@@ -34,7 +34,6 @@ export default function DepartmentWorkloadChart() {
     error: departmentError,
   } = useDepartmentStore()
 
-  // Calculate workload percentage for each department
   const chartData = useMemo(() => {
     if (departments.length === 0) {
       return null
@@ -53,7 +52,7 @@ export default function DepartmentWorkloadChart() {
     const labels = mergedDepartments.map((dept) => dept.name)
     const data = mergedDepartments.map((dept) => {
       const percentage = totalPatients > 0 ? (dept.total / totalPatients) * 100 : 0
-      return Math.round(percentage * 10) / 10 // Round to 1 decimal
+      return Math.round(percentage * 10) / 10 
     })
 
     return {
@@ -131,7 +130,6 @@ export default function DepartmentWorkloadChart() {
   return (
     <div className="relative h-[280px] w-full">
       <Doughnut data={data} options={options} />
-      {/* Teks di tengah Donat */}
       <div className="pointer-events-none absolute inset-0 mt-[-30px] flex flex-col items-center justify-center">
         <span className="font-['Manrope'] text-3xl text-zinc-900 dark:text-zinc-100">
           {chartData.totalPatients}

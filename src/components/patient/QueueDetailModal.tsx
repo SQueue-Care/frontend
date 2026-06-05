@@ -43,7 +43,6 @@ const statusMeta: Record<QueueStatus, { title: string; tone: string; message: st
 export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDetailsModalProps) {
   const meta = statusMeta[status]
 
-  // Penjaga keamanan jika status tidak valid
   if (!meta) return null
 
   const isWaiting = status === QueueStatus.WAITING
@@ -69,7 +68,7 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
       <div
         className={`fixed top-[55%] left-1/2 z-110 flex max-h-[80vh] w-[90%] max-w-md origin-center flex-col overflow-hidden rounded-3xl bg-white shadow-2xl transition-all duration-500 ease-out dark:bg-[#1e1f20] ${ isOpen ? 'visible -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100' : 'pointer-events-none invisible -translate-x-1/2 translate-y-[-70%] scale-95 opacity-0' }`}
       >
-        {/* Header Modal - Desain Lebih Bersih */}
+        {/* Header Modal */}
         <div className="flex items-center justify-between p-6 pb-4 transition-colors md:p-8">
           <div>
             <h3 className="font-['Manrope'] text-2xl tracking-tight text-zinc-950 transition-colors dark:text-zinc-100">
@@ -107,9 +106,9 @@ export default function QueueDetailsModal({ isOpen, onClose, status }: QueueDeta
             </p>
           </div>
 
-          {/* 3. TIMELINE VISUAL MONOKROMATIK & AKSEN */}
+          {/* 3. TIMELINE */}
           <div className="relative ml-3 space-y-8 border-l-2 border-slate-200 pb-4 transition-colors dark:border-zinc-800">
-            {/* Tahap 1: Tiket Diterbitkan (Selalu Abu-abu/Masa Lalu) */}
+            {/* Tahap 1: Tiket Diterbitkan */}
             <div className="relative pl-8">
               <div className="absolute top-1 left-[-9px] h-4 w-4 rounded-full bg-slate-300 ring-4 ring-white transition-colors dark:bg-zinc-600 dark:ring-[#1e1f20]" />
               <h4 className="text-sm text-zinc-900 transition-colors dark:text-zinc-100">

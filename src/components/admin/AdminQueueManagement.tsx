@@ -21,17 +21,17 @@ import CustomSelect from '../ui/CustomSelect'
 
 export default function AdminQueueManagement() {
   const { queues, isLoadingTable, errorTable, fetchQueues } = useQueueStore()
-  const { departments } = useDepartmentStore()
+  const { departments, fetchDepartments } = useDepartmentStore()
   const showAlert = useAlertStore((s) => s.showAlert)
 
-  // STATE BARU: Untuk Search Bar & Filter Antrean (Sama persis dengan Reservasi)
   const [queueSearchQuery, setQueueSearchQuery] = useState('')
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState('')
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('')
 
   useEffect(() => {
     fetchQueues()
-  }, [fetchQueues])
+    fetchDepartments() 
+  }, [fetchQueues, fetchDepartments])
 
   const handleUpdateStatus = async (
     id: string,
@@ -51,7 +51,6 @@ export default function AdminQueueManagement() {
     }
   }
 
-  // LOGIKA PENYARINGAN DATA (Departemen, Status, & Teks Pencarian)
   const filteredQueues = queues.filter((item) => {
     const matchDept = !selectedDepartmentFilter || item.department?.id === selectedDepartmentFilter
     const matchStatus = !selectedStatusFilter || item.status === selectedStatusFilter
@@ -66,7 +65,6 @@ export default function AdminQueueManagement() {
     return matchDept && matchStatus && matchSearch
   })
 
-  // LOGIKA PENGURUTAN (Aktif di atas, Selesai/Batal di bawah)
   const activeStatuses: QueueStatus[] = [
     QueueStatus.WAITING,
     QueueStatus.CALLED,
@@ -91,8 +89,8 @@ export default function AdminQueueManagement() {
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-[#1e1f20]">
-        {/* AREA FILTER & SEARCH (Identik dengan Reservasi) */}
-        <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        {/* AREA FILTER & SEARCH */}
+        <div className="relative z-[60] mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="w-full md:w-72">
             <CustomSearchBar
               label="Cari Antrean"
@@ -153,7 +151,7 @@ export default function AdminQueueManagement() {
                 : 'Belum ada data antrean yang sesuai dengan kriteria filter.'}
             </p>
           ) : (
-            <div className="no-scrollbar overflow-x-auto relative">
+            <div className="no-scrollbar overflow-x-auto relative min-h-[350px] pb-16">
               <table className="w-full min-w-[1000px] border-collapse text-left whitespace-nowrap">
                 <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] tracking-widest text-slate-400 uppercase dark:border-zinc-800 dark:bg-[#131314] dark:text-zinc-500">
                   <tr>
@@ -169,7 +167,7 @@ export default function AdminQueueManagement() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
-                  {sortedQueues.map((item, index) => {
+                  {sortedQueues.map((item) => {
                     const statusClasses: Record<string, string> = {
                       WAITING:
                         'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
@@ -198,7 +196,6 @@ export default function AdminQueueManagement() {
                     return (
                       <tr
                         key={item.id}
-                        style={{ zIndex: sortedQueues.length - index }}
                         className="group relative transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/30"
                     >
                         <td className="p-6 pl-8 align-top sticky left-0 z-10 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-r border-slate-100 dark:border-zinc-800/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors">
@@ -263,8 +260,7 @@ export default function AdminQueueManagement() {
                           )}
                         </td>
                         <td 
-                        style={{ zIndex: sortedQueues.length - index }}
-                        className="p-6 pr-8 text-right align-top sticky right-0 z-10 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors focus-within:z-50 group-hover:z-50">
+                        className="p-6 pr-8 text-right align-top sticky right-0 z-10 bg-white group-hover:bg-slate-50/80 dark:bg-[#1e1f20] dark:group-hover:bg-[#252628] border-l border-slate-100 dark:border-zinc-800/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.2)] transition-colors focus-within:z-[70] hover:z-[70] group-hover:z-[70]">
                           <div className="flex items-center justify-end">
                             {allowedTransitions.length > 0 ? (
                               <Menu as="div" className="relative inline-block text-left">

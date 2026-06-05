@@ -40,10 +40,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       await get().fetchProfile()
     } catch (error: any) {
-      // PERBAIKAN: Memastikan state isLoading dikembalikan ke false tanpa melempar ulang 
-      // pesan error generik yang merusak struktur dari API Client.
       set({ isLoading: false })
-      throw error // Melempar error asli agar bisa ditangkap oleh blok catch di Auth.tsx
+      throw error 
     }
   },
 

@@ -51,7 +51,6 @@ export default function CustomInput({
           />
         )}
 
-        {/* IMPLEMENTASI FIX: top-0 -translate-y-1/2 mengunci label tepat di atas garis border */}
         <label
           className={`pointer-events-none absolute left-3 z-10 rounded-sm px-1.5 transition-all duration-200 ease-in-out ${ isFloating ? 'top-0 -translate-y-1/2 text-[10px] bg-white text-teal-600 dark:bg-[#1e1f20] dark:text-teal-400' : multiline ? 'top-3.5 translate-y-0 text-sm bg-transparent text-slate-500 dark:text-zinc-500' : 'top-1/2 -translate-y-1/2 text-sm bg-transparent text-slate-500 dark:text-zinc-500' }`}
         >

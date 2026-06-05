@@ -37,17 +37,14 @@ interface PatientState {
 }
 
 export const usePatientStore = create<PatientState>((set, get) => ({
-  // State yang sudah ada
   profile: null,
   medicalProfile: null,
   isSaving: false,
 
-  // State baru
   patients: [],
   totalPatients: 0,
   pagination: null,
 
-  // State bersama
   isLoading: false,
   error: null,
 
@@ -97,7 +94,6 @@ export const usePatientStore = create<PatientState>((set, get) => ({
       const response = await apiClient.get(`/patients/${patientId}`)
       const profileData = response.data.data
 
-      // Jika backend tidak mengembalikan appointmentIds, coba ambil dari localStorage
       if (!profileData.appointmentIds) {
         const stored = localStorage.getItem(`patient_appointments_${patientId}`)
         if (stored) {
@@ -122,7 +118,6 @@ export const usePatientStore = create<PatientState>((set, get) => ({
     set({ isSaving: true, error: null })
     try {
       const response = await apiClient.patch(`/patients/${patientId}`, data)
-      // Memperbarui state profile dan juga daftar patients jika ada
       set((state) => ({
         isSaving: false,
         profile: state.profile?.id === patientId ? response.data.data : state.profile,
@@ -154,16 +149,13 @@ export const usePatientStore = create<PatientState>((set, get) => ({
       const updatedIds = [...currentIds, appointmentId]
       console.log('💾 Saving appointment IDs:', updatedIds)
 
-      // Update locally first
       set((s) => ({
         profile: s.profile ? { ...s.profile, appointmentIds: updatedIds } : null,
       }))
 
-      // Always save to localStorage as backup (backend might not persist it)
       localStorage.setItem(`patient_appointments_${patientId}`, JSON.stringify(updatedIds))
       console.log('💾 Appointment IDs saved to localStorage:', updatedIds)
 
-      // Then try to persist to backend (optional)
       try {
         await apiClient.patch(`/patients/${patientId}`, { appointmentIds: updatedIds })
         console.log('✅ Appointment IDs also saved to backend')

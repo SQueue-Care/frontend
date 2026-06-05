@@ -35,7 +35,7 @@ function StatCard({
     >
       <p className="text-sm font-medium text-slate-600 dark:text-zinc-400">{label}</p>
       <p
-        className={`mt-1 font-mono text-3xl font-bold tabular-nums tracking-tight sm:text-4xl ${
+        className={`mt-1 font-['Manrope'] text-3xl font-bold tabular-nums tracking-tight sm:text-4xl ${
           highlight ? 'text-teal-700 dark:text-teal-400' : 'text-zinc-900 dark:text-zinc-100'
         }`}
       >
@@ -118,7 +118,7 @@ export default function PatientQueueSummary({
       <div className="mt-6 rounded-2xl border-2 border-teal-300 bg-white px-4 py-6 text-center shadow-sm dark:border-teal-800 dark:bg-[#131314]">
         <p className="text-base font-medium text-slate-600 dark:text-zinc-400">Nomor antrean Anda</p>
         <p
-          className="mt-2 font-mono text-6xl font-bold tabular-nums tracking-tight text-teal-700 sm:text-7xl dark:text-teal-400"
+          className="mt-2 font-['Manrope'] text-6xl font-bold tabular-nums tracking-tight text-teal-700 sm:text-7xl dark:text-teal-400"
           aria-label={`Nomor antrean ${queue.queueNumber}`}
         >
           {queue.queueNumber}
@@ -181,7 +181,7 @@ export default function PatientQueueSummary({
       {isActive && queue.currentServingNumber != null && (
         <p className="mt-4 text-center text-sm text-slate-600 dark:text-zinc-400">
           Antrean yang sedang dilayani: nomor{' '}
-          <strong className="font-mono text-base">{queue.currentServingNumber}</strong>
+          <strong className="font-['Manrope'] tabular-nums font-bold text-base tracking-tight">{queue.currentServingNumber}</strong>
         </p>
       )}
     </section>

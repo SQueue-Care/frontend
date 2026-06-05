@@ -8,7 +8,7 @@ interface AnimatedElementProps {
   className?: string;
   delay?: number;
   animation?: 'fade-up' | 'slide-left' | 'slide-right' | 'pop-up' | 'flip-up';
-  rootMargin?: string; // Properti baru untuk kalibrasi batas layar
+  rootMargin?: string; 
 }
 
 function AnimatedElement({ children, className = '', delay = 0, animation = 'fade-up', rootMargin = '-20% 0px -20% 0px' }: AnimatedElementProps) {
@@ -20,7 +20,6 @@ function AnimatedElement({ children, className = '', delay = 0, animation = 'fad
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
       },
-      // Menggunakan rootMargin dinamis. Jika tidak diisi, ia kembali ke nilai default -20%
       { threshold: 0.1, rootMargin } 
     );
 
@@ -56,6 +55,8 @@ export default function Landing() {
   const { theme, toggleTheme } = useThemeStore()
   const [isMounted, setIsMounted] = useState(false)
   const [scrollY, setScrollY] = useState(0)
+  const mockupRef = useRef<HTMLDivElement>(null)
+  const glowRef = useRef<HTMLDivElement>(null)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   useEffect(() => {
@@ -69,7 +70,36 @@ export default function Landing() {
     }
   }, [])
 
-  // Fungsi navigasi yang memastikan seksi berhenti tepat di ujung layar (block: 'start')
+  const handleMockupMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mockupRef.current || !glowRef.current) return;
+    
+    const rect = mockupRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((y - centerY) / centerY) * -8;
+    const rotateY = ((x - centerX) / centerX) * 8;
+
+    const shadowX = rotateY * -4; 
+    const shadowY = (rotateX * 4) + 20; 
+    
+    mockupRef.current.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+    mockupRef.current.style.boxShadow = `${shadowX}px ${shadowY}px 50px rgba(0, 0, 0, 0.25)`;
+    
+    glowRef.current.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.12), transparent 40%)`;
+  };
+
+  const handleMockupMouseLeave = () => {
+    if (!mockupRef.current || !glowRef.current) return;
+    
+    mockupRef.current.style.transform = `perspective(1200px) rotateY(-12deg) rotateX(6deg)`;
+    mockupRef.current.style.boxShadow = `30px 30px 60px rgba(0, 0, 0, 0.15)`;
+    glowRef.current.style.background = `transparent`;
+  };
+
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -95,7 +125,6 @@ export default function Landing() {
       <header className={`fixed top-0 z-50 flex w-full justify-center border-b border-slate-200/50 dark:border-zinc-800/50 bg-white/70 dark:bg-[#131314]/70 backdrop-blur-xl transition-all duration-700 ease-out ${isMounted ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
         <div className="flex w-full max-w-7xl items-center justify-between px-6 py-4">
           
-          {/* SARAN REVISI: Blok logo telah dibersihkan dari div pembungkus berwarna dan teks SQ lama. Logo dirender murni sebagai vektor SVG. */}
           <div className="flex items-center gap-3">
             <SQueue className="w-10 h-10 transition-transform duration-500 hover:scale-105 drop-shadow-sm" />
             <span className="font-['Manrope'] text-xl font-bold text-zinc-900 dark:text-white tracking-tight transition-colors duration-500">
@@ -133,13 +162,32 @@ export default function Landing() {
 
       {/* 1. HERO SECTION */}
       <section className="min-h-screen flex flex-col justify-center items-center w-full pt-20 px-6 relative z-0">
+
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes ambient-drift {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(150px, -120px) scale(1.3); }
+            66% { transform: translate(-120px, 150px) scale(0.7); }
+            100% { transform: translate(0px, 0px) scale(1); }
+          }
+          .animate-ambient {
+            animation: ambient-drift 10s infinite ease-in-out;
+          }
+          .animate-ambient-reverse {
+            animation: ambient-drift 14s infinite ease-in-out reverse;
+          }
+        `}} />
+
         <div 
           className="absolute inset-0 w-full h-full flex flex-col justify-center items-center pointer-events-none"
           style={{ opacity: heroOpacity, transform: `translateY(${heroTranslateY}px)` }}
         >
           <div className={`absolute inset-0 z-0 overflow-hidden transition-opacity duration-1000 ${isMounted ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="absolute top-0 -left-32 h-[600px] w-[600px] rounded-full bg-teal-600/10 dark:bg-teal-500/10 blur-3xl transition-colors duration-500"></div>
-            <div className="absolute bottom-0 -right-32 h-[500px] w-[500px] rounded-full bg-blue-600/10 dark:bg-blue-500/10 blur-3xl transition-colors duration-500"></div>
+            
+            <div className="absolute top-[-10%] left-[-10%] h-[700px] w-[700px] rounded-full bg-teal-600/30 dark:bg-teal-500/20 blur-[120px] transition-colors duration-500 animate-ambient mix-blend-multiply dark:mix-blend-screen"></div>
+            
+            <div className="absolute bottom-[-10%] right-[-10%] h-[600px] w-[600px] rounded-full bg-blue-600/30 dark:bg-blue-500/20 blur-[120px] transition-colors duration-500 animate-ambient-reverse mix-blend-multiply dark:mix-blend-screen" style={{ animationDelay: '-5s' }}></div>
+            
           </div>
 
           <div className="relative z-10 grid w-full max-w-7xl grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-center pointer-events-auto">
@@ -181,35 +229,141 @@ export default function Landing() {
             </div>
 
             <div className={`transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] delay-[500ms] w-full flex justify-center lg:justify-end ${isMounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
-              <div className="w-full max-w-[520px] bg-white dark:bg-[#1e1f20] border border-slate-200/60 dark:border-zinc-800/60 rounded-3xl shadow-2xl overflow-hidden [transform:perspective(1200px)_rotateY(-10deg)_rotateX(8deg)] hover:[transform:perspective(1200px)_rotateY(0deg)_rotateX(0deg)] hover:scale-[1.02] transition-transform duration-500 ease-out">
-                <div className="h-14 border-b border-slate-100 dark:border-zinc-800 flex items-center px-5 gap-2.5 bg-slate-50/80 dark:bg-[#131314]/80 backdrop-blur-sm transition-colors duration-500">
-                  <div className="w-3.5 h-3.5 rounded-full bg-rose-500/90 shadow-sm"></div>
-                  <div className="w-3.5 h-3.5 rounded-full bg-amber-500/90 shadow-sm"></div>
-                  <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/90 shadow-sm"></div>
-                  <div className="ml-4 px-3 py-1 rounded-md bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex-1 flex items-center">
-                    <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500 truncate">squeue-care.med/dashboard</span>
+
+              <div 
+                ref={mockupRef}
+                onMouseMove={handleMockupMouseMove}
+                onMouseLeave={handleMockupMouseLeave}
+                style={{ boxShadow: '30px 30px 60px rgba(0, 0, 0, 0.15)' }} 
+                className="w-full max-w-[620px] bg-white dark:bg-[#1e1f20] border border-slate-200/80 dark:border-zinc-800/80 rounded-2xl overflow-hidden [transform:perspective(1200px)_rotateY(-12deg)_rotateX(6deg)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col relative group"
+              >
+                <div ref={glowRef} className="absolute inset-0 z-50 pointer-events-none transition-colors duration-200 mix-blend-overlay"></div>
+                <div className="w-full h-full pointer-events-none select-none relative z-10">
+                  {/* Header Browser */}
+                  <div className="h-8 border-b border-slate-100 dark:border-zinc-800 flex items-center px-4 gap-2 bg-slate-50 dark:bg-[#131314]">
+                     <div className="w-2.5 h-2.5 rounded-full bg-rose-500/90"></div>
+                     <div className="w-2.5 h-2.5 rounded-full bg-amber-500/90"></div>
+                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/90"></div>
+                     <div className="ml-4 flex-1 h-5 bg-white dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700 rounded flex items-center px-2">
+                        <span className="text-[9px] text-slate-400 dark:text-zinc-500 font-medium">app.squeue-care.com/portal</span>
+                     </div>
                   </div>
-                </div>
-                <div className="p-6 md:p-8 flex flex-col gap-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col gap-2">
-                      <div className="w-32 h-5 rounded-md bg-slate-200 dark:bg-zinc-700 transition-colors duration-500"></div>
-                      <div className="w-48 h-4 rounded-md bg-slate-100 dark:bg-zinc-800 transition-colors duration-500"></div>
+
+                {/* Replika App Shell Pasien */}
+                <div className="flex h-[420px] bg-slate-50 dark:bg-[#131314]">
+                  
+                  {/* Replika Sidebar */}
+                  <div className="w-12 bg-white dark:bg-[#1e1f20] border-r border-slate-100 dark:border-zinc-800 flex flex-col items-center py-3 gap-4 relative">
+                    <div className="w-6 h-6 flex items-center justify-center rounded-md border border-slate-200 dark:border-zinc-700 shadow-sm">
+                      <SQueue className="w-4 h-4" />
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800/50 flex items-center justify-center transition-colors duration-500">
-                      <div className="w-6 h-6 rounded-full bg-teal-600 dark:bg-teal-500"></div>
+                    <div className="w-6 h-6 rounded-md bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 flex items-center justify-center text-teal-600 dark:text-teal-400">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                    </div>
+                    <div className="w-6 h-6 flex items-center justify-center text-slate-400 dark:text-zinc-500">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                    </div>
+                    <div className="w-6 h-6 flex items-center justify-center text-slate-400 dark:text-zinc-500">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    
+                    {/* Avatar Bawah */}
+                    <div className="absolute bottom-3 w-6 h-6 rounded-full bg-teal-100 dark:bg-teal-900/40 border border-teal-200 dark:border-teal-700/50 flex items-center justify-center">
+                      <span className="text-[10px] font-bold text-teal-700 dark:text-teal-400">A</span>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-teal-50 dark:bg-teal-500/5 border border-teal-100 dark:border-teal-500/10 transition-colors duration-500">
-                      <div className="w-8 h-8 rounded-lg bg-teal-200 dark:bg-teal-800/50 mb-4 transition-colors duration-500"></div>
-                      <div className="w-16 h-6 rounded-md bg-teal-600 dark:bg-teal-500 mb-2 transition-colors duration-500"></div>
-                      <div className="w-24 h-4 rounded-md bg-teal-200 dark:bg-teal-800/50 transition-colors duration-500"></div>
+
+                  {/* Area Konten */}
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    
+                    {/* Header Top Nav */}
+                    <div className="h-10 bg-white dark:bg-[#1e1f20] border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between px-4 shrink-0">
+                      <span className="font-['Manrope'] text-xs font-extrabold text-zinc-900 dark:text-white">Beranda</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-md border border-slate-200 dark:border-zinc-700 flex items-center justify-center text-slate-500 dark:text-zinc-400 bg-slate-50 dark:bg-[#131314]">
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                        </div>
+                        <div className="w-6 h-6 rounded-md border border-slate-200 dark:border-zinc-700 flex items-center justify-center text-slate-500 dark:text-zinc-400 relative bg-slate-50 dark:bg-[#131314]">
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                          <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-rose-500 border-2 border-white dark:border-[#1e1f20] flex items-center justify-center">
+                            <span className="text-[5px] font-bold text-white">11</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-800/30 border border-slate-100 dark:border-zinc-800 transition-colors duration-500">
-                      <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-zinc-700 mb-4 transition-colors duration-500"></div>
-                      <div className="w-16 h-6 rounded-md bg-slate-300 dark:bg-zinc-600 mb-2 transition-colors duration-500"></div>
-                      <div className="w-24 h-4 rounded-md bg-slate-200 dark:bg-zinc-700 transition-colors duration-500"></div>
+
+                    <div className="flex-1 p-3 flex flex-col gap-3 overflow-hidden">
+                      
+                      {/* Greeting Banner */}
+                      <div className="rounded-xl border border-teal-100 dark:border-teal-900/30 bg-gradient-to-br from-teal-50/80 via-white to-sky-50/40 dark:from-teal-950/40 dark:via-[#1e1f20] dark:to-[#1e1f20] p-4 flex justify-between items-center relative overflow-hidden shrink-0">
+                        <div className="absolute -top-6 -right-6 w-20 h-20 bg-teal-200/30 dark:bg-teal-800/20 rounded-full blur-2xl"></div>
+                        <div>
+                          <p className="text-[7px] font-extrabold tracking-widest text-teal-700 dark:text-teal-400 uppercase mb-1">Jumat, 5 Juni 2026</p>
+                          <h1 className="font-['Manrope'] text-lg font-extrabold text-zinc-900 dark:text-white tracking-tight">Selamat pagi, Andi</h1>
+                          <p className="text-[8px] text-slate-500 dark:text-slate-400 mt-0.5">Kelola kunjungan, antrean, dan informasi medis Anda dari satu tempat.</p>
+                        </div>
+                        <div className="flex gap-1.5 relative z-10">
+                          <div className="px-3 py-1.5 rounded-lg bg-teal-600 dark:bg-teal-700 text-white text-[8px] font-bold shadow-md flex items-center gap-1">
+                            <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                            Ambil Antrean
+                          </div>
+                          <div className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white/90 dark:bg-[#131314] text-slate-700 dark:text-zinc-300 text-[8px] font-bold shadow-sm">
+                            Lihat Reservasi
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Active Queue Summary */}
+                      <div className="rounded-xl border-2 border-teal-100 dark:border-teal-900/40 bg-teal-50/30 dark:bg-[#1e1f20] p-4 shrink-0 shadow-sm relative overflow-hidden">
+                        
+                        <div className="flex justify-between items-center mb-3">
+                          <div className="px-2 py-1 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 rounded-full text-[8px] font-bold flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                            Menunggu giliran
+                          </div>
+                          <span className="text-[8px] font-medium text-slate-500 dark:text-zinc-400">Jumat, 5 Juni 2026</span>
+                        </div>
+
+                        <h2 className="font-['Manrope'] text-sm font-extrabold text-zinc-900 dark:text-white">Poli Anak</h2>
+                        <p className="text-[9px] font-medium text-slate-600 dark:text-zinc-400 mt-0.5 mb-2">Dokter: dr. Sari Wulandari</p>
+                        <p className="text-[8px] p-2 bg-white/60 dark:bg-zinc-900/40 rounded-lg text-slate-600 dark:text-zinc-400 border border-slate-100 dark:border-zinc-800/50 mb-3">Silakan duduk di ruang tunggu. Nomor Anda akan dipanggil di layar atau speaker.</p>
+
+                        <div className="rounded-xl border-2 border-teal-300 dark:border-teal-700 bg-white dark:bg-[#131314] py-3 text-center shadow-sm">
+                          <p className="text-[8px] font-medium text-slate-500 dark:text-zinc-400">Nomor antrean Anda</p>
+                          <p className="font-['Manrope'] tabular-nums tracking-tighter text-4xl font-extrabold text-teal-700 dark:text-teal-400 leading-none mt-1">3</p>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-3 gap-2 mt-2">
+                          <div className="rounded-lg border border-slate-200 dark:border-zinc-700/80 bg-white/80 dark:bg-[#131314]/80 py-2 text-center">
+                            <p className="text-[7px] text-slate-500 dark:text-zinc-400">Sedang dilayani</p>
+                            <p className="font-['Manrope'] text-sm font-bold tabular-nums text-zinc-900 dark:text-white mt-0.5">1</p>
+                            <p className="text-[6px] text-slate-400 mt-0.5">Nomor yang dipanggil sekarang</p>
+                          </div>
+                          <div className="rounded-lg border-2 border-teal-200 dark:border-teal-800/60 bg-white dark:bg-[#131314] py-2 text-center shadow-sm">
+                            <p className="text-[7px] text-slate-500 dark:text-zinc-400">Orang di depan Anda</p>
+                            <p className="font-['Manrope'] text-sm font-bold tabular-nums text-teal-700 dark:text-teal-400 mt-0.5">2</p>
+                            <p className="text-[6px] text-slate-400 mt-0.5">Masih 2 orang sebelum giliran Anda</p>
+                          </div>
+                          <div className="rounded-lg border border-slate-200 dark:border-zinc-700/80 bg-white/80 dark:bg-[#131314]/80 py-2 text-center">
+                            <p className="text-[7px] text-slate-500 dark:text-zinc-400">Perkiraan dipanggil</p>
+                            <p className="font-['Manrope'] text-sm font-bold tabular-nums text-zinc-900 dark:text-white mt-0.5">08.24</p>
+                            <p className="text-[6px] text-slate-400 mt-0.5">Sekitar 24 menit lagi</p>
+                          </div>
+                        </div>
+
+                        {/* Next Steps & Buttons */}
+                        <div className="mt-3 pt-3 border-t border-teal-200/50 dark:border-teal-900/50 flex justify-between items-end">
+                           <div className="flex flex-col gap-0.5">
+                              <span className="text-[8px] font-bold text-teal-700 dark:text-teal-400">Langkah selanjutnya</span>
+                              <span className="text-[8px] text-slate-600 dark:text-zinc-300">Silakan menunggu di Ruang Tunggu Poli Anak</span>
+                           </div>
+                           <div className="flex gap-1.5">
+                              <div className="px-3 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-[8px] font-bold bg-white dark:bg-[#1e1f20]">Batalkan</div>
+                              <div className="px-3 py-1.5 rounded-lg bg-teal-600 dark:bg-teal-700 text-white text-[8px] font-bold shadow-sm">Detail lengkap</div>
+                           </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -217,9 +371,10 @@ export default function Landing() {
             </div>
           </div>
         </div>
+      </div>
       </section>
 
-      {/* 2. SEKSI PROSEDUR - Full Screen */}
+      {/* 2. SEKSI PROSEDUR */}
       <section 
         id="prosedur" 
         className="w-full min-h-screen flex flex-col justify-center items-center pt-24 pb-12 px-6 relative z-20 bg-slate-50 dark:bg-[#131314] overflow-hidden"
@@ -271,7 +426,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 3. SEKSI LIVE ANTREAN - Full Screen */}
+      {/* 3. SEKSI LIVE ANTREAN */}
       <section 
         id="live-queue" 
         className="w-full min-h-screen flex flex-col justify-center items-center pt-24 pb-12 px-6 relative z-20 bg-white dark:bg-[#1e1f20] border-y border-slate-200 dark:border-zinc-800 overflow-hidden"
@@ -335,7 +490,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 4. SEKSI JADWAL DOKTER - Full Screen */}
+      {/* 4. SEKSI JADWAL DOKTER */}
       <section 
         id="jadwal-dokter" 
         className="w-full min-h-screen flex flex-col justify-center items-center pt-24 pb-12 px-6 relative z-20 bg-slate-50 dark:bg-[#131314] overflow-hidden"
@@ -387,7 +542,7 @@ export default function Landing() {
          </div>
       </section>
 
-      {/* 5. SEKSI ARSITEKTUR - Full Screen */}
+      {/* 5. SEKSI ARSITEKTUR */}
       <section 
         id="arsitektur" 
         className="w-full min-h-screen flex flex-col justify-center items-center pt-24 pb-12 px-6 relative z-20 bg-white dark:bg-[#1e1f20] overflow-hidden"
@@ -481,7 +636,6 @@ export default function Landing() {
 
       {/* FOOTER */}
       <footer className="w-full border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#131314] transition-colors duration-500 py-12 px-6 relative z-20 overflow-hidden">
-        {/* Penambahan rootMargin="0px 0px 0px 0px" membebaskan footer dari jebakan margin layar */}
         <AnimatedElement animation="fade-up" rootMargin="0px 0px 0px 0px" className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8 w-full">
            
            <div className="flex flex-col items-start gap-2">
