@@ -169,7 +169,7 @@ export default function AdminQueueManagement() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
-                  {sortedQueues.map((item, index) => {
+                  {sortedQueues.map((item) => {
                     const statusClasses: Record<string, string> = {
                       WAITING:
                         'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',

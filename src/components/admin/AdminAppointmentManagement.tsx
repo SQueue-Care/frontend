@@ -179,7 +179,7 @@ export default function AdminAppointmentManagement() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
-                  {filteredAppointments.map((apt, index) => {
+                  {filteredAppointments.map((apt) => {
                     const statusClasses: Record<string, string> = {
                       BOOKED:
                         'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
